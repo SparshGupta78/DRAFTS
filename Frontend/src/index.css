@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  --white-1: #ffffff;
+  --white-2: #fcfcfe;
+  --white-3: #f5f8fd;
+  --white-4: #EEF3FC;
+
+  --blue-1: #E6EEFA;
+  --blue-2: #347CE9;
+  --blue-3: #1b63ce;
+  --blue-4: #b6d3ff;
+
+  --black-1: #D0D0D0;
+  --black-2: #4C4C4C;
+  --black-3: #000000;
+  --black-4: rgb(231, 231, 231);
+
+  --red-1: #ff6c6c;
+  --red-2: #ffe3e3;
+  --red-3: #ff9595;
+  --red-4: #FF0000;
+}
+
+body {
+  transition: all 0.2s ease;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}

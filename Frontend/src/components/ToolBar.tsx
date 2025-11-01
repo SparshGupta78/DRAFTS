@@ -1,0 +1,217 @@
+import { useEffect, useState } from "react"
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight, ArrowDown, Blockquote, Bold, Code, Highlighter, Italic, Link, Redo, Strikethrough, Subscript, Superscript, Underline, Undo, UnoderedList, HorizontalRule, Paragraph, ClearMarks, ClearNodes } from "../assets/Icons";
+
+type ToolBoxType = {
+  setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
+  toolkit: {
+    undo: () => boolean;
+    redo: () => boolean;
+    bold: () => boolean;
+    italic: () => boolean;
+    underline: () => boolean;
+    subscript: () => boolean;
+    superscript: () => boolean;
+    strikethrough: () => boolean;
+    code: () => boolean;
+    paragraph: () => boolean;
+    blockquote: () => boolean;
+    horizontalRule: () => boolean;
+    unorderedList: () => boolean;
+    orderedList: () => boolean;
+    taskList: () => boolean;
+    clearMarks: () => boolean;
+    clearNodes: () => boolean;
+    removeLink: () => boolean;
+    highlight: (color?: string) => boolean;
+    align: (alignment: "left" | "center" | "right" | "justify") => boolean;
+    heading: (level: 2 | 1 | 3 | 4 | 5 | 6) => boolean;
+    setLink: (link?: string) => boolean;
+  }
+}
+
+const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
+
+  const [windowWidth, setwindowWidth] = useState(window.innerWidth)
+  useEffect(() => {
+    const resizeHandler = () => setwindowWidth(window.innerWidth)
+    window.addEventListener('resize', resizeHandler)
+    return () => window.removeEventListener('resize', resizeHandler)
+  }, [])
+  
+  const [toolbarOpen, setToolbarOpen] = useState(false)
+
+  useEffect(() => {
+    if (windowWidth > 768) setToolbarOpen(true)
+    else setToolbarOpen(false)
+  }, [windowWidth])
+
+  return (
+    <div className="bg-[var(--white-3)] rounded-b-xl md:rounded-t-xl md:rounded-b-sm fixed md:relative top-0 left-2 md:left-0 w-[calc(100%-16px)] md:w-full h-fit z-10">
+      <div className={`h-fit p-2 md:pb-2 rounded-b-xl md:rounded-xl flex flex-wrap items-center gap-2.5 relative duration-300 ${toolbarOpen ? 'pb-6' : 'pb-3'}`}>
+        <div className="w-full max-w-full duration-300">
+          <div className={`md:w-full flex items-center flex-wrap md:flex-nowrap duration-300 ${toolbarOpen ? 'gap-2.5' : 'gap-0'}`}>
+            <div className="h-fit w-full md:w-fit flex items-center justify-between gap-2.5">
+              <div className="w-fit h-fit p-0.5 rounded-sm active:bg-[var(--white-3)] active:scale-80 duration-100 md:hidden" onClick={() => setSideNavOpen(prev => !prev)}>
+                {/* menu-toggle-button */}
+                <div className="w-7 h-fit flex flex-col items-center justify-center gap-1.25">
+                  <div className="w-85/100 h-0.5 rounded-sm bg-[var(--black-3)]"></div>
+                  <div className="w-65/100 h-0.5 rounded-sm bg-[var(--black-1)]"></div>
+                </div>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]" onClick={() => toolkit.undo()}>
+                  <Undo dimension={windowWidth > 425 ? 20 : 22} />
+                </div>
+                <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]" onClick={() => toolkit.redo()}>
+                  <Redo dimension={windowWidth > 425 ? 20 : 22} />
+                </div>
+              </div>
+            </div>
+            <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)] hidden md:block"></div>
+            <div className={`max-w-full md:max-w-[calc(100%-80px)] overflow-x-auto overflow-y-hidden bg-[var(--white-1)] md:bg-transparent rounded-lg md:rounded-none px-2 md:p-0 duration-300 h-fit ${toolbarOpen ? 'py-2 max-h-75 opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="w-max flex items-center gap-2.5">
+                <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <Bold dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <Italic dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <Underline dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <Strikethrough dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <div className="-translate-y-0.25 scale-75">
+                      <Highlighter dimension={windowWidth > 425 ? 20 : 24} />
+                    </div>
+                  </div>
+                  <div className="p-1 flex items-center gap-0.5">
+                    <div className="">
+                      <Link dimension={windowWidth > 425 ? 20 : 24} />
+                    </div>
+                    <div className="">
+                      <ArrowDown dimension={10} />
+                    </div>
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <Superscript dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <Subscript dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <AlignLeft dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <AlignCenter dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <AlignRight dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                    <AlignJustify dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit max-w-30 flex items-center justify-evenly gap-1">
+                  <div className="text-sm md:text-xs text-nowrap">
+                    Heading 1
+                  </div>
+                  <div className="">
+                    <ArrowDown dimension={10} />
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                  <div className="">
+                    <Code dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="text-sm md:text-xs text-nowrap">
+                    Code
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit flex items-center justify-evenly gap-1">
+                  <div className="">
+                    <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="text-sm md:text-xs text-nowrap">Unordered list</div>
+                  <div className="">
+                    <ArrowDown dimension={10} />
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                  <div className="">
+                    <Blockquote dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="text-sm md:text-xs text-nowrap">
+                    Blockquote
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                  <div className="">
+                    <HorizontalRule dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="text-sm md:text-xs text-nowrap">
+                    Horizontal rule
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                  <div className="">
+                    <Paragraph dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="text-sm md:text-xs text-nowrap">
+                    Paragraph
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                  <div className="">
+                    <ClearMarks dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="text-sm md:text-xs text-nowrap">
+                    CLear marks
+                  </div>
+                </div>
+                <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
+                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                  <div className="">
+                    <ClearNodes dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div className="text-sm md:text-xs text-nowrap">
+                    CLear nodes
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="md:hidden absolute bottom-1 left-0 w-full h-fit flex items-center justify-center gap-1">
+          <div 
+            className="w-fit flex items-center justify-center gap-1 select-none" 
+            onClick={() => setToolbarOpen(prev => !prev)}
+            >
+            <div className={`duration-300 ${toolbarOpen ? 'rotate-x-180' : 'rotate-x-0'}`}>
+              <ArrowDown dimension={10} color="#347CE9" />
+            </div>
+            {toolbarOpen ? <span className="text-xs text-[var(--blue-2)]">Close toolbar</span> : <span className="text-xs text-[var(--blue-2)]">Open toolbar</span>}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ToolBox
