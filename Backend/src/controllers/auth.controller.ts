@@ -1,11 +1,13 @@
 import { Request, Response } from "express"
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
+import bcryptjs from 'bcryptjs'
 import User from "../types/user.type"
+import user from '../model/User.model'
 
 dotenv.config()
 
-export const signup = (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
   const {firstName, middleName, lastName, email, username, password} = req.body
   if (
     !firstName || 
@@ -16,13 +18,22 @@ export const signup = (req: Request, res: Response) => {
   ) {
     return res.status(400).json({error: "Bad Request"})
   }
-  const user: User = {firstName, middleName, lastName, email, username, password}
 
-  //database store
+  try {
+    const existingUser: (User | null) = await user.findOne({username})
+    if (existingUser) {
+      return res.status(409).json({error: "Username already taken"})
+    }
+    const hashedPassword = await bcryptjs.hash(password, 16)  
+    const newUser = new user({firstName, middleName, lastName, email, username, password: hashedPassword})
+    await newUser.save()
+  } catch (error) {
+    return res.status(500).json({error: "Internal server error"})
+  }
 
   try {
     const token = jwt.sign(
-      user, 
+      {firstName, middleName, lastName, username},
       process.env.JWT_SECRET_KEY as string,
       {expiresIn: '1h'}
     )
@@ -33,26 +44,32 @@ export const signup = (req: Request, res: Response) => {
   }
 }
 
-export const signin = (req: Request, res: Response) => {
+export const signin = async (req: Request, res: Response) => {
   const { username, password } = req.body
   if (!username || !password) { return res.status(400).json({ error: "Bad Request" }) }
-
-  //database verification...
-
-  const user = {
-    firstName: "sparsh",
-    middleName: "",
-    lastName: "gupta",
-    username: "spar123"
-  }
+  
   try {
+    const existingUser: (User | null) = await user.findOne({username})
+    if (!existingUser) {
+      return res.status(400).json({error: "User not found"})
+    }
+    const passwordMatch = await bcryptjs.compare(password, existingUser.password)
+    if (!passwordMatch) {
+      return res.status(400).json({error: "Invalid credentials"})
+    }
+    const returnUser = {
+        firstName: existingUser.firstName,
+        middleName: existingUser.middleName,
+        lastName: existingUser.lastName,
+        username: existingUser.username
+      }
     const token = jwt.sign(
-      user, 
+      returnUser, 
       process.env.JWT_SECRET_KEY as string, 
       {expiresIn: '1h'}
     )
     if (!token) { return res.status(500).json({ error: "Internal server error" }) }
-    res.status(200).json({ user, token })
+    res.status(200).json({ user: returnUser, token })
   } catch (err) {
     res.status(500).json({ error: "Internal server error" })
   }

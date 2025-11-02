@@ -1,9 +1,10 @@
 export interface authResponse {
-  user: {
+  user?: {
     firstName: string,
     middleName: string,
     lastName: string,
     username: string
   },
-  token: string
+  token?: string,
+  error?: string
 }

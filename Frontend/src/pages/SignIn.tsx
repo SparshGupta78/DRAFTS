@@ -21,8 +21,13 @@ const SignIn = () => {
     password: false
   })
 
+  const [errorStatus, setErrorStatus] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const [submitBtnDisable, setSumBtnDisable] = useState(false)
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSumBtnDisable(true)
     const usernameRegex = /^[A-Za-z0-9_]{3,12}$/
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=]).+$/
     const errors = {
@@ -39,11 +44,28 @@ const SignIn = () => {
         },
         body: JSON.stringify({username, password})
       })
-      if (response) {
-        localStorage.setItem('token', response.token)
+      if (!response) {
+        setErrorStatus(true)
+        setErrorMsg('Error getting details')
+        setSumBtnDisable(false)
+        return
       }
-      navigate('/dashboard')
+      const {user, error, token} = response
+      if (error) {
+        setErrorStatus(true)
+        setErrorMsg(error)
+        setSumBtnDisable(false)
+        return
+      }
+      if (token) {
+        localStorage.setItem('token', token)
+        navigate(`/dashboard/${username.toLowerCase()}/`)
+      } else {
+        setErrorStatus(true)
+        setErrorMsg("Error saving token")
+      }
     }
+    setSumBtnDisable(false)
   }
 
   return (
@@ -55,6 +77,9 @@ const SignIn = () => {
             <div className="text-sm mt-1.5 flex gap-x-1 flex-wrap">Don't have an account?<NavLink to='/signup' className='text-[var(--blue-2)]'>Sign Up</NavLink></div>
           </div>
           <div className="w-full flex flex-col gap-4">
+            <div className={`w-full h-fit px-2.5 text-center text-sm text-[var(--red-4)] overflow-hidden duration-500 ${errorStatus ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
+              {errorMsg}
+            </div>
               <div className="relative">
                 <input 
                   className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.username ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
@@ -125,7 +150,9 @@ const SignIn = () => {
               </div>
           </div>
           <div className="w-full">
-            <button type="submit" className="w-full bg-[var(--blue-2)] text-[var(--white-1)] rounded-full px-4.5 py-2 cursor-pointer outline-0 outline-[var(--blue-1)] hover:outline-6 active:outline-6 duration-100">Sign In</button>
+            <button type="submit" className="w-full bg-[var(--blue-2)] text-[var(--white-1)] rounded-full px-4.5 py-2 cursor-pointer outline-0 outline-[var(--blue-1)] hover:outline-6 active:scale-96 duration-250 flex items-center justify-center gap-2.5 disabled:hover:outline-0  disabled:active:scale-100 disabled:opacity-75" disabled={submitBtnDisable}>
+              {submitBtnDisable ? 'Signing In...' : 'Sign In'}
+            </button>
           </div>
         </form>
       </div>

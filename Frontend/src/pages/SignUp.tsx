@@ -33,8 +33,37 @@ const SignUp = () => {
     username: false,
     password: false,
     rePassword: false,
-    passwordNotMatch: false
+    passwordNotMatch: false,
+    usernameStatus: false
   })
+
+  const [usernameStatus, setUsernameStatus] = useState< 0 | 1 | 2 | 3 | 4 >(0)
+  // 0 - Empty | 1 - Available | 2 - Not available | 3 - Error | 4 - Invalid
+  const usernameHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const currentUsername = e.target.value
+    setUsername(currentUsername)
+    setFormErrors({...formErrors, username: false})
+    if (currentUsername === '') {
+      setUsernameStatus(0)
+      return
+    }
+    const usernameRegex = /^[A-Za-z0-9_]{3,12}$/
+    if (!usernameRegex.test(currentUsername)) {
+      setUsernameStatus(4)
+      return
+    }
+    try {
+      const result: ({matched?: string} | null) = await fetchData(`http://localhost:3000/public/usernameExistCheck?username=${currentUsername}`)
+      if (!result) {
+        setUsernameStatus(3)
+      } else {
+        if (result.matched) setUsernameStatus(2)
+        else setUsernameStatus(1)
+      }
+    } catch (error) {
+      setUsernameStatus(3)
+    }
+  }
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +79,8 @@ const SignUp = () => {
       username: username.trim().length < 3 || username.trim().length > 12 || !usernameRegex.test(username.trim()),
       password: password.trim().length < 8 || !passwordRegex.test(password.trim()),
       rePassword: rePassword.trim().length < 8 || !passwordRegex.test(rePassword.trim()),
-      passwordNotMatch: password !== rePassword
+      passwordNotMatch: password !== rePassword,
+      usernameStatus: usernameStatus === 1 ? false : true
     }
     setFormErrors(errors)
     const hasError = Object.values(errors).some(v => v)
@@ -63,9 +93,16 @@ const SignUp = () => {
         body: JSON.stringify({firstName, middleName, lastName, email, username, password})
       })
       if (response) {
-        localStorage.setItem('token', response.token)
+        const error = response.error
+        const token = response.token
+        if (error) {
+          console.log(error)
+        }
+        if (token) {
+          localStorage.setItem('token', token)
+          navigate('/dashboard')
+        }
       }
-      navigate('/dashboard')
     }
   }
 
@@ -216,38 +253,55 @@ const SignUp = () => {
                   </svg>
                 </div>
               </div>
-              <div className="relative">
-                <input 
-                  className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.username ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
-                  type="text" 
-                  name="username" 
-                  placeholder="Create you username" 
-                  value={username} 
-                  onChange={
-                    (e) => {
-                      setUsername(e.target.value)
-                      setFormErrors({...formErrors, username: false})
+              <div className="">
+                <div className="relative">
+                  <input 
+                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.username ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
+                    type="text" 
+                    name="username" 
+                    placeholder="Create you username" 
+                    value={username} 
+                    onChange={
+                      (e) => usernameHandler(e)
                     }
-                  }
-                />
-                <div 
-                  className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${username != '' ? 'flex' : 'hidden'}`}
-                  onClick={() => {setUsername(''); setFormErrors({...formErrors, username: false})}}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <g clipPath="url(#clip0_4418_6158)">
-                      <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="#4c4c4c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <g opacity="0.4">
-                        <path d="M9.16992 14.8299L14.8299 9.16992" stroke="#4c4c4c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M14.8299 14.8299L9.16992 9.16992" stroke="#4c4c4c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  />
+                  <div 
+                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${username != '' ? 'flex' : 'hidden'}`}
+                    onClick={() => {
+                      setUsername('')
+                      setFormErrors({...formErrors, username: false})
+                      setUsernameStatus(0)
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <g clipPath="url(#clip0_4418_6158)">
+                        <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="#4c4c4c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <g opacity="0.4">
+                          <path d="M9.16992 14.8299L14.8299 9.16992" stroke="#4c4c4c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M14.8299 14.8299L9.16992 9.16992" stroke="#4c4c4c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </g>
                       </g>
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_4418_6158">
-                        <rect width="24" height="24" fill="white"/>
-                      </clipPath>
-                    </defs>
-                  </svg>
+                      <defs>
+                        <clipPath id="clip0_4418_6158">
+                          <rect width="24" height="24" fill="white"/>
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </div>
+                </div>
+                <div className={`w-full h-fit overflow-hidden px-2.5 duration-500 ${usernameStatus === 0 ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
+                  {usernameStatus === 1 && (
+                    <span className="text-xs font-normal text-[var(--green-1)]">Username available</span>
+                  )}
+                  {usernameStatus === 2 && (
+                    <span className="text-xs font-normal text-[var(--red-4)]">Username already taken</span>
+                  )}
+                  {usernameStatus === 3 && (
+                    <span className="text-xs font-normal text-[var(--red-3)]">Can't get username status</span>
+                  )}
+                  {usernameStatus === 4 && (
+                    <span className="text-xs font-normal text-[var(--red-4)]">Invalid username</span>
+                  )}
                 </div>
               </div>
               <div className="relative">
@@ -320,7 +374,8 @@ const SignUp = () => {
               </div>
           </div>
           <div className="w-full">
-            <button type="submit" className="w-full bg-[var(--blue-2)] text-[var(--white-1)] rounded-full px-4.5 py-2 cursor-pointer outline-0 outline-[var(--blue-1)] hover:outline-6 active:outline-6 duration-100">Sign Up</button>
+            <button type="submit" className="w-full bg-[var(--blue-2)] text-[var(--white-1)] rounded-full px-4.5 py-2 cursor-pointer outline-0 outline-[var(--blue-1)] hover:outline-10 active:outline-8
+            duration-150">Sign Up</button>
           </div>
         </form>
       </div>
