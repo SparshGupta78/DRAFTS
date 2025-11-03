@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import SideBar from '../components/SideBar';
 import Editor from '../components/Editor';
+import { useParams } from 'react-router-dom';
 
 const Dashboard = () => {
+
+  const { username } = useParams()
   
   const notes = [
     { _id: 0, noteID: 1001, title: "Podcast Episode Ideas" },

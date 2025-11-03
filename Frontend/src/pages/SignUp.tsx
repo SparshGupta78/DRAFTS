@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import ai from '../assets/ai.svg'
-import fetchData from "../api/public.fetch"
 import type { authResponse } from "../types/authResponse.type"
+import { signUpAPI } from "../services/auth.service"
+import { usernameCheckerAPI } from "../services/drafts.service"
 
 const SignUp = () => {
 
@@ -53,7 +54,8 @@ const SignUp = () => {
       return
     }
     try {
-      const result: ({matched?: string} | null) = await fetchData(`http://localhost:3000/public/usernameExistCheck?username=${currentUsername}`)
+      const res = await usernameCheckerAPI(currentUsername)
+      const result: ({matched?: string} | null) = res.data
       if (!result) {
         setUsernameStatus(3)
       } else {
@@ -65,8 +67,10 @@ const SignUp = () => {
     }
   }
 
+  const [btnsDisable, setBtnsDisable] = useState(false)
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
+    setBtnsDisable(true)
     const nameRegex = /^[A-Za-z\s]+$/
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const usernameRegex = /^[A-Za-z0-9_]{3,12}$/
@@ -85,25 +89,20 @@ const SignUp = () => {
     setFormErrors(errors)
     const hasError = Object.values(errors).some(v => v)
     if (!hasError) {
-      const response: (authResponse | null) = await fetchData('http://localhost:3000/auth/signup', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({firstName, middleName, lastName, email, username, password})
-      })
+      const res = await signUpAPI({ firstName, middleName, lastName, email, username, password })
+      const response: (authResponse | null) = res.data
       if (response) {
-        const error = response.error
-        const token = response.token
+        const {error, token} = response
         if (error) {
           console.log(error)
         }
         if (token) {
           localStorage.setItem('token', token)
-          navigate('/dashboard')
+          navigate(`/dashboard/${username}`)
         }
       }
     }
+    setBtnsDisable(false)
   }
 
   return (
@@ -118,7 +117,7 @@ const SignUp = () => {
               <div className="w-full flex flex-wrap gap-4">
                 <div className="w-full md:max-w-[calc(50%-8px)] relative">
                   <input 
-                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.firstName ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
+                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] disabled:opacity-60 ${formErrors.firstName ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0'}`} 
                     type="text" 
                     name="firstName" 
                     placeholder="First Name"
@@ -128,10 +127,11 @@ const SignUp = () => {
                         setFirstName(e.target.value)
                         setFormErrors({...formErrors, firstName: false})
                       }
-                    }
+                    } 
+                    disabled={btnsDisable}
                   />
                   <div 
-                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${firstName != '' ? 'flex' : 'hidden'}`}
+                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${(firstName != '' && !btnsDisable) ? 'flex' : 'hidden'}`}
                     onClick={() => {setFirstName(''); setFormErrors({...formErrors, firstName: false})}}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -152,7 +152,7 @@ const SignUp = () => {
                 </div>
                 <div className="w-full md:max-w-[calc(50%-8px)] relative">
                   <input 
-                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.middleName ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
+                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] disabled:opacity-60 ${formErrors.middleName ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0'}`} 
                     type="text" 
                     name="middleName" 
                     placeholder="Middle Name" 
@@ -162,10 +162,11 @@ const SignUp = () => {
                         setMiddleName(e.target.value)
                         setFormErrors({...formErrors, middleName: false})
                       }
-                    }
+                    } 
+                    disabled={btnsDisable}
                   />
                   <div 
-                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${middleName != '' ? 'flex' : 'hidden'}`}
+                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${(middleName != '' && !btnsDisable) ? 'flex' : 'hidden'}`}
                     onClick={() => {setMiddleName(''); setFormErrors({...formErrors, middleName: false})}}
                   >
                       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -186,7 +187,7 @@ const SignUp = () => {
                 </div>
                 <div className="w-full md:max-w-[calc(50%-8px)] relative">
                   <input 
-                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.lastName ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
+                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] disabled:opacity-60 ${formErrors.lastName ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0'}`} 
                     type="text" 
                     name="lastName" 
                     placeholder="Last Name" 
@@ -196,10 +197,11 @@ const SignUp = () => {
                         setLastName(e.target.value)
                         setFormErrors({...formErrors, lastName: false})
                       }
-                    }
+                    } 
+                    disabled={btnsDisable}
                   />
                   <div 
-                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${lastName != '' ? 'flex' : 'hidden'}`}
+                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${(lastName != '' && !btnsDisable) ? 'flex' : 'hidden'}`}
                     onClick={() => {setLastName(''); setFormErrors({...formErrors, lastName: false})}}
                   >
                       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -221,7 +223,7 @@ const SignUp = () => {
               </div>
               <div className="relative">
                 <input 
-                  className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.email ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
+                  className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] disabled:opacity-60 ${formErrors.email ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0'}`} 
                   type="text" 
                   name="email" 
                   placeholder="Email Address" 
@@ -231,10 +233,11 @@ const SignUp = () => {
                       setEmail(e.target.value)
                       setFormErrors({...formErrors, email: false})
                     }
-                  }
+                  } 
+                  disabled={btnsDisable}
                 />
                 <div 
-                  className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${email != '' ? 'flex' : 'hidden'}`}
+                  className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${(email != '' && !btnsDisable) ? 'flex' : 'hidden'}`}
                   onClick={() => {setEmail(''); setFormErrors({...formErrors, email: false})}}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -256,17 +259,18 @@ const SignUp = () => {
               <div className="">
                 <div className="relative">
                   <input 
-                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.username ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
+                    className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] disabled:opacity-60 ${formErrors.username ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0'}`} 
                     type="text" 
                     name="username" 
                     placeholder="Create you username" 
                     value={username} 
                     onChange={
                       (e) => usernameHandler(e)
-                    }
+                    } 
+                    disabled={btnsDisable}
                   />
                   <div 
-                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${username != '' ? 'flex' : 'hidden'}`}
+                    className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${(username != '' && !btnsDisable) ? 'flex' : 'hidden'}`}
                     onClick={() => {
                       setUsername('')
                       setFormErrors({...formErrors, username: false})
@@ -306,8 +310,8 @@ const SignUp = () => {
               </div>
               <div className="relative">
                 <input 
-                  className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.password || formErrors.passwordNotMatch ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
-                  type="text" 
+                  className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] disabled:opacity-60 ${formErrors.password || formErrors.passwordNotMatch ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0'}`} 
+                  type="password" 
                   name="password" 
                   placeholder="Create password" 
                   value={password} 
@@ -316,10 +320,11 @@ const SignUp = () => {
                       setPassword(e.target.value)
                       setFormErrors({...formErrors, password: false, passwordNotMatch: false})
                     }
-                  }
+                  } 
+                  disabled={btnsDisable}
                   />
                 <div 
-                  className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${password != '' ? 'flex' : 'hidden'}`}
+                  className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${(password != '' && !btnsDisable) ? 'flex' : 'hidden'}`}
                   onClick={() => {setPassword(''); setFormErrors({...formErrors, password: false, passwordNotMatch: false})}}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -340,7 +345,7 @@ const SignUp = () => {
               </div>
               <div className="relative">
                 <input 
-                  className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.rePassword || formErrors.passwordNotMatch ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)]'}`} 
+                  className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] disabled:opacity-60 ${formErrors.rePassword || formErrors.passwordNotMatch ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0'}`} 
                   type="password" 
                   name="rePassword" 
                   placeholder="Re-enter your password" 
@@ -350,10 +355,11 @@ const SignUp = () => {
                       setRePassword(e.target.value)
                       setFormErrors({...formErrors, rePassword: false, passwordNotMatch: false})
                     }
-                  }
+                  } 
+                  disabled={btnsDisable}
                 />
                 <div 
-                  className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${rePassword != '' ? 'flex' : 'hidden'}`}
+                  className={`absolute right-[8px] top-1/2 translate-y-[-50%] items-center justify-center rounded-full ${(rePassword != '' && !btnsDisable) ? 'flex' : 'hidden'}`}
                   onClick={() => {setRePassword(''); setFormErrors({...formErrors, rePassword: false, passwordNotMatch: false})}}
                   >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -374,8 +380,10 @@ const SignUp = () => {
               </div>
           </div>
           <div className="w-full">
-            <button type="submit" className="w-full bg-[var(--blue-2)] text-[var(--white-1)] rounded-full px-4.5 py-2 cursor-pointer outline-0 outline-[var(--blue-1)] hover:outline-10 active:outline-8
-            duration-150">Sign Up</button>
+            <button type="submit" className="w-full bg-[var(--blue-2)] text-[var(--white-1)] rounded-full px-4.5 py-2 cursor-pointer outline-0 outline-[var(--blue-1)] hover:outline-6 active:scale-96 duration-250
+            disabled:hover:outline-0  disabled:active:scale-100 disabled:opacity-75" disabled={btnsDisable}>
+              {btnsDisable ? 'Signing Up...' : 'Sign Up'}
+            </button>
           </div>
         </form>
       </div>

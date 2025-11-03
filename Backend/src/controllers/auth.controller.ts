@@ -2,8 +2,8 @@ import { Request, Response } from "express"
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import bcryptjs from 'bcryptjs'
-import User from "../types/user.type"
-import user from '../model/User.model'
+import USER from "../types/userAuth.type"
+import User from '../model/User.model'
 
 dotenv.config()
 
@@ -20,12 +20,12 @@ export const signup = async (req: Request, res: Response) => {
   }
 
   try {
-    const existingUser: (User | null) = await user.findOne({username})
+    const existingUser: (USER | null) = await User.findOne({username})
     if (existingUser) {
       return res.status(409).json({error: "Username already taken"})
     }
     const hashedPassword = await bcryptjs.hash(password, 16)  
-    const newUser = new user({firstName, middleName, lastName, email, username, password: hashedPassword})
+    const newUser = new User({firstName, middleName, lastName, email, username, password: hashedPassword})
     await newUser.save()
   } catch (error) {
     return res.status(500).json({error: "Internal server error"})
@@ -38,7 +38,7 @@ export const signup = async (req: Request, res: Response) => {
       {expiresIn: '1h'}
     )
     if (!token) { return res.status(500).json({error: 'Internal server error'}) }
-    return res.status(200).json({user: {firstName, middleName, lastName, username}, token})
+    return res.status(200).json({token})
   } catch (err) {
     res.status(500).json({error: "Internal server error"})
   }
@@ -49,7 +49,7 @@ export const signin = async (req: Request, res: Response) => {
   if (!username || !password) { return res.status(400).json({ error: "Bad Request" }) }
   
   try {
-    const existingUser: (User | null) = await user.findOne({username})
+    const existingUser: (USER | null) = await User.findOne({username})
     if (!existingUser) {
       return res.status(400).json({error: "User not found"})
     }
@@ -57,19 +57,18 @@ export const signin = async (req: Request, res: Response) => {
     if (!passwordMatch) {
       return res.status(400).json({error: "Invalid credentials"})
     }
-    const returnUser = {
+    const token = jwt.sign(
+      {
         firstName: existingUser.firstName,
         middleName: existingUser.middleName,
         lastName: existingUser.lastName,
         username: existingUser.username
-      }
-    const token = jwt.sign(
-      returnUser, 
+      }, 
       process.env.JWT_SECRET_KEY as string, 
       {expiresIn: '1h'}
     )
     if (!token) { return res.status(500).json({ error: "Internal server error" }) }
-    res.status(200).json({ user: returnUser, token })
+    res.status(200).json({ token })
   } catch (err) {
     res.status(500).json({ error: "Internal server error" })
   }
