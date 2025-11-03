@@ -1,4 +1,4 @@
-interface USER {
+interface User {
   firstName: string,
   middleName: string,
   lastName: string,
@@ -7,4 +7,4 @@ interface USER {
   password: string
 }
 
-export default USER
+export default User

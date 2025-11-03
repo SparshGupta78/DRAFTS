@@ -2,8 +2,8 @@ import { Request, Response } from "express"
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import bcryptjs from 'bcryptjs'
-import USER from "../types/userAuth.type"
-import User from '../model/User.model'
+import User from "../types/userAuth.type"
+import UserSchema from '../model/User.model'
 
 dotenv.config()
 
@@ -20,13 +20,13 @@ export const signup = async (req: Request, res: Response) => {
   }
 
   try {
-    const existingUser: (USER | null) = await User.findOne({username})
+    const existingUser: (User | null) = await UserSchema.findOne({username})
     if (existingUser) {
       return res.status(409).json({error: "Username already taken"})
     }
     const hashedPassword = await bcryptjs.hash(password, 16)  
-    const newUser = new User({firstName, middleName, lastName, email, username, password: hashedPassword})
-    await newUser.save()
+    const user = new UserSchema({firstName, middleName, lastName, email, username, password: hashedPassword})
+    await user.save()
   } catch (error) {
     return res.status(500).json({error: "Internal server error"})
   }
@@ -49,7 +49,7 @@ export const signin = async (req: Request, res: Response) => {
   if (!username || !password) { return res.status(400).json({ error: "Bad Request" }) }
   
   try {
-    const existingUser: (USER | null) = await User.findOne({username})
+    const existingUser: (User | null) = await UserSchema.findOne({username})
     if (!existingUser) {
       return res.status(400).json({error: "User not found"})
     }

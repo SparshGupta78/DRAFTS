@@ -1,4 +1,4 @@
-interface USER {
+interface User {
   firstName: string,
   middleName: string,
   lastName: string,
@@ -6,4 +6,4 @@ interface USER {
   notes: string[]
 }
 
-export default USER
+export default User

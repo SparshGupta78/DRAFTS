@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import User from '../model/User.model'
+import UserSchema from '../model/User.model'
 
 export const UsernameExistChecker = async (req: Request, res: Response) => {
   const username = req.query.username as string
   if (!username) {
     return res.status(400).json({error: "Bad request"})
   }
-  const existingUsername = await User.findOne({username})
+  const existingUsername = await UserSchema.findOne({username})
   if (existingUsername) {
     res.status(200).json({matched: true})
   } else {
