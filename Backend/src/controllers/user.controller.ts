@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import UserSchema from '../model/User.model'
+import UserSchema from '../model/user.model'
 import User from "../types/userRes.type";
 
 export const dashboard = async (req: Request, res: Response) => {

@@ -5,9 +5,8 @@ import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
-import "../styles/Editor.css"
-import { Delete, Edit, Pin, Tick } from "../assets/Icons"
-import { useEffect, useState } from "react"
+import { Delete, Edit, Pin, Tick } from "../../assets/Icons"
+import { useState } from "react"
 
 type EditorType = {
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>

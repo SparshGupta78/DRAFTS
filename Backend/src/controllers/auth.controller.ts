@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import bcryptjs from 'bcryptjs'
 import User from "../types/userAuth.type"
-import UserSchema from '../model/User.model'
+import UserSchema from '../model/user.model'
 
 dotenv.config()
 

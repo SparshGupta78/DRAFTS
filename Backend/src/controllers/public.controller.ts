@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import UserSchema from '../model/User.model'
+import UserSchema from '../model/user.model'
 
 export const UsernameExistChecker = async (req: Request, res: Response) => {
   const username = req.query.username as string

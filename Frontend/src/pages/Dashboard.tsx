@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import SideBar from '../components/SideBar';
-import Editor from '../components/Editor';
+import SideBar from '../components/Dashboard/SideBar';
+import Editor from '../components/Dashboard/Editor';
 import { useParams } from 'react-router-dom';
 
 const Dashboard = () => {
