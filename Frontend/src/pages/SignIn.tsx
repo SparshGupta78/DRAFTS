@@ -1,12 +1,15 @@
 import { useState, type FormEvent } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import ai from '../assets/ai.svg'
-import type { authResponse } from "../types/authResponse.type"
+import type { AuthResponseType } from "../types/authResponse.type"
 import { signInAPI } from "../services/auth.service"
+import { useNotificationContext } from "../contexts/notification.context"
 
 const SignIn = () => {
 
   const navigate = useNavigate()
+
+  const { createNotification } = useNotificationContext()
 
   const [aiOpen, setAiOpen] = useState(true)
   const aiHandler = () => {
@@ -21,45 +24,56 @@ const SignIn = () => {
     password: false
   })
 
-  const [errorStatus, setErrorStatus] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
-
   const [btnsDisable, setBtnsDisable] = useState(false)
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setBtnsDisable(true)
+
     const usernameRegex = /^[A-Za-z0-9_]{3,12}$/
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=]).+$/
+
     const errors = {
       username: username.trim().length < 3 || username.trim().length > 12 || !usernameRegex.test(username.trim()),
       password: password.trim().length < 8 || !passwordRegex.test(password.trim())
     }
+
     setFormErrors(errors)
+
     const hasError = Object.values(errors).some(v => v)
-    if (!hasError) {
-      const res = await signInAPI({ username, password })
-      const response: (authResponse | null) = res.data
-      if (!response) {
-        setErrorStatus(true)
-        setErrorMsg('Error getting details')
-        setBtnsDisable(false)
-        return
-      }
-      const {error, token} = response
-      if (error) {
-        setErrorStatus(true)
-        setErrorMsg(error)
-        setBtnsDisable(false)
-        return
-      }
-      if (token) {
-        localStorage.setItem('token', token)
-        navigate(`/dashboard/${username.toLowerCase()}/`)
-      } else {
-        setErrorStatus(true)
-        setErrorMsg("Error saving token")
-      }
+    if (hasError) {
+      createNotification({
+        title: "Invalid Input",
+        message: "Please check your entered details and try again.",
+        type: "error"
+      })
+      setBtnsDisable(false)
+      return
     }
+
+    try {
+      const res = await signInAPI({ username, password })
+      const response: AuthResponseType | null = res.data
+
+      if (!response?.token) {
+        createNotification({
+          title: "Something Went Wrong",
+          message: "Signin could not be completed at this moment. Please try again shortly.",
+          type: "error"
+        })
+        setBtnsDisable(false)
+        return
+      }
+
+      localStorage.setItem('token', response.token)
+      navigate(`/dashboard/${username.toLowerCase()}/`)
+    } catch (err: any) {
+      createNotification({
+        title: "Invalid Credentials",
+        message: err.response?.data?.error || "The username or password you entered is incorrect.",
+        type: "error"
+      })
+    }
+
     setBtnsDisable(false)
   }
 
@@ -72,9 +86,6 @@ const SignIn = () => {
             <div className="text-sm mt-1.5 flex gap-x-1 flex-wrap">Don't have an account?<NavLink to='/signup' className='text-[var(--blue-2)]'>Sign Up</NavLink></div>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <div className={`w-full h-fit px-2.5 text-center text-sm text-[var(--red-4)] overflow-hidden duration-500 ${errorStatus ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
-              {errorMsg}
-            </div>
               <div className="relative">
                 <input 
                   className={`w-full border-1 rounded-full pl-4.5 pr-9 py-2 duration-100 placeholder:text-[var(--black-2)] text-[15px] ${formErrors.username ? 'border-[var(--red-1)] outline-4 outline-[var(--red-2)]' : 'border-[var(--black-1)] outline-0 outline-[var(--blue-1)] hover:outline-4 active:outline-4 focus:outline-6 focus:border-[var(--blue-2)] disabled:hover:outline-0 disabled:active:outline-0 disabled:opacity-60'}`} 

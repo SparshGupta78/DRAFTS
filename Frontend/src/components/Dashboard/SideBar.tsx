@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type Dispatch } from "react"
 import { NavLink } from "react-router-dom"
-import type {Note} from '../types/note.type'
+import type {NoteType} from '../../types/note.type'
 
 type SideBarProps = {
-  notes: Note[],
+  notes: NoteType[],
   currentNoteID: number,
   setCurrentNoteID: Dispatch<React.SetStateAction<number>>,
   sideNavOpen: boolean,

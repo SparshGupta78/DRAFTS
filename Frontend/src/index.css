@@ -14,7 +14,7 @@
   --black-1: #D0D0D0;
   --black-2: #4C4C4C;
   --black-3: #000000;
-  --black-4: rgb(231, 231, 231);
+  --black-4: #e7e7e7;
 
   --red-1: #ff6c6c;
   --red-2: #ffe3e3;
@@ -74,10 +74,20 @@ body {
 
 /* Notification */
 
+.notification-hide {
+  opacity: 0;
+  width: 56px;
+  transition: all 0.2s;
+}
+
 .notification-active {
+  opacity: 1;
   width: 100%;
+  transition: all 0.6s;
 }
 
 .notification-deactive {
-  width: 48px;
+  opacity: 1;
+  width: 56px;
+  transition: all 0.6s;
 }

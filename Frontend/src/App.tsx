@@ -1,13 +1,14 @@
 import { Outlet } from "react-router-dom"
 import NotificationPanel from "./components/Notification/NotificationPanel"
+import { NotificationProvider } from "./contexts/notification.context"
 
 function App() {
 
   return (
-    <>
-      <NotificationPanel />
-      <Outlet />
-    </>
+  <NotificationProvider>
+    <NotificationPanel />
+    <Outlet />
+  </NotificationProvider>
   )
 }
 

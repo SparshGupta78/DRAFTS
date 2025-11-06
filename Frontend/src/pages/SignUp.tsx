@@ -1,13 +1,16 @@
 import { useState, type FormEvent } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import ai from '../assets/ai.svg'
-import type { authResponse } from "../types/authResponse.type"
+import type { AuthResponseType } from "../types/authResponse.type"
 import { signUpAPI } from "../services/auth.service"
 import { usernameCheckerAPI } from "../services/drafts.service"
+import { useNotificationContext } from "../contexts/notification.context"
 
 const SignUp = () => {
 
   const navigate = useNavigate()
+
+  const { createNotification } = useNotificationContext()
 
   const [guidelinesOpen, setGuidelinesOpen] = useState(true)
   const guidelinesHandler = () => {
@@ -90,17 +93,33 @@ const SignUp = () => {
     const hasError = Object.values(errors).some(v => v)
     if (!hasError) {
       const res = await signUpAPI({ firstName, middleName, lastName, email, username, password })
-      const response: (authResponse | null) = res.data
-      if (response) {
-        const {error, token} = response
-        if (error) {
-          console.log(error)
-        }
-        if (token) {
-          localStorage.setItem('token', token)
-          navigate(`/dashboard/${username}`)
-        }
+      const response: (AuthResponseType | null) = res.data
+      if (!response) {
+        createNotification({
+          title: "Something Went Wrong",
+          message: "Signup could not be completed at this moment. Please try again shortly.",
+          type: "error"
+        })
+        return
       }
+      const {error, token} = response
+      if (error) {
+        createNotification({
+          title: "Something Went Wrong",
+          message: "Signup could not be completed at this moment. Please try again shortly.",
+          type: "error"
+        })
+      }
+      if (token) {
+        localStorage.setItem('token', token)
+        navigate(`/dashboard/${username}`)
+      }
+    } else {
+      createNotification({
+        title: "Invalid Input",
+        message: "Please check your entered details and try again.",
+        type: "error"
+      })
     }
     setBtnsDisable(false)
   }

@@ -1,4 +1,4 @@
-export type iconType = {
+export interface IconType {
   dimension?: number
   color?: string
 }
