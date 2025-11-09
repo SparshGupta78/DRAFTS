@@ -65,11 +65,7 @@ const Editor = ({setSideNavOpen}: EditorType) => {
   return (
     <div className="w-full h-full md:h-screen md:w-[calc(100%-290px)] p-3.5 md:p-5 md:pl-2.5 flex justify-center">
       <div className="w-full h-full flex flex-col items-center gap-0.5">
-
-
         <ToolBox setSideNavOpen={setSideNavOpen} toolkit={toolkit} />
-
-
         <div className="w-full h-full md:h-[calc(100%-46px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-xl md:rounded-t-sm md:rounded-b-xl flex items-center justify-center mt-13 mb-10 md:mt-0 md:mb-0">
           <div className="w-full max-w-180 h-full md:min-h-0 bg-[var(--white-1)] rounded-xl md:rounded-sm p-3.5">
             <div className="w-full h-full overflow-x-hidden overflow-y-auto">
@@ -113,7 +109,7 @@ const Editor = ({setSideNavOpen}: EditorType) => {
                   </button>
                   <button className="group h-fit p-1 bg-[var(--red-3)] rounded-full flex items-center">
                     <div className="group-hover:scale-90 group-active:scale-90 duration-300 p-1 rounded-full bg-[var(--red-4)]">
-                      <Delete dimension={14} />
+                      <Delete dimension={14} color="#ffe3e3" />
                     </div>
                     <span className="px-1.5 text-xs text-[var(--red-4)] font-[500]">Delete</span>
                   </button>
@@ -126,8 +122,6 @@ const Editor = ({setSideNavOpen}: EditorType) => {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   )

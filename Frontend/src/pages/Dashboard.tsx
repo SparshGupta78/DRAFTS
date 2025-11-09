@@ -2,6 +2,7 @@ import { useState } from 'react'
 import SideBar from '../components/Dashboard/SideBar';
 import Editor from '../components/Dashboard/Editor';
 import { useParams } from 'react-router-dom';
+import NewNote from '../components/NewNote/NewNote';
 
 const Dashboard = () => {
 
@@ -56,6 +57,8 @@ const Dashboard = () => {
   ];
   
   const [sideNavOpen, setSideNavOpen] = useState(false)
+  const [newNoteOpen, setNewNoteOpen] = useState(false)
+
   const [currentNoteID, setCurrentNoteID] = useState(1001)
 
   return (
@@ -66,8 +69,10 @@ const Dashboard = () => {
         setCurrentNoteID={setCurrentNoteID} 
         sideNavOpen={sideNavOpen}
         setSideNavOpen={setSideNavOpen}
+        setNewNoteOpen={setNewNoteOpen}
       />
       <Editor setSideNavOpen={setSideNavOpen} />
+      <NewNote newNoteOpen={newNoteOpen} setNewNoteOpen={setNewNoteOpen} />
     </div>
   )
 }

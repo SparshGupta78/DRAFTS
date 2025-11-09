@@ -111,13 +111,13 @@ export const Pin = ({dimension = 24, color='#000000'}: IconType) => {
 
 export const Delete = ({dimension = 24, color='#000000'}: IconType) => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="#ffe3e3"><g clipPath="url(#clip0_4418_7385)"><path d="M20.9999 6.73046C20.9799 6.73046 20.9499 6.73046 20.9199 6.73046C15.6299 6.20046 10.3499 6.00046 5.11992 6.53046L3.07992 6.73046C2.65992 6.77046 2.28992 6.47046 2.24992 6.05046C2.20992 5.63046 2.50992 5.27046 2.91992 5.23046L4.95992 5.03046C10.2799 4.49046 15.6699 4.70046 21.0699 5.23046C21.4799 5.27046 21.7799 5.64046 21.7399 6.05046C21.7099 6.44046 21.3799 6.73046 20.9999 6.73046Z" fill="white" style={{fill: "var(--fillg)"}}/><path d="M8.50001 5.72C8.46001 5.72 8.42001 5.72 8.37001 5.71C7.97001 5.64 7.69001 5.25 7.76001 4.85L7.98001 3.54C8.14001 2.58 8.36001 1.25 10.69 1.25H13.31C15.65 1.25 15.87 2.63 16.02 3.55L16.24 4.85C16.31 5.26 16.03 5.65 15.63 5.71C15.22 5.78 14.83 5.5 14.77 5.1L14.55 3.8C14.41 2.93 14.38 2.76 13.32 2.76H10.7C9.64001 2.76 9.62001 2.9 9.47001 3.79L9.24001 5.09C9.18001 5.46 8.86001 5.72 8.50001 5.72Z" fill="white" style={{fill: "var(--fillg)"}}/><path d="M15.2099 22.7496H8.7899C5.2999 22.7496 5.1599 20.8196 5.0499 19.2596L4.3999 9.18959C4.3699 8.77959 4.6899 8.41959 5.0999 8.38959C5.5199 8.36959 5.8699 8.67959 5.8999 9.08959L6.5499 19.1596C6.6599 20.6796 6.6999 21.2496 8.7899 21.2496H15.2099C17.3099 21.2496 17.3499 20.6796 17.4499 19.1596L18.0999 9.08959C18.1299 8.67959 18.4899 8.36959 18.8999 8.38959C19.3099 8.41959 19.6299 8.76959 19.5999 9.18959L18.9499 19.2596C18.8399 20.8196 18.6999 22.7496 15.2099 22.7496Z" fill="white" style={{fill: "var(--fillg)"}}/><path d="M13.6601 17.25H10.3301C9.92008 17.25 9.58008 16.91 9.58008 16.5C9.58008 16.09 9.92008 15.75 10.3301 15.75H13.6601C14.0701 15.75 14.4101 16.09 14.4101 16.5C14.4101 16.91 14.0701 17.25 13.6601 17.25Z" fill="white" style={{fill: "var(--fillg)"}}/><path d="M14.5 13.25H9.5C9.09 13.25 8.75 12.91 8.75 12.5C8.75 12.09 9.09 11.75 9.5 11.75H14.5C14.91 11.75 15.25 12.09 15.25 12.5C15.25 12.91 14.91 13.25 14.5 13.25Z" fill="white" style={{fill: "var(--fillg)"}}/></g><defs><clipPath id="clip0_4418_7385"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6145)"><path d="M21 5.98047C17.67 5.65047 14.32 5.48047 10.98 5.48047C9 5.48047 7.02 5.58047 5.04 5.78047L3 5.98047" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M8.5 4.97L8.72 3.66C8.88 2.71 9 2 10.69 2H13.31C15 2 15.13 2.75 15.28 3.67L15.5 4.97" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M18.8499 9.14062L18.1999 19.2106C18.0899 20.7806 17.9999 22.0006 15.2099 22.0006H8.7899C5.9999 22.0006 5.9099 20.7806 5.7999 19.2106L5.1499 9.14062" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M10.3301 16.5H13.6601" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M9.5 12.5H14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></g><defs><clipPath id="clip0_4418_6145"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
   )
 }
 
 export const Edit = ({dimension = 24, color='#000000'}: IconType) => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6050)"><path opacity="0.4" d="M11 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22H15C20 22 22 20 22 15V13" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M16.0399 3.01928L8.15988 10.8993C7.85988 11.1993 7.55988 11.7893 7.49988 12.2193L7.06988 15.2293C6.90988 16.3193 7.67988 17.0793 8.76988 16.9293L11.7799 16.4993C12.1999 16.4393 12.7899 16.1393 13.0999 15.8393L20.9799 7.95928C22.3399 6.59928 22.9799 5.01928 20.9799 3.01928C18.9799 1.01928 17.3999 1.65928 16.0399 3.01928Z" stroke={color} strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.4" d="M14.9102 4.15039C15.5802 6.54039 17.4502 8.41039 19.8502 9.09039" stroke={color} strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" /></g><defs><clipPath id="clip0_4418_6050"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6050)"><path opacity="0.5" d="M11 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22H15C20 22 22 20 22 15V13" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M16.0399 3.01928L8.15988 10.8993C7.85988 11.1993 7.55988 11.7893 7.49988 12.2193L7.06988 15.2293C6.90988 16.3193 7.67988 17.0793 8.76988 16.9293L11.7799 16.4993C12.1999 16.4393 12.7899 16.1393 13.0999 15.8393L20.9799 7.95928C22.3399 6.59928 22.9799 5.01928 20.9799 3.01928C18.9799 1.01928 17.3999 1.65928 16.0399 3.01928Z" stroke={color} strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M14.9102 4.15039C15.5802 6.54039 17.4502 8.41039 19.8502 9.09039" stroke={color} strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" /></g><defs><clipPath id="clip0_4418_6050"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
   )
 }
 
@@ -172,5 +172,35 @@ export const Alert = ({dimension = 24, color='#000000'}: IconType) => {
 export const Unlink = ({dimension = 24, color='#000000'}: IconType) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" height={dimension} viewBox="0 -960 960 960" width={dimension} fill={color}><path d="M616.92-456.31 563.23-510h36q12.77 0 21.38 8.62 8.62 8.61 8.62 21.38 0 7.69-3.23 13.77-3.23 6.08-9.08 9.92Zm210 365.39q-8.69 8.69-21.07 8.69-12.39 0-21.08-8.69L90.92-784.77q-8.3-8.31-8.5-20.88-.19-12.58 8.5-21.27 8.7-8.7 21.08-8.7 12.38 0 21.08 8.7l693.84 693.84q8.31 8.31 8.5 20.89.2 12.57-8.5 21.27ZM281.54-298.46q-75.31 0-128.42-53.12Q100-404.69 100-480q0-66.69 42.96-117.04 42.96-50.34 107.81-60.8H260l56.31 56.3h-34.77q-50.39 0-85.96 35.58Q160-530.38 160-480q0 50.38 35.58 85.96 35.57 35.58 85.96 35.58h121.54q12.77 0 21.38 8.61 8.62 8.62 8.62 21.39 0 12.77-8.62 21.38-8.61 8.62-21.38 8.62H281.54ZM360.77-450q-12.77 0-21.38-8.62-8.62-8.61-8.62-21.38t8.62-21.38Q348-510 360.77-510h47.69l59 60H360.77Zm372.69 114.31q-6.69-10.54-4.38-22.69 2.3-12.16 13.23-18.47 26.46-16.23 42.07-43.34Q800-447.31 800-480q0-50.38-35.38-85.96-35.39-35.58-85.39-35.58H556.92q-12.77 0-21.38-8.61-8.62-8.62-8.62-21.39 0-12.77 8.62-21.38 8.61-8.62 21.38-8.62h122.31q74.92 0 127.85 53.12Q860-555.31 860-480q0 47.46-23.08 87.65-23.08 40.2-62.31 65.12-10.53 6.69-22.5 4.38-11.96-2.3-18.65-12.84Z"/></svg>
+  )
+}
+
+export const Plus = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6162)"><path opacity="0.4" d="M6 12H18" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 18V6" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></g><defs><clipPath id="clip0_4418_6162"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+  )
+}
+
+export const Search = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><path d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path opacity="0.4" d="M22 22L20 20" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+  )
+}
+
+export const Account = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_3111_32680)"><path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path opacity="0.4" d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26003 15 3.41003 18.13 3.41003 22" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></g><defs><clipPath id="clip0_3111_32680"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+  )
+}
+
+export const Settings = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6270)"><path d="M3 9.10937V14.8794C3 16.9994 3 16.9994 5 18.3494L10.5 21.5294C11.33 22.0094 12.68 22.0094 13.5 21.5294L19 18.3494C21 16.9994 21 16.9994 21 14.8894V9.10937C21 6.99937 21 6.99937 19 5.64937L13.5 2.46937C12.68 1.98937 11.33 1.98937 10.5 2.46937L5 5.64937C3 6.99937 3 6.99937 3 9.10937Z" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path opacity="0.34" d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></g><defs><clipPath id="clip0_4418_6270"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+  )
+}
+
+export const Close = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height={dimension} viewBox="0 -960 960 960" width={dimension} fill={color}><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>
   )
 }
