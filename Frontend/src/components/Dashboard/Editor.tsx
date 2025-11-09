@@ -5,6 +5,8 @@ import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
+import TaskList from '@tiptap/extension-task-list'
+import TaskItem from '@tiptap/extension-task-item'
 import { Delete, Edit, Pin, Tick } from "../../assets/Icons"
 import { useState } from "react"
 
@@ -20,11 +22,15 @@ const Editor = ({setSideNavOpen}: EditorType) => {
       Subscript,
       Superscript,
       Highlight,
-      TextAlign.configure({ types: ['heading', 'paragraph'] })
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
     ],
     content: '',
     onUpdate: ({editor}) => {
-      console.log(editor.getJSON())
+      // console.log(editor.getJSON())
     }
   })
 
@@ -114,7 +120,7 @@ const Editor = ({setSideNavOpen}: EditorType) => {
                 </div>
               </div>
               <div className="w-full h-0.5 rounded-full bg-[var(--blue-1)] my-2.5"></div>
-              <div className="w-full md:h-[calc(100%-74px)] px-1">
+              <div className="w-full md:h-[calc(100%-76px)] px-1">
                 <EditorContent className="w-full h-full" editor={editor} />
               </div>
             </div>

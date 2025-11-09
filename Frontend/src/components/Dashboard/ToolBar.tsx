@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { AlignCenter, AlignJustify, AlignLeft, AlignRight, ArrowDown, Blockquote, Bold, Code, Highlighter, Italic, Link, Redo, Strikethrough, Subscript, Superscript, Underline, Undo, UnoderedList, HorizontalRule, Paragraph, ClearMarks, ClearNodes } from "../../assets/Icons";
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight, ArrowDown, Blockquote, Bold, Code, Highlighter, Italic, Link, Redo, Strikethrough, Subscript, Superscript, Underline, Undo, UnoderedList, HorizontalRule, Paragraph, ClearMarks, ClearNodes, Unlink } from "../../assets/Icons";
 
 type ToolBoxType = {
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -71,67 +71,137 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
             <div className={`max-w-full md:max-w-[calc(100%-80px)] overflow-x-auto overflow-y-hidden bg-[var(--white-1)] md:bg-transparent rounded-lg md:rounded-none px-2 md:p-0 duration-300 h-fit ${toolbarOpen ? 'py-2 max-h-75 opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="w-max flex items-center gap-2.5">
                 <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.bold()}
+                  >
                     <Bold dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.italic()}
+                  >
                     <Italic dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.underline()}
+                  >
                     <Underline dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.strikethrough()}
+                  >
                     <Strikethrough dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.highlight()}
+                  >
                     <div className="-translate-y-0.25 scale-75">
                       <Highlighter dimension={windowWidth > 425 ? 20 : 24} />
                     </div>
                   </div>
-                  <div className="p-1 flex items-center gap-0.5">
-                    <div className="">
-                      <Link dimension={windowWidth > 425 ? 20 : 24} />
-                    </div>
-                    <div className="">
-                      <ArrowDown dimension={10} />
-                    </div>
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.setLink('https://github.com/SparshGupta78')}
+                  >
+                    <Link dimension={windowWidth > 425 ? 20 : 24} />
+                  </div>
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.removeLink()}
+                  >
+                    <Unlink dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
                 <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.superscript()}
+                  >
                     <Superscript dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.subscript()}
+                  >
                     <Subscript dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
                 <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.align('left')}
+                  >
                     <AlignLeft dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.align('center')}
+                  >
                     <AlignCenter dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.align('right')}
+                  >
                     <AlignRight dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
-                  <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.align('justify')}
+                  >
                     <AlignJustify dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit max-w-30 flex items-center justify-evenly gap-1">
-                  <div className="text-sm md:text-xs text-nowrap">
-                    Heading 1
+                <div className="p-1 h-fit w-fit flex items-center justify-evenly gap-0.5">
+                  <div 
+                    className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.heading(1)}
+                  >
+                    H1
                   </div>
-                  <div className="">
-                    <ArrowDown dimension={10} />
+                  <div 
+                    className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.heading(2)}
+                  >
+                    H2
+                  </div>
+                  <div 
+                    className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.heading(3)}
+                  >
+                    H3
+                  </div>
+                  <div 
+                    className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.heading(4)}
+                  >
+                    H4
+                  </div>
+                  <div 
+                    className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.heading(5)}
+                  >
+                    H5
+                  </div>
+                  <div 
+                    className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
+                    onClick={() => toolkit.heading(6)}
+                  >
+                    H6
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                <div 
+                  className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
+                  onClick={() => toolkit.code()}
+                >
                   <div className="">
                     <Code dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
@@ -140,17 +210,40 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit flex items-center justify-evenly gap-1">
-                  <div className="">
-                    <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
+                <div className="p-1 h-fit w-fit flex items-center justify-evenly gap-0.5">
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center gap-1"
+                    onClick={() => toolkit.unorderedList()}
+                  >
+                    <div className="">
+                      <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
+                    </div>
+                    <div className="text-sm md:text-xs text-nowrap">Unordered list</div>
                   </div>
-                  <div className="text-sm md:text-xs text-nowrap">Unordered list</div>
-                  <div className="">
-                    <ArrowDown dimension={10} />
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center gap-1"
+                    onClick={() => toolkit.orderedList()}
+                  >
+                    <div className="">
+                      <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
+                    </div>
+                    <div className="text-sm md:text-xs text-nowrap">Ordered list</div>
+                  </div>
+                  <div 
+                    className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center gap-1"
+                    onClick={() => toolkit.taskList()}
+                  >
+                    <div className="">
+                      <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
+                    </div>
+                    <div className="text-sm md:text-xs text-nowrap">Task list</div>
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                <div 
+                  className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
+                  onClick={() => toolkit.blockquote()}
+                >
                   <div className="">
                     <Blockquote dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
@@ -159,7 +252,10 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                <div 
+                  className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
+                  onClick={() => toolkit.horizontalRule()}
+                >
                   <div className="">
                     <HorizontalRule dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
@@ -168,7 +264,10 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                <div 
+                  className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
+                  onClick={() => toolkit.paragraph()}
+                >
                   <div className="">
                     <Paragraph dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
@@ -177,7 +276,10 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                <div 
+                  className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
+                  onClick={() => toolkit.clearMarks()}
+                >
                   <div className="">
                     <ClearMarks dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
@@ -186,7 +288,10 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   </div>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1">
+                <div 
+                  className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
+                  onClick={() => toolkit.clearNodes()}
+                >
                   <div className="">
                     <ClearNodes dimension={windowWidth > 425 ? 20 : 24} />
                   </div>
