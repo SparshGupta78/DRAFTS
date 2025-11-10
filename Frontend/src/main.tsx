@@ -12,7 +12,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
       <Route path='' element={<LandingPage />} />
-      <Route path='dashboard/:username' element={<Dashboard />} />
+      <Route path=':username/dashboard/:noteId?' element={<Dashboard />} />
       <Route path='signup' element={<SignUp />} />
       <Route path='signin' element={<SignIn />} />
     </Route>

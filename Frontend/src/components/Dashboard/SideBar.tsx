@@ -5,8 +5,8 @@ import { Account, Delete, Edit, Plus, Search, Settings } from "../../assets/Icon
 
 type SideBarProps = {
   notes: NoteType[],
-  currentNoteID: number,
-  setCurrentNoteID: Dispatch<React.SetStateAction<number>>,
+  currentNoteID: string,
+  setCurrentNoteID: Dispatch<React.SetStateAction<string>>,
   sideNavOpen: boolean,
   setSideNavOpen: Dispatch<React.SetStateAction<boolean>>,
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>

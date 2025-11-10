@@ -1,18 +1,21 @@
 import { useState } from "react"
 import { Close } from "../../assets/Icons"
 import { useNotificationContext } from "../../contexts/notification.context"
+import { newNoteAPI } from "../../services/user.service"
+import { useNavigate, useParams } from "react-router-dom"
+import type { TagType } from "../../types/tag.type"
+import type { CreateNewNote } from "../../types/CreateNewNote.type"
 
 type NewNoteType = {
   newNoteOpen: boolean,
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-type TagType = {
-  tag: string,
-  tagId: string
-}
-
 const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
+
+  const navigate = useNavigate()
+
+  const {username, noteId} = useParams()
 
   const {createNotification} = useNotificationContext()
 
@@ -49,8 +52,49 @@ const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
     setTags(tags.filter(tag => tag.tagId != id))
   }
 
-  const submitHandler = () => {
-    
+  const clear = () => {
+    setNewNoteOpen(false)
+    setTitle('')
+    setTagInput('')
+    setTags([])
+    setVisibility('private')
+    setFieldDisable(false)
+ }
+  const submitHandler = async () => {
+    setFieldDisable(true)
+    if (title.length < 1 || title.length > 50) {
+      setFieldDisable(false)
+      return createNotification({
+        title: "Invalid Title Length",
+        message: "Title must contain between 1 and 50 characters.",
+        type: "error"
+      })
+    }
+    try {
+      if (!username) {
+        return
+      }
+      const payload: CreateNewNote = {note: {title, tags, visibility}, username: username}
+      const newNoteId = await newNoteAPI(payload)
+      if (!newNoteId) {
+        createNotification({
+          title: "Failed to Create Note",
+          message: "An error occurred while creating the note. Please try again.",
+          type: "error"
+        })
+      } else {
+        navigate(`/${username}/dashboard/${newNoteId.data.noteID}`)
+        clear()
+      }
+      setFieldDisable(false)
+    } catch (error) {
+      setFieldDisable(false)
+      return createNotification({
+        title: "Failed to Create Note",
+        message: "An error occurred while creating the note. Please try again.",
+        type: "error"
+      })
+    }
   }
 
   return (
@@ -59,7 +103,11 @@ const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
         <div className={`w-full h-fit bg-[var(--white-2)] rounded-xl max-w-93/100 sm:max-w-150 shadow-[var(--shadow-1)] duration-100 ${newNoteOpen ? 'scale-100' : 'scale-98'}`}>
           <div className="px-3 py-2 bg-[var(--black-4)] flex items-center justify-between gap-2.5 rounded-t-xl border-b-[1px] border-[var(--black-1)]">
             <span className="pl-1.5">New Note</span>
-            <div onClick={() => setNewNoteOpen(false)}>
+            <div 
+              onClick={() => {
+                clear()
+              }}
+            >
               <Close />
             </div>
           </div>
@@ -154,6 +202,7 @@ const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
               <button 
                 className={`w-fit px-5 py-1.5 rounded-full text-[15px] font-normal duration-300 ${fieldDisable ? 'bg-[var(--white-5)] text-[var(--black-2)]' : 'bg-[var(--blue-2)] text-[var(--white-2)]'}`} 
                 onClick={() => submitHandler()}
+                disabled={fieldDisable}
               >
                 {fieldDisable ? 'Creating...' : 'Create'}
               </button>

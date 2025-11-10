@@ -1,5 +1,10 @@
+import type { TagType } from "./tag.type";
+import type { Content } from "./tiptap.type";
+
 export interface NoteType {
-  _id: number,
-  noteID: number,
-  title: string
+  noteID: string,
+  title: string,
+  content: Content,
+  tags: TagType[],
+  visibility: 'public' | 'private'
 }
