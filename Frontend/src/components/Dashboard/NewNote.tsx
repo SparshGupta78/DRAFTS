@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Close } from "../../assets/Icons"
 import { useNotificationContext } from "../../contexts/notification.context"
 import { newNoteAPI } from "../../services/user.service"
@@ -8,14 +8,15 @@ import type { CreateNewNote } from "../../types/CreateNewNote.type"
 
 type NewNoteType = {
   newNoteOpen: boolean,
-  setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  fetchNotesTitle: () => void
 }
 
-const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
+const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) => {
 
   const navigate = useNavigate()
 
-  const {username, noteId} = useParams()
+  const { username } = useParams()
 
   const {createNotification} = useNotificationContext()
 
@@ -24,6 +25,7 @@ const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
   const [tagInput, setTagInput] = useState('')
   const [visibility, setVisibility] = useState<'private' | 'public'>('private')
   const [fieldDisable, setFieldDisable] = useState(false)
+  const dialogRef = useRef(null)
 
   const createTag = () => {
     if (tagInput.length < 1 || tagInput.length > 10) {
@@ -52,14 +54,15 @@ const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
     setTags(tags.filter(tag => tag.tagId != id))
   }
 
-  const clear = () => {
+  const clearDialog = () => {
     setNewNoteOpen(false)
     setTitle('')
     setTagInput('')
     setTags([])
     setVisibility('private')
     setFieldDisable(false)
- }
+  }
+
   const submitHandler = async () => {
     setFieldDisable(true)
     if (title.length < 1 || title.length > 50) {
@@ -83,8 +86,9 @@ const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
           type: "error"
         })
       } else {
-        navigate(`/${username}/dashboard/${newNoteId.data.noteID}`)
-        clear()
+        navigate(`/${username}/${newNoteId.data.noteID}`)
+        clearDialog()
+        fetchNotesTitle()
       }
       setFieldDisable(false)
     } catch (error) {
@@ -97,15 +101,21 @@ const NewNote = ({newNoteOpen, setNewNoteOpen}: NewNoteType) => {
     }
   }
 
+  const outsideClickHandler = (e :React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (dialogRef.current && !(dialogRef.current as HTMLElement).contains(e.target as Node)) {
+      clearDialog()
+    }
+  }
+
   return (
-    <div className={`fixed inset-0 z-900 bg-black/15 backdrop-blur-[2px] duration-300 ${newNoteOpen ? 'pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-      <div className="w-full h-full flex items-center justify-center">
-        <div className={`w-full h-fit bg-[var(--white-2)] rounded-xl max-w-93/100 sm:max-w-150 shadow-[var(--shadow-1)] duration-100 ${newNoteOpen ? 'scale-100' : 'scale-98'}`}>
+    <div className={`fixed inset-0 z-100 bg-black/15 backdrop-blur-[2px] duration-300 ${newNoteOpen ? 'pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+      <div className="w-full h-full flex items-center justify-center" onClick={(e) => outsideClickHandler(e)}>
+        <div ref={dialogRef} className={`w-full h-fit bg-[var(--white-2)] rounded-xl max-w-93/100 sm:max-w-150 shadow-[var(--shadow-1)] duration-300 ${newNoteOpen ? 'scale-100' : 'scale-98'}`}>
           <div className="px-3 py-2 bg-[var(--black-4)] flex items-center justify-between gap-2.5 rounded-t-xl border-b-[1px] border-[var(--black-1)]">
             <span className="pl-1.5">New Note</span>
             <div 
               onClick={() => {
-                clear()
+                clearDialog()
               }}
             >
               <Close />

@@ -1,18 +1,23 @@
 import { useEffect, useMemo, useState, type Dispatch } from "react"
-import { NavLink } from "react-router-dom"
-import type {NoteType} from '../../types/note.type'
+import { NavLink, useParams } from "react-router-dom"
 import { Account, Delete, Edit, Plus, Search, Settings } from "../../assets/Icons"
 
 type SideBarProps = {
-  notes: NoteType[],
-  currentNoteID: string,
-  setCurrentNoteID: Dispatch<React.SetStateAction<string>>,
   sideNavOpen: boolean,
   setSideNavOpen: Dispatch<React.SetStateAction<boolean>>,
-  setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  noteTitles: SideBarNotesType[],
+  fetchNotesTitle: () => void
 }
 
-const SideBar = ({ notes, currentNoteID, setCurrentNoteID, sideNavOpen, setSideNavOpen, setNewNoteOpen }: SideBarProps) => {
+type SideBarNotesType = {
+  noteID: string,
+  title: string
+}
+
+const SideBar = ({ sideNavOpen, setSideNavOpen, setNewNoteOpen, noteTitles, fetchNotesTitle }: SideBarProps) => {
+
+  const { username, noteId } = useParams()
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -33,13 +38,17 @@ const SideBar = ({ notes, currentNoteID, setCurrentNoteID, sideNavOpen, setSideN
       setSideNavActiveBg(46.5)
     }
   }, [windowWidth])
+
+  useEffect(() => {
+    fetchNotesTitle()
+    }, [])
   
   const currentNoteIndex = useMemo(() => {
-    return notes.findIndex(note => note.noteID === currentNoteID)
-  }, [notes, currentNoteID])
+    return noteTitles.findIndex(note => note.noteID === noteId)
+  }, [noteTitles, noteId])
 
   return (
-    <div className={`duration-300 fixed md:relative inset-0 w-full md:w-fit h-full flex z-100 md:p-5 md:pr-2.5 ${sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+    <div className={`duration-300 fixed md:relative inset-0 w-full md:w-fit h-full flex z-900 md:p-5 md:pr-2.5 ${sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
       <div className={`duration-300 w-[min(80%,340px)] md:w-65 h-full bg-[var(--white-2)] md:rounded-xl ${sideNavOpen ? 'translate-x-[-0%]' : 'translate-x-[-100%]'}`}>
         <div className="w-full h-fit px-2.5 py-3.5 md:pb-2.5 flex flex-col gap-3.5">
           <div className="w-fit h-hull text-lg md:text-base font-[500] tracking-[3px]">DRAFTS</div>
@@ -84,42 +93,52 @@ const SideBar = ({ notes, currentNoteID, setCurrentNoteID, sideNavOpen, setSideN
             <NavLink to='' className='text-[var(--blue-2)] px-3 py-1.5 translate-y-1.5 text-sm md:text-xs'>View All</NavLink>
           </div>
             <div className="w-full h-[calc(100%-32px)] md:h-[calc(100%-28px)] overflow-x-hidden overflow-y-auto pt-3">
-            <div className="w-full h-full relative">
-              <div className="relative z-10 w-full h-full">
-                {notes.map((note, index) => {
-                  return (
-                    <NavLink key={index} to=''>
-                      <div className="w-full pl-5.5 pr-2.5 py-3 md:py-2.5 flex items-center justify-between gap-2.5">
-                        <span className={`text-[15px] text-nowrap truncate duration-300 delay-100 ${note.noteID == currentNoteID ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'}`}>
-                          {note.title}
-                        </span>
-                        <div className={`flex items-center justify-center gap-3.5 duration-300 delay-100 ${note.noteID == currentNoteID ? 'opacity-100 w-fit' : 'opacity-0 w-0'}`}>
-                          <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
-                            <Edit dimension={19} />
-                          </div>
-                          <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
-                            <Delete dimension={19} />
+            {noteTitles.length > 0 
+              ? 
+              <div className="w-full h-full relative">
+                <div className="relative z-10 w-full h-full">
+                  {noteTitles.map((note, _) => {
+                    return (
+                      <NavLink key={note.noteID} to={`/${username}/${note.noteID}`}>
+                        <div className="w-full pl-5.5 pr-2.5 py-3 md:py-2.5 flex items-center justify-between gap-2.5">
+                          <span className={`text-[15px] text-nowrap truncate duration-300 delay-100 ${note.noteID == noteId ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'}`}>
+                            {note.title}
+                          </span>
+                          <div className={`flex items-center justify-center gap-3.5 duration-300 delay-100 ${note.noteID == noteId ? 'opacity-100 w-fit' : 'opacity-0 w-0'}`}>
+                            <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
+                              <Edit dimension={19} />
+                            </div>
+                            <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
+                              <Delete dimension={19} />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </NavLink>
-                  )
-                })}
+                      </NavLink>
+                    )
+                  })}
+                </div>
+                <div 
+                  className="absolute duration-300 left-0 w-full h-fit z-0" 
+                  style={{top: `${(currentNoteIndex * sideNavActiveBg - 13)}px`, display: `${currentNoteIndex == -1 ? 'none' : 'block'}`}}>
+                  <div className="bg-[var(--blue-1)] w-full h-3">
+                    <div className="bg-[var(--white-2)] w-full h-full rounded-br-xl"></div>
+                  </div>
+                  <div className="bg-[var(--blue-1)] ml-2.5 w-[calc(100%-10px)] h-12 md:h-10 rounded-l-full">
+                    <div className="h-full w-[calc(100%-12px)] rounded-l-full"></div>
+                  </div>
+                  <div className="bg-[var(--blue-1)] w-full h-3">
+                    <div className="bg-[var(--white-2)] w-full h-full rounded-tr-xl"></div>
+                  </div>
+                </div>
               </div>
-              <div 
-                className="absolute duration-300 left-0 w-full h-fit z-0" 
-                style={{top: `${(currentNoteIndex * sideNavActiveBg - 13)}px`, display: `${currentNoteIndex == -1 ? 'none' : 'block'}`}}>
-                <div className="bg-[var(--blue-1)] w-full h-3">
-                  <div className="bg-[var(--white-2)] w-full h-full rounded-br-xl"></div>
-                </div>
-                <div className="bg-[var(--blue-1)] ml-2.5 w-[calc(100%-10px)] h-12 md:h-10 rounded-l-full">
-                  <div className="h-full w-[calc(100%-12px)] rounded-l-full"></div>
-                </div>
-                <div className="bg-[var(--blue-1)] w-full h-3">
-                  <div className="bg-[var(--white-2)] w-full h-full rounded-tr-xl"></div>
-                </div>
+              : 
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-sm text-[var(--black-2)]">
+                  No notes to show
+                </span>
               </div>
-            </div>
+            }
+            
           </div>
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-b from-transparent to-[var(--white-2)] pointer-events-none z-10"></div>
         </div>

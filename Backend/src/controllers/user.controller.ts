@@ -40,3 +40,29 @@ export const newNote = async (req: Request, res: Response) => {
     res.status(500).json({error: "Internal server error"})
   }
 }
+
+export const findAllTitle = async (req: Request, res: Response) => {
+  try {
+    const user = req.user as Omit<User, 'notes'>
+    if (!user) return res.status(400).json({error: "Bad request"})
+    const username = user.username
+    const noteIdsDoc = await UserSchema.findOne(
+      {username},
+      {notes: 1, _id: 0}
+    )
+    if (!noteIdsDoc || !noteIdsDoc.notes) return res.status(500).json({error: "Internal server error"})
+    const notesIds: string[] = noteIdsDoc.notes
+    const notes: Omit<Note, 'content' | 'tags' | 'visibility'>[] = await Promise.all(
+      notesIds.map(async (noteID) => {
+        const note = await NoteSchema.findOne(
+          { noteID },
+          { _id: 0, noteID: 1, title: 1 }
+        )
+        return note as Omit<Note, 'content' | 'tags' | 'visibility'>
+      })
+    )
+    return res.status(200).json({notes})
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" })
+  }
+}

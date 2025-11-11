@@ -112,7 +112,7 @@ const SignUp = () => {
       }
       if (token) {
         localStorage.setItem('token', token)
-        navigate(`/${username}/dashboard`)
+        navigate(`/${username}`)
       }
     } else {
       createNotification({

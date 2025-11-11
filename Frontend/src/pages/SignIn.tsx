@@ -65,7 +65,7 @@ const SignIn = () => {
       }
 
       localStorage.setItem('token', response.token)
-      navigate(`/${username}/dashboard`)
+      navigate(`/${username}`)
     } catch (err: any) {
       createNotification({
         title: "Invalid Credentials",

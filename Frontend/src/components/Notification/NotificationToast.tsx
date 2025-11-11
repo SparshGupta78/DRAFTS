@@ -47,7 +47,7 @@ const NotificationToast = ({toastId, title, index, message, type, destructNotifi
   
   return (
     <div 
-    className={`max-h-14 absolute top-5 left-1/2 max-w-9/10 sm:max-w-95 p-2 bg-[var(--white-1)] rounded-full shadow-[var(--shadow-1)] flex items-center gap-2 overflow-hidden h-fit ${notificationAnimationCLass}`}
+    className={`max-h-14 absolute top-7 left-1/2 max-w-9/10 sm:max-w-95 p-2 bg-[var(--white-1)] rounded-full shadow-[var(--shadow-1)] flex items-center gap-2 overflow-hidden h-fit ${notificationAnimationCLass}`}
     style={{
       zIndex: 999 - index,
       transform: `translate(-50%, ${translateY}px) scale(${scale})`
