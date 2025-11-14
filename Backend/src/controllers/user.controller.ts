@@ -52,17 +52,84 @@ export const findAllTitle = async (req: Request, res: Response) => {
     )
     if (!noteIdsDoc || !noteIdsDoc.notes) return res.status(500).json({error: "Internal server error"})
     const notesIds: string[] = noteIdsDoc.notes
-    const notes: Omit<Note, 'content' | 'tags' | 'visibility'>[] = await Promise.all(
+    const notes = await Promise.all(
       notesIds.map(async (noteID) => {
         const note = await NoteSchema.findOne(
           { noteID },
           { _id: 0, noteID: 1, title: 1 }
         )
-        return note as Omit<Note, 'content' | 'tags' | 'visibility'>
+        return note ? { noteID: note.noteID, title: note.title } : null
       })
     )
-    return res.status(200).json({notes})
+
+    const filteredNotes = notes.filter((n): n is { noteID: string; title: string } => n !== null)
+
+    return res.status(200).json({ notes: filteredNotes })
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" })
+  }
+}
+
+export const editorFetch = async (req: Request, res: Response) => {
+  try {
+    const noteId = req.query.noteId as string | undefined
+    const user = req.user as Omit<User, 'notes'> | undefined
+    if (!user || !noteId) return res.status(400).json({error: "Bad request"})
+    const username = user.username
+    const response = await UserSchema.findOne(
+      {username},
+      {_id: 0, notes: 1}
+    )
+    if (!response || !response.notes) return res.status(500).json({error: "Internal server error"})
+    if (!response.notes.includes(noteId)) return res.status(400).json({error: "Unathorized"})
+    const noteResponse = await NoteSchema.findOne({noteID: noteId})
+    if (!noteResponse) return res.status(500).json({error: "Internal server error"})
+    return res.status(200).json(noteResponse)
+  } catch (error) {
+    res.status(500).json({error: "Internal server error"})
+  }
+}
+
+export const editorSave = async (req: Request, res: Response) => {
+  try {
+    const user = req.user as Omit<User, 'notes'> | undefined
+    const {noteId, content} = req.body
+    if (!user || !noteId || !content) return res.status(400).json({error: "Bad request"})
+    const response = await UserSchema.findOne(
+      {username: user.username},
+      {_id: 0, notes: 1}
+    )
+    if (!response || !response.notes) return res.status(500).json({error: "Internal server error"})
+    if (!response.notes.includes(noteId)) return res.status(400).json({error: "Bad request"})
+    const updatedNote = await NoteSchema.findOneAndUpdate(
+      {noteID: noteId},
+      {$set: {content}}
+    )
+    if (!updatedNote) return res.status(500).json({error: "Internal server error"})
+    res.status(200).json({updatedNote})
+  } catch (error) {
+    res.status(500).json({error: "Internal server error"})
+  }
+}
+
+export const editorTitleUpdate = async (req: Request, res: Response) => {
+  try {
+    const user = req.user as Omit<User, 'notes'> | undefined
+    const {noteId, title} = req.body
+    if (!user || !noteId || !title) return res.status(400).json({error: "Bad request"})
+    const response = await UserSchema.findOne(
+      {username: user.username},
+      {_id: 0, notes: 1}
+    )
+    if (!response || !response.notes) return res.status(500).json({error: "Internal server error"})
+    if (!response.notes.includes(noteId)) return res.status(400).json({error: "Bad request"})
+    const updatedNote = await NoteSchema.findOneAndUpdate(
+      {noteID: noteId},
+      {$set: {title}}
+    )
+    if (!updatedNote) return res.status(500).json({error: "Internal server error"})
+    res.status(200).json({updatedNote})
+  } catch (error) {
+    res.status(500).json({error: "Internal server error"})
   }
 }

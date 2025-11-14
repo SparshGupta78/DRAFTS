@@ -113,7 +113,8 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
         <div ref={dialogRef} className={`w-full h-fit bg-[var(--white-2)] rounded-xl max-w-93/100 sm:max-w-150 shadow-[var(--shadow-1)] duration-300 ${newNoteOpen ? 'scale-100' : 'scale-98'}`}>
           <div className="px-3 py-2 bg-[var(--black-4)] flex items-center justify-between gap-2.5 rounded-t-xl border-b-[1px] border-[var(--black-1)]">
             <span className="pl-1.5">New Note</span>
-            <div 
+            <div
+              className="duration-150 hover:opacity-70 active:opacity-60"
               onClick={() => {
                 clearDialog()
               }}
@@ -147,11 +148,11 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
                 <div className="text-xs text-[var(--black-2)] italic">Maximum of 5 allowed</div>
               </div>
               <div className="mt-1.5 sm:mt-0 w-full sm:w-1/2">
-                <div className="w-fit max-w-full relative">
+                <div className="w-full md:w-fit max-w-full relative">
                   <input 
                     type="text" 
                     name="title" 
-                    className="pl-3 py-1.5 pr-15 rounded-full max-w-full border-2 outline-0 border-[var(--blue-1)] placeholder:text-sm placeholder:text-[var(--black-2)] placeholder:opacity-60 disabled:opacity-75 duration-300" 
+                    className="w-full md:w-fit pl-3 py-1.5 pr-15 rounded-full max-w-full border-2 outline-0 border-[var(--blue-1)] placeholder:text-sm placeholder:text-[var(--black-2)] placeholder:opacity-60 disabled:opacity-75 duration-300" 
                     placeholder="Max 10 characters" 
                     value={tagInput} 
                     onChange={(e) => setTagInput(prev => (
@@ -191,7 +192,7 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
                 <div className="text-[15px] sm:text-base">Visibility</div>
                 <div className="text-xs text-[var(--black-2)] italic">Choose who can see your notes</div>
               </div>
-              <div className="mt-1.5 sm:mt-0 w-full sm:w-1/2">
+              <div className="mt-1.5 sm:mt-0 w-full sm:w-1/2 flex justify-end sm:justify-start">
                 <div className="p-0.75 w-fit max-w-full border-2 border-[var(--blue-1)] rounded-full flex">
                   <div 
                     className={`px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none ${visibility === 'private' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]'} ${fieldDisable ? 'opacity-75' : ''}`} 

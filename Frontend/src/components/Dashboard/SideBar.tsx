@@ -7,7 +7,8 @@ type SideBarProps = {
   setSideNavOpen: Dispatch<React.SetStateAction<boolean>>,
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>,
   noteTitles: SideBarNotesType[],
-  fetchNotesTitle: () => void
+  fetchNotesTitle: () => void,
+  noteTitlesFetchStatus: -1 | 0 | 1
 }
 
 type SideBarNotesType = {
@@ -15,7 +16,14 @@ type SideBarNotesType = {
   title: string
 }
 
-const SideBar = ({ sideNavOpen, setSideNavOpen, setNewNoteOpen, noteTitles, fetchNotesTitle }: SideBarProps) => {
+const SideBar = ({
+  sideNavOpen, 
+  setSideNavOpen, 
+  setNewNoteOpen, 
+  noteTitles, 
+  fetchNotesTitle, 
+  noteTitlesFetchStatus 
+}: SideBarProps) => {
 
   const { username, noteId } = useParams()
 
@@ -48,7 +56,7 @@ const SideBar = ({ sideNavOpen, setSideNavOpen, setNewNoteOpen, noteTitles, fetc
   }, [noteTitles, noteId])
 
   return (
-    <div className={`duration-300 fixed md:relative inset-0 w-full md:w-fit h-full flex z-900 md:p-5 md:pr-2.5 ${sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+    <div className={`duration-300 fixed md:relative inset-0 w-full md:w-fit h-full flex z-900 md:z-0 md:p-5 md:pr-2.5 ${sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
       <div className={`duration-300 w-[min(80%,340px)] md:w-65 h-full bg-[var(--white-2)] md:rounded-xl ${sideNavOpen ? 'translate-x-[-0%]' : 'translate-x-[-100%]'}`}>
         <div className="w-full h-fit px-2.5 py-3.5 md:pb-2.5 flex flex-col gap-3.5">
           <div className="w-fit h-hull text-lg md:text-base font-[500] tracking-[3px]">DRAFTS</div>
@@ -93,8 +101,45 @@ const SideBar = ({ sideNavOpen, setSideNavOpen, setNewNoteOpen, noteTitles, fetc
             <NavLink to='' className='text-[var(--blue-2)] px-3 py-1.5 translate-y-1.5 text-sm md:text-xs'>View All</NavLink>
           </div>
             <div className="w-full h-[calc(100%-32px)] md:h-[calc(100%-28px)] overflow-x-hidden overflow-y-auto pt-3">
-            {noteTitles.length > 0 
-              ? 
+            {
+              noteTitlesFetchStatus === 0 && 
+              <div className="w-full h-full flex flex-col items-center justify-center p-3.75">
+                <span className="text-sm text-[var(--black-2)] text-center">
+                  Gathering your notes.
+                </span>
+                <span className="text-sm text-[var(--black-2)] text-center">
+                  Almost there...
+                </span>
+              </div>
+            }
+            {
+              noteTitlesFetchStatus === -1 && 
+              <div className="w-full h-full flex items-center justify-center p-3.75">
+                <span className="text-sm text-[var(--black-2)] text-center">
+                  Something went wrong while retrieving your notes.
+                </span>
+              </div>
+            }
+            {
+              noteTitlesFetchStatus === 1 && noteTitles.length === 0 &&
+              <div className="w-full h-full flex flex-col items-center justify-center p-3.75">
+                <span className="text-sm text-[var(--black-2)] text-center">
+                  You don't have any notes yet.
+                </span>
+                <div 
+                  className="text-sm text-[var(--black-2)] text-center"
+                  onClick={() => {
+                    if (windowWidth < 768) setSideNavOpen(false)
+                    setNewNoteOpen(true)
+                  }}
+                >
+                  Click <span className="text-[var(--blue-2)] text-center select-none">New Note</span> to get started.
+                </div>
+              </div>
+            } 
+            {
+              noteTitlesFetchStatus === 1 && 
+              noteTitles.length > 0 &&
               <div className="w-full h-full relative">
                 <div className="relative z-10 w-full h-full">
                   {noteTitles.map((note, _) => {
@@ -130,12 +175,6 @@ const SideBar = ({ sideNavOpen, setSideNavOpen, setNewNoteOpen, noteTitles, fetc
                     <div className="bg-[var(--white-2)] w-full h-full rounded-tr-xl"></div>
                   </div>
                 </div>
-              </div>
-              : 
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-sm text-[var(--black-2)]">
-                  No notes to show
-                </span>
               </div>
             }
             

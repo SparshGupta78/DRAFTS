@@ -18,27 +18,32 @@ const Dashboard = () => {
   const [newNoteOpen, setNewNoteOpen] = useState(false)
   
   const [noteTitles, setNoteTitles] = useState<SideBarNotesType[]>([])
+  const [noteTitlesFetchStatus, setNoteTitlesFetchStatus] = useState<-1 | 0 | 1>(0)
 
   const fetchNotesTitle = async () => {
-      try {
-        const fetchedNotes = await sideBarNotesAPI()
-        if (!fetchedNotes || !Array.isArray(fetchedNotes)) {
-          createNotification({
-            title: "Unable to Fetch Notes",
-            message: "We encountered an issue retrieving your notes. Please try again shortly.",
-            type: "error"
-          })
-          return
-        }
-        setNoteTitles(fetchedNotes)
-      } catch(error) {
+    try {
+      setNoteTitlesFetchStatus(0)
+      const fetchedNotes = await sideBarNotesAPI()
+      if (!fetchedNotes || !Array.isArray(fetchedNotes)) {
         createNotification({
           title: "Unable to Fetch Notes",
           message: "We encountered an issue retrieving your notes. Please try again shortly.",
           type: "error"
         })
+        setNoteTitlesFetchStatus(-1)
+        return
       }
+      setNoteTitles(fetchedNotes)
+      setNoteTitlesFetchStatus(1)
+    } catch(error) {
+      createNotification({
+        title: "Unable to Fetch Notes",
+        message: "We encountered an issue retrieving your notes. Please try again shortly.",
+        type: "error"
+      })
+      setNoteTitlesFetchStatus(-1)
     }
+  }
 
   return (
     <div className="w-screen min-h-screen sm:h-screen bg-[var(--blue-1)] flex">
@@ -48,11 +53,15 @@ const Dashboard = () => {
         setNewNoteOpen={setNewNoteOpen}
         noteTitles={noteTitles}
         fetchNotesTitle={fetchNotesTitle}
+        noteTitlesFetchStatus={noteTitlesFetchStatus}
       />
-      <Editor setSideNavOpen={setSideNavOpen} />
-      <NewNote 
-        newNoteOpen={newNoteOpen} 
-        setNewNoteOpen={setNewNoteOpen} 
+      <Editor
+        setSideNavOpen={setSideNavOpen}
+        setNewNoteOpen={setNewNoteOpen}
+      />
+      <NewNote
+        newNoteOpen={newNoteOpen}
+        setNewNoteOpen={setNewNoteOpen}
         fetchNotesTitle={fetchNotesTitle}
       />
     </div>
