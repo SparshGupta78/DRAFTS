@@ -55,6 +55,7 @@ const Dashboard = () => {
 
   const editorFetch = async (noteId: string) => {
     try {
+      setFetchingStatus(0)
       const res = await EditorFetchAPI(noteId)
       if (!res) {
         createNotification({

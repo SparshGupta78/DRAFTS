@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type Dispatch } from "react"
 import { NavLink, useParams } from "react-router-dom"
-import { Account, Delete, Edit, Plus, Search, Settings } from "../../assets/Icons"
+import { Account, Delete, Edit, Plus, Retry, Search, Settings } from "../../assets/Icons"
 
 type SideBarProps = {
   sideNavOpen: boolean,
@@ -116,10 +116,21 @@ const SideBar = ({
             }
             {
               noteTitlesFetchStatus === -1 && 
-              <div className="w-full h-full flex items-center justify-center p-3.75">
+              <div className="w-full h-full flex flex-col gap-1 items-center justify-center p-3.75">
                 <span className="text-sm text-[var(--black-2)] text-center">
                   Something went wrong while retrieving your notes.
                 </span>
+                <button
+                  className="w-fit flex items-center gap-1.25 duration-150 hover:opacity-80 active:opacity-60 select-none"
+                  onClick={() => {
+                    if (noteId) fetchNotesTitle()
+                  }}
+                >
+                  <div className="pl-0.75">
+                    <Retry dimension={14} color="#347CE9" />
+                  </div>
+                  <span className="text-sm text-[var(--blue-2)] font-normal">Retry</span>
+                </button>
               </div>
             }
             {
