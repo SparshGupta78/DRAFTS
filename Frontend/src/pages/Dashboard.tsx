@@ -2,8 +2,9 @@ import { useState } from 'react'
 import SideBar from '../components/Dashboard/SideBar';
 import Editor from '../components/Dashboard/Editor';
 import NewNote from '../components/Dashboard/NewNote';
-import { sideBarNotesAPI } from '../services/user.service';
+import { EditorFetchAPI, sideBarNotesAPI } from '../services/user.service';
 import { useNotificationContext } from '../contexts/notification.context';
+import type { Content } from '../types/tiptap.type';
 
 type SideBarNotesType = {
   noteID: string,
@@ -44,6 +45,38 @@ const Dashboard = () => {
       setNoteTitlesFetchStatus(-1)
     }
   }
+  
+  const [title, setTitle] = useState('')
+  const [fetchingStatus, setFetchingStatus] = useState<-1 | 0 | 1>(0)
+  const [content, setContent] = useState<Content>({
+    type: "doc",
+    content: []
+  })
+
+  const editorFetch = async (noteId: string) => {
+    try {
+      const res = await EditorFetchAPI(noteId)
+      if (!res) {
+        createNotification({
+          title: "Unable to Load Note",
+          message: "Could not fetch this note. Please try again.",
+          type: "error"
+        })
+        return setFetchingStatus(-1)
+      }
+      console.log(res)
+      setTitle(res.title)
+      setContent(res.content)
+      setFetchingStatus(1)
+    } catch (error) {
+      createNotification({
+        title: "Unable to Load Note",
+        message: "Could not fetch this note. Please try again.",
+        type: "error"
+      })
+      setFetchingStatus(-1)
+    }
+  }
 
   return (
     <div className="w-screen min-h-screen sm:h-screen bg-[var(--blue-1)] flex">
@@ -54,10 +87,17 @@ const Dashboard = () => {
         noteTitles={noteTitles}
         fetchNotesTitle={fetchNotesTitle}
         noteTitlesFetchStatus={noteTitlesFetchStatus}
+        editorFetch={editorFetch}
       />
       <Editor
         setSideNavOpen={setSideNavOpen}
         setNewNoteOpen={setNewNoteOpen}
+        editorFetch={editorFetch}
+        title={title}
+        setTitle={setTitle}
+        content={content}
+        setContent={setContent}
+        fetchingStatus={fetchingStatus}
       />
       <NewNote
         newNoteOpen={newNoteOpen}

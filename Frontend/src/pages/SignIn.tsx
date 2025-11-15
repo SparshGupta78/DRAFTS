@@ -63,8 +63,7 @@ const SignIn = () => {
         setBtnsDisable(false)
         return
       }
-
-      localStorage.setItem('token', response.token)
+      localStorage.setItem('token', JSON.stringify({token: response.token, createdAt: Date.now()}))
       navigate(`/${username}`)
     } catch (err: any) {
       createNotification({

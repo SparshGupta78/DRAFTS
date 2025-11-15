@@ -9,29 +9,37 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { Delete, Edit, Pin, Plus, Retry, Tick, ViewAll } from "../../assets/Icons"
 import { useEffect, useRef, useState } from "react"
-import { useFetcher, useParams } from "react-router-dom"
-import { EditorFetchAPI, EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
+import { useParams } from "react-router-dom"
+import { EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
 import type { Content } from "../../types/tiptap.type"
-import { useNotificationContext } from "../../contexts/notification.context"
 
 type EditorType = {
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>
+  editorFetch: (noteId: string) => Promise<void>
+  title: string,
+  setTitle: React.Dispatch<React.SetStateAction<string>>,
+  content: Content,
+  setContent: React.Dispatch<React.SetStateAction<Content>>,
+  fetchingStatus: -1 | 0 | 1
 }
 
-const Editor = ({setSideNavOpen, setNewNoteOpen}: EditorType) => {
-  
-  const { createNotification } = useNotificationContext()
+const Editor = ({
+  setSideNavOpen, 
+  setNewNoteOpen, 
+  editorFetch, 
+  title, 
+  setTitle, 
+  content, 
+  setContent,
+  fetchingStatus
+}: EditorType) => {
+
   const { noteId } = useParams()
-  
-  const [title, setTitle] = useState('')
+
   const [titleEdit, setTitleEdit] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<-1 | 0 | 1>(1)
-  const [fetchingStatus, setFetchingStatus] = useState<-1 | 0 | 1>(0)
-  const [content, setContent] = useState<Content>({
-    type: "doc",
-    content: []
-  })
+
   const controllerRef = useRef<AbortController>(null)
   const timeRef = useRef(0)
   const prevContentRef = useRef<Content | null>(null)
@@ -47,37 +55,8 @@ const Editor = ({setSideNavOpen, setNewNoteOpen}: EditorType) => {
     }
   }
 
-  const editorFetch = async () => {
-    if(!noteId) {
-      setFetchingStatus(1)
-      return
-    }
-    try {
-      const res = await EditorFetchAPI(noteId)
-      if (!res) {
-        createNotification({
-          title: "Unable to Load Note",
-          message: "Could not fetch this note. Please try again.",
-          type: "error"
-        })
-        return setFetchingStatus(-1)
-      }
-      console.log(res)
-      setTitle(res.title)
-      setContent(res.content)
-      setFetchingStatus(1)
-    } catch (error) {
-      createNotification({
-        title: "Unable to Load Note",
-        message: "Could not fetch this note. Please try again.",
-        type: "error"
-      })
-      setFetchingStatus(-1)
-    }
-  }
-
   useEffect(() => {
-    editorFetch()
+    if (noteId) editorFetch(noteId)
   }, [])
 
   const autoSave = () => {
@@ -281,7 +260,9 @@ const Editor = ({setSideNavOpen, setNewNoteOpen}: EditorType) => {
                       fetchingStatus === -1 ? (
                         <button
                           className="w-fit flex items-center gap-1.25 duration-150 hover:opacity-80 active:opacity-60 select-none"
-                          onClick={() => editorFetch()}
+                          onClick={() => {
+                            if (noteId) editorFetch(noteId)
+                          }}
                         >
                           <div className="pl-0.75">
                             <Retry dimension={16} color="#347CE9" />

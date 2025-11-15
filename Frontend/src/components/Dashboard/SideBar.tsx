@@ -9,6 +9,7 @@ type SideBarProps = {
   noteTitles: SideBarNotesType[],
   fetchNotesTitle: () => void,
   noteTitlesFetchStatus: -1 | 0 | 1
+  editorFetch: (noteId: string) => Promise<void>
 }
 
 type SideBarNotesType = {
@@ -22,7 +23,8 @@ const SideBar = ({
   setNewNoteOpen, 
   noteTitles, 
   fetchNotesTitle, 
-  noteTitlesFetchStatus 
+  noteTitlesFetchStatus,
+  editorFetch
 }: SideBarProps) => {
 
   const { username, noteId } = useParams()
@@ -121,7 +123,8 @@ const SideBar = ({
               </div>
             }
             {
-              noteTitlesFetchStatus === 1 && noteTitles.length === 0 &&
+              noteTitlesFetchStatus === 1 && 
+              noteTitles.length === 0 &&
               <div className="w-full h-full flex flex-col items-center justify-center p-3.75">
                 <span className="text-sm text-[var(--black-2)] text-center">
                   You don't have any notes yet.
@@ -144,7 +147,7 @@ const SideBar = ({
                 <div className="relative z-10 w-full h-full">
                   {noteTitles.map((note, _) => {
                     return (
-                      <NavLink key={note.noteID} to={`/${username}/${note.noteID}`}>
+                      <NavLink key={note.noteID} to={`/${username}/${note.noteID}`}onClick={() => editorFetch(note.noteID)}>
                         <div className="w-full pl-5.5 pr-2.5 py-3 md:py-2.5 flex items-center justify-between gap-2.5">
                           <span className={`text-[15px] text-nowrap truncate duration-300 delay-100 ${note.noteID == noteId ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'}`}>
                             {note.title}

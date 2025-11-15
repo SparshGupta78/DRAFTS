@@ -111,7 +111,7 @@ const SignUp = () => {
         })
       }
       if (token) {
-        localStorage.setItem('token', token)
+        localStorage.setItem('token', JSON.stringify({token: response.token, createdAt: Date.now()}))
         navigate(`/${username}`)
       }
     } else {

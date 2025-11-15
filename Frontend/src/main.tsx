@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import './index.css'
@@ -7,12 +6,17 @@ import LandingPage from './pages/LandingPage.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import SignUp from './pages/SignUp.tsx'
 import SignIn from './pages/SignIn.tsx'
+import AuthRoute from './components/AuthRoute/AuthRoute.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
       <Route path='' element={<LandingPage />} />
-      <Route path=':username/:noteId?' element={<Dashboard />} />
+      <Route path=':username/:noteId?' element={
+        <AuthRoute>
+          <Dashboard />
+        </AuthRoute>
+        } />
       <Route path='signup' element={<SignUp />} />
       <Route path='signin' element={<SignIn />} />
     </Route>
