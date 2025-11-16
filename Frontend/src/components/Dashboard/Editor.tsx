@@ -21,7 +21,8 @@ type EditorType = {
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   content: Content,
   setContent: React.Dispatch<React.SetStateAction<Content>>,
-  fetchingStatus: -1 | 0 | 1
+  fetchingStatus: -1 | 0 | 1,
+  isUserDashboard: boolean
 }
 
 const Editor = ({
@@ -32,7 +33,8 @@ const Editor = ({
   setTitle, 
   content, 
   setContent,
-  fetchingStatus
+  fetchingStatus,
+  isUserDashboard
 }: EditorType) => {
 
   const { noteId } = useParams()
@@ -55,10 +57,6 @@ const Editor = ({
     }
   }
 
-  useEffect(() => {
-    if (noteId) editorFetch(noteId)
-  }, [])
-
   const autoSave = () => {
     if (timeRef.current) clearTimeout(timeRef.current)
     try {
@@ -75,21 +73,17 @@ const Editor = ({
         if (controllerRef.current) controllerRef.current.abort()
         controllerRef.current = new AbortController()
         const signal = controllerRef.current.signal
-        await EditorContentSaveAPI(noteId, content, signal)
-        setAutoSaveStatus(1)
+        try {
+          await EditorContentSaveAPI(noteId, content, signal)
+          setAutoSaveStatus(1)
+        } catch {
+          setAutoSaveStatus(-1)
+        }
       }, 1000)
     } catch (error) {
       setAutoSaveStatus(-1)
     }
   }
-
-  useEffect(() => {
-    if (firstLoadRef.current) {
-      firstLoadRef.current = false
-      return
-    }
-    autoSave()
-  }, [content])
 
   const editor = useEditor({
     extensions: [
@@ -108,14 +102,9 @@ const Editor = ({
       if (JSON.stringify(json) !== JSON.stringify(content)) {
         setContent(json)
       }
-    }
+    },
+    editable: isUserDashboard
   })
-
-  useEffect(() => {
-    if (editor && fetchingStatus === 1) {
-      editor.commands.setContent(content)
-    }
-  }, [editor, fetchingStatus])
 
   const toolkit = {
     undo: () => editor.chain().focus().undo().run(),
@@ -141,6 +130,20 @@ const Editor = ({
     clearMarks: () => editor.chain().focus().unsetAllMarks().run(),
     clearNodes: () => editor.chain().focus().clearNodes().run(),
   }
+
+  useEffect(() => {
+    if (firstLoadRef.current) {
+      firstLoadRef.current = false
+      return
+    }
+    autoSave()
+  }, [content])
+
+  useEffect(() => {
+    if (editor && fetchingStatus === 1) {
+      editor.commands.setContent(content)
+    }
+  }, [editor, fetchingStatus])
 
   return (
     <div className="w-full h-full md:h-screen md:w-[calc(100%-290px)] p-3.5 md:p-5 md:pl-2.5 flex justify-center">

@@ -77,7 +77,7 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
       if (!username) {
         return
       }
-      const payload: CreateNewNote = {note: {title, tags, visibility}, username: username}
+      const payload: CreateNewNote = {title, tags, visibility}
       const newNoteId = await newNoteAPI(payload)
       if (!newNoteId) {
         createNotification({

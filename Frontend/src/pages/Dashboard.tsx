@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SideBar from '../components/Dashboard/SideBar';
 import Editor from '../components/Dashboard/Editor';
 import NewNote from '../components/Dashboard/NewNote';
-import { EditorFetchAPI, sideBarNotesAPI } from '../services/user.service';
+import { dashboardAPI, EditorFetchAPI, sideBarNotesAPI } from '../services/user.service';
 import { useNotificationContext } from '../contexts/notification.context';
 import type { Content } from '../types/tiptap.type';
+import { useParams } from 'react-router-dom';
+import type { UserType } from '../types/user.type';
 
 type SideBarNotesType = {
   noteID: string,
@@ -13,18 +15,66 @@ type SideBarNotesType = {
 
 const Dashboard = () => {
 
+  const {username} = useParams()
   const { createNotification } = useNotificationContext()
-  
+
+  const [user, setUser] = useState<UserType>()
+  const [isUserDashboard, setIsUserDashboard] = useState(false)
   const [sideNavOpen, setSideNavOpen] = useState(false)
   const [newNoteOpen, setNewNoteOpen] = useState(false)
-  
   const [noteTitles, setNoteTitles] = useState<SideBarNotesType[]>([])
   const [noteTitlesFetchStatus, setNoteTitlesFetchStatus] = useState<-1 | 0 | 1>(0)
+  const [title, setTitle] = useState('')
+  const [fetchingStatus, setFetchingStatus] = useState<-1 | 0 | 1>(0)
+  const [content, setContent] = useState<Content>({
+    type: "doc",
+    content: []
+  })
+
+  useEffect(() => {
+    userFetch()
+    if (username === user?.username) {
+      setIsUserDashboard(true)
+    } else {
+      setIsUserDashboard(false)
+    }
+  }, [])
+
+  const userFetch = async () => {
+    try {
+      if (!username) return
+      const res = await dashboardAPI(username)
+      if (!res) {
+        createNotification({
+          title: "Unable to Fetch User Details",
+          message: "We couldn't retrieve your account information. Please try again.",
+          type: "error"
+        })
+        return
+      }
+      setUser(res.data as UserType)
+    } catch(err: any) {
+      if (err?.response?.status === 404) {
+        createNotification({
+          title: "User Not Found",
+          message: "No account exists with this username.",
+          type: "default"
+        })
+        return
+      }
+      createNotification({
+        title: "Unable to Fetch User Details",
+        message: "We couldn't retrieve your account information. Please try again.",
+        type: "error"
+      })
+    }
+  }
 
   const fetchNotesTitle = async () => {
+    if (!username) return
     try {
       setNoteTitlesFetchStatus(0)
-      const fetchedNotes = await sideBarNotesAPI()
+      const fetchedNotes = await sideBarNotesAPI(username)
       if (!fetchedNotes || !Array.isArray(fetchedNotes)) {
         createNotification({
           title: "Unable to Fetch Notes",
@@ -45,13 +95,6 @@ const Dashboard = () => {
       setNoteTitlesFetchStatus(-1)
     }
   }
-  
-  const [title, setTitle] = useState('')
-  const [fetchingStatus, setFetchingStatus] = useState<-1 | 0 | 1>(0)
-  const [content, setContent] = useState<Content>({
-    type: "doc",
-    content: []
-  })
 
   const editorFetch = async (noteId: string) => {
     try {
@@ -65,7 +108,6 @@ const Dashboard = () => {
         })
         return setFetchingStatus(-1)
       }
-      console.log(res)
       setTitle(res.title)
       setContent(res.content)
       setFetchingStatus(1)
@@ -77,6 +119,14 @@ const Dashboard = () => {
       })
       setFetchingStatus(-1)
     }
+  }
+
+  if (!user) {
+    return (
+      <div className="w-screen min-h-screen sm:h-screen bg-[var(--blue-1)] flex items-center justify-center">
+        <span>No user found.</span>
+      </div>
+    )
   }
 
   return (
@@ -99,6 +149,7 @@ const Dashboard = () => {
         content={content}
         setContent={setContent}
         fetchingStatus={fetchingStatus}
+        isUserDashboard={isUserDashboard}
       />
       <NewNote
         newNoteOpen={newNoteOpen}
