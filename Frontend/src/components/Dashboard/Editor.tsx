@@ -102,8 +102,7 @@ const Editor = ({
       if (JSON.stringify(json) !== JSON.stringify(content)) {
         setContent(json)
       }
-    },
-    editable: isUserDashboard
+    }
   })
 
   const toolkit = {
@@ -130,6 +129,12 @@ const Editor = ({
     clearMarks: () => editor.chain().focus().unsetAllMarks().run(),
     clearNodes: () => editor.chain().focus().clearNodes().run(),
   }
+
+  useEffect(() => {
+    if (editor) {
+      editor.setEditable(isUserDashboard)
+    }
+  }, [isUserDashboard, editor])
 
   useEffect(() => {
     if (firstLoadRef.current) {

@@ -67,8 +67,8 @@ const SignIn = () => {
       navigate(`/${username}`)
     } catch (err: any) {
       createNotification({
-        title: "Invalid Credentials",
-        message: err.response?.data?.error || "The username or password you entered is incorrect.",
+        title: "Something Went Wrong",
+        message: "Signup could not be completed at this moment. Please try again shortly.",
         type: "error"
       })
     }

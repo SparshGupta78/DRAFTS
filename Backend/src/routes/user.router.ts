@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { dashboard, editorFetch, editorSave, editorTitleUpdate, findAllTitle, newNote } from "../controllers/user.controller";
+import { allNotes, dashboard, editorFetch, editorSave, editorTitleUpdate, findAllTitle, newNote } from "../controllers/user.controller";
 
 const userRouter = Router()
 
@@ -9,5 +9,6 @@ userRouter.get('/findAllTitle', findAllTitle)
 userRouter.get('/editorFetch', editorFetch)
 userRouter.post('/editorSave', editorSave)
 userRouter.post('/editorTitleUpdate', editorTitleUpdate)
+userRouter.get('/allNotes', allNotes)
 
 export default userRouter

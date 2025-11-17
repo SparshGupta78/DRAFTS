@@ -20,7 +20,7 @@ mongoose
     console.log('Database connected successfully')
   })
   .catch((err) => {
-    console.log('Error connecting to database', err)
+    console.log('Error connecting to database')
   })
 
 export default app

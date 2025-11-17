@@ -8,8 +8,9 @@ type SideBarProps = {
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>,
   noteTitles: SideBarNotesType[],
   fetchNotesTitle: () => void,
-  noteTitlesFetchStatus: -1 | 0 | 1
-  editorFetch: (noteId: string) => Promise<void>
+  noteTitlesFetchStatus: -1 | 0 | 1,
+  editorFetch: (noteId: string) => Promise<void>,
+  setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type SideBarNotesType = {
@@ -24,7 +25,8 @@ const SideBar = ({
   noteTitles, 
   fetchNotesTitle, 
   noteTitlesFetchStatus,
-  editorFetch
+  editorFetch,
+  setAllNotesOpen
 }: SideBarProps) => {
 
   const { username, noteId } = useParams()
@@ -100,7 +102,15 @@ const SideBar = ({
         <div className="w-full h-[1px] bg-[var(--blue-1)]"></div>
         <div className={`w-full duration-300 relative ${searchOpen ? 'h-[calc(100%-262px)] md:h-[calc(100%-232px)]' : 'h-[calc(100%-250px)] md:h-[calc(100%-224px)]'}`}>
           <div className="flex justify-end rounded-br-xl">
-            <NavLink to='' className='text-[var(--blue-2)] px-3 py-1.5 translate-y-1.5 text-sm md:text-xs'>View All</NavLink>
+            <button 
+              className="text-[var(--blue-2)] px-3 py-1.5 translate-y-1.5 text-sm md:text-xs duration-200 hover:opacity-75 active:opacity-60"
+              onClick={() => {
+                if (windowWidth < 768) setSideNavOpen(false)
+                setAllNotesOpen(true)
+              }}
+            >
+              View All
+            </button>
           </div>
             <div className="w-full h-[calc(100%-32px)] md:h-[calc(100%-28px)] overflow-x-hidden overflow-y-auto pt-3">
             {

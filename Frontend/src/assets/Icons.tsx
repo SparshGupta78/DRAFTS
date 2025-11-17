@@ -111,7 +111,7 @@ export const Pin = ({dimension = 24, color='#000000'}: IconType) => {
 
 export const Delete = ({dimension = 24, color='#000000'}: IconType) => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6145)"><path d="M21 5.98047C17.67 5.65047 14.32 5.48047 10.98 5.48047C9 5.48047 7.02 5.58047 5.04 5.78047L3 5.98047" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M8.5 4.97L8.72 3.66C8.88 2.71 9 2 10.69 2H13.31C15 2 15.13 2.75 15.28 3.67L15.5 4.97" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M18.8499 9.14062L18.1999 19.2106C18.0899 20.7806 17.9999 22.0006 15.2099 22.0006H8.7899C5.9999 22.0006 5.9099 20.7806 5.7999 19.2106L5.1499 9.14062" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M10.3301 16.5H13.6601" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M9.5 12.5H14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></g><defs><clipPath id="clip0_4418_6145"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6145)"><path d="M21 5.98047C17.67 5.65047 14.32 5.48047 10.98 5.48047C9 5.48047 7.02 5.58047 5.04 5.78047L3 5.98047" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M8.5 4.97L8.72 3.66C8.88 2.71 9 2 10.69 2H13.31C15 2 15.13 2.75 15.28 3.67L15.5 4.97" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M18.8499 9.14062L18.1999 19.2106C18.0899 20.7806 17.9999 22.0006 15.2099 22.0006H8.7899C5.9999 22.0006 5.9099 20.7806 5.7999 19.2106L5.1499 9.14062" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M10.3301 16.5H13.6601" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.5" d="M9.5 12.5H14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></g><defs><clipPath id="clip0_4418_6145"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
   )
 }
 
@@ -214,5 +214,23 @@ export const ViewAll = ({dimension = 24, color='#000000'}: IconType) => {
 export const Retry = ({dimension = 24, color='#000000'}: IconType) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><path d="M14.55 21.67C18.84 20.54 22 16.64 22 12C22 6.48 17.56 2 12 2C5.33 2 2 7.56 2 7.56M2 7.56V3M2 7.56H4.01H6.44" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.4" d="M2 12C2 17.52 6.48 22 12 22" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 3" /></svg>
+  )
+}
+
+export const Sort = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6040)"><path opacity="0.4" d="M3.34985 2H12.2499C12.9899 2 13.5999 2.61001 13.5999 3.35001V4.82999C13.5999 5.36999 13.2599 6.04 12.9299 6.38L10.0299 8.94C9.62991 9.28 9.35986 9.94999 9.35986 10.49V13.39C9.35986 13.79 9.08988 14.33 8.74988 14.54L7.80987 15.15C6.92987 15.69 5.71985 15.08 5.71985 14V10.43C5.71985 9.95999 5.44987 9.35001 5.17987 9.01001L2.61987 6.31C2.27987 5.97 2.00989 5.36999 2.00989 4.95999V3.41C1.99989 2.61 2.60985 2 3.34985 2Z" stroke={color} strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" /><path d="M2 12.0002V15.0002C2 20.0002 4 22.0002 9 22.0002H15C20 22.0002 22 20.0002 22 15.0002V9.00024C22 5.88024 21.22 3.92024 19.41 2.90024C18.9 2.61024 17.88 2.39023 16.95 2.24023" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.4" d="M13 13H18" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.4" d="M11 17H18" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></g><defs><clipPath id="clip0_4418_6040"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+  )
+}
+
+export const Filter = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g clipPath="url(#clip0_4418_6202)"><path d="M5.3999 2.09961H18.5999C19.6999 2.09961 20.5999 2.99961 20.5999 4.09961V6.29961C20.5999 7.09961 20.0999 8.09961 19.5999 8.59961L15.2999 12.3996C14.6999 12.8996 14.2999 13.8996 14.2999 14.6996V18.9996C14.2999 19.5996 13.8999 20.3996 13.3999 20.6996L11.9999 21.5996C10.6999 22.3996 8.8999 21.4996 8.8999 19.8996V14.5996C8.8999 13.8996 8.4999 12.9996 8.0999 12.4996L4.2999 8.49961C3.7999 7.99961 3.3999 7.09961 3.3999 6.49961V4.19961C3.3999 2.99961 4.2999 2.09961 5.3999 2.09961Z" stroke={color} strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" /><path opacity="0.4" d="M10.93 2.09961L6 9.99961" stroke={color} strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" /></g><defs><clipPath id="clip0_4418_6202"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+  )
+}
+
+export const ArrowTopRight = ({dimension = 24, color='#000000'}: IconType) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={dimension} height={dimension} viewBox="0 0 24 24" fill="none"><g opacity="0.4"><path d="M13 10.9998L21.2 2.7998" stroke={color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M21.9992 6.8V2H17.1992" stroke={color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></g><path d="M11 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22H15C20 22 22 20 22 15V13" stroke={color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
   )
 }

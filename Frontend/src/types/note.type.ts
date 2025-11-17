@@ -7,4 +7,6 @@ export interface NoteType {
   content: Content,
   tags: TagType[],
   visibility: 'public' | 'private'
+  createdAt?: string,
+  updatedAt?: string
 }

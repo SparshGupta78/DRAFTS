@@ -132,3 +132,29 @@ export const editorTitleUpdate = async (req: Request, res: Response) => {
     res.status(500).json({error: "Internal server error"})
   }
 }
+
+export const allNotes = async (req: Request, res: Response) => {
+  try {
+    const { username } = req.query
+    const user = req.user as Omit<User, 'notes'> | undefined
+    if (!user || !username) return res.status(400).json({error: "Bad request"})
+    const noteIdsDoc = await UserSchema.findOne(
+      {username},
+      {_id: 0, notes: 1}
+    )
+    if (!noteIdsDoc || !noteIdsDoc.notes) return res.status(500).json({error: "Internal server error"})
+    const notesIds = noteIdsDoc.notes
+    const notes = await Promise.all(notesIds.map(async (noteID) => {
+      const note = await NoteSchema.findOne({noteID})
+      return note ? note : null
+    }))
+    const filteredNotes = notes.filter(note => note !== null)
+    if (username === user.username) {
+      return res.status(200).json(filteredNotes)
+    }
+    const publicNotes = filteredNotes.filter(note => note.visibility === 'public')
+    return res.status(200).json(publicNotes)
+  } catch {
+    res.status(500).json({error: "Internal server error"})
+  }
+}

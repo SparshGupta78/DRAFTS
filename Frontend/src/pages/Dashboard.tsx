@@ -7,6 +7,7 @@ import { useNotificationContext } from '../contexts/notification.context';
 import type { Content } from '../types/tiptap.type';
 import { useParams } from 'react-router-dom';
 import type { UserType } from '../types/user.type';
+import AllNotes from '../components/Dashboard/AllNotes';
 
 type SideBarNotesType = {
   noteID: string,
@@ -30,15 +31,19 @@ const Dashboard = () => {
     type: "doc",
     content: []
   })
+  const [allNotesOpen, setAllNotesOpen] = useState(false)
 
   useEffect(() => {
     userFetch()
+  }, [username])
+
+  useEffect(() => {
     if (username === user?.username) {
       setIsUserDashboard(true)
     } else {
       setIsUserDashboard(false)
     }
-  }, [])
+  }, [username, user])
 
   const userFetch = async () => {
     try {
@@ -139,6 +144,7 @@ const Dashboard = () => {
         fetchNotesTitle={fetchNotesTitle}
         noteTitlesFetchStatus={noteTitlesFetchStatus}
         editorFetch={editorFetch}
+        setAllNotesOpen={setAllNotesOpen}
       />
       <Editor
         setSideNavOpen={setSideNavOpen}
@@ -155,6 +161,11 @@ const Dashboard = () => {
         newNoteOpen={newNoteOpen}
         setNewNoteOpen={setNewNoteOpen}
         fetchNotesTitle={fetchNotesTitle}
+      />
+      <AllNotes
+        allNotesOpen={allNotesOpen}
+        setAllNotesOpen={setAllNotesOpen}
+        setNewNoteOpen={setNewNoteOpen}
       />
     </div>
   )
