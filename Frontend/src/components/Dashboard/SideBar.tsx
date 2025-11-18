@@ -53,7 +53,7 @@ const SideBar = ({
 
   useEffect(() => {
     fetchNotesTitle()
-    }, [])
+    }, [username])
   
   const currentNoteIndex = useMemo(() => {
     return noteTitles.findIndex(note => note.noteID === noteId)

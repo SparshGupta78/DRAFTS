@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import { EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
 import type { Content } from "../../types/tiptap.type"
+import type { TagType } from "../../types/tag.type"
 
 type EditorType = {
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -19,10 +20,14 @@ type EditorType = {
   editorFetch: (noteId: string) => Promise<void>
   title: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
-  content: Content,
+  content: (Content | null),
   setContent: React.Dispatch<React.SetStateAction<Content>>,
   fetchingStatus: -1 | 0 | 1,
   isUserDashboard: boolean
+  tags: TagType[]
+  visibility: 'public' | 'private'
+  createdAt: string
+  updatedAt: string
 }
 
 const Editor = ({
@@ -34,18 +39,23 @@ const Editor = ({
   content, 
   setContent,
   fetchingStatus,
-  isUserDashboard
+  isUserDashboard,
+  tags,
+  visibility,
+  createdAt,
+  updatedAt
 }: EditorType) => {
 
-  const { noteId } = useParams()
+  const { username, noteId } = useParams()
 
   const [titleEdit, setTitleEdit] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<-1 | 0 | 1>(1)
-
   const controllerRef = useRef<AbortController>(null)
   const timeRef = useRef(0)
   const prevContentRef = useRef<Content | null>(null)
-  const firstLoadRef = useRef(true)
+  const update = updatedAt.length > 0 ? updatedAt.split('T')[0].split('-') : []
+  const month = update.length > 0 ? new Date(0, Number(update[1])).toLocaleString('en-US', {month: 'long'}) : ''
+  const formattedUpdatedAt = update.length > 0 ? month + ' ' + update[2] + ', ' + update[0] : null
 
   const headingUpdateHandler = async () => {
     try {
@@ -65,7 +75,7 @@ const Editor = ({
         return
       }
 
-      if (JSON.stringify(prevContentRef.current) === JSON.stringify(content)) return
+      if (!prevContentRef.current || JSON.stringify(prevContentRef.current) === JSON.stringify(content)) return
       prevContentRef.current = content
 
       setAutoSaveStatus(0)
@@ -99,7 +109,8 @@ const Editor = ({
     ],
     onUpdate: ({editor}) => {
       const json = editor.getJSON()
-      if (JSON.stringify(json) !== JSON.stringify(content)) {
+      if (JSON.stringify(prevContentRef.current) !== JSON.stringify(content)) {
+        prevContentRef.current = json
         setContent(json)
       }
     }
@@ -137,11 +148,7 @@ const Editor = ({
   }, [isUserDashboard, editor])
 
   useEffect(() => {
-    if (firstLoadRef.current) {
-      firstLoadRef.current = false
-      return
-    }
-    autoSave()
+    if (content) autoSave()
   }, [content])
 
   useEffect(() => {
@@ -149,6 +156,10 @@ const Editor = ({
       editor.commands.setContent(content)
     }
   }, [editor, fetchingStatus])
+
+  useEffect(() => {
+    if (username && noteId) editorFetch(noteId)
+  }, [username, noteId])
 
   return (
     <div className="w-full h-full md:h-screen md:w-[calc(100%-290px)] p-3.5 md:p-5 md:pl-2.5 flex justify-center">
@@ -195,7 +206,9 @@ const Editor = ({
                     </div>
                     <div className="mt-1.5 flex items-center gap-1.5">
                       <div className="w-1 h-1 rounded-full bg-[var(--blue-2)]"></div>
-                      <div className="text-xs text-[var(--black-2)] text-nowrap truncate">Last updated at Oct 28, 2025 00:25</div>
+                      <div className="text-xs text-[var(--black-2)] text-nowrap truncate">
+                        {formattedUpdatedAt ? `Last updated at ${formattedUpdatedAt}` : ''}
+                      </div>
                     </div>
                   </div>
                   <div className="w-full sm:w-fit flex justify-between gap-2.5 md:flex-col">

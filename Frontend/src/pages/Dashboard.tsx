@@ -8,6 +8,8 @@ import type { Content } from '../types/tiptap.type';
 import { useParams } from 'react-router-dom';
 import type { UserType } from '../types/user.type';
 import AllNotes from '../components/Dashboard/AllNotes';
+import type { NoteType } from '../types/note.type';
+import type { TagType } from '../types/tag.type';
 
 type SideBarNotesType = {
   noteID: string,
@@ -25,12 +27,13 @@ const Dashboard = () => {
   const [newNoteOpen, setNewNoteOpen] = useState(false)
   const [noteTitles, setNoteTitles] = useState<SideBarNotesType[]>([])
   const [noteTitlesFetchStatus, setNoteTitlesFetchStatus] = useState<-1 | 0 | 1>(0)
-  const [title, setTitle] = useState('')
   const [fetchingStatus, setFetchingStatus] = useState<-1 | 0 | 1>(0)
-  const [content, setContent] = useState<Content>({
-    type: "doc",
-    content: []
-  })
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState<Content>(null)
+  const [tags, setTags] = useState<TagType[]>([])
+  const [visibility, setVisibiility] = useState<'public' | 'private'>('private')
+  const [createdAt, setCreatedAt] = useState('')
+  const [updatedAt, setUpdatedAt] = useState('')
   const [allNotesOpen, setAllNotesOpen] = useState(false)
 
   useEffect(() => {
@@ -113,8 +116,13 @@ const Dashboard = () => {
         })
         return setFetchingStatus(-1)
       }
-      setTitle(res.title)
-      setContent(res.content)
+      const note = res as NoteType
+      setTitle(note.title)
+      setContent(note.content)
+      setTags(note.tags)
+      setVisibiility(note.visibility)
+      if (note.createdAt) setCreatedAt(note.createdAt)
+      if (note.updatedAt) setUpdatedAt(note.updatedAt)
       setFetchingStatus(1)
     } catch (error) {
       createNotification({
@@ -156,6 +164,10 @@ const Dashboard = () => {
         setContent={setContent}
         fetchingStatus={fetchingStatus}
         isUserDashboard={isUserDashboard}
+        tags={tags}
+        visibility={visibility}
+        createdAt={createdAt}
+        updatedAt={updatedAt}
       />
       <NewNote
         newNoteOpen={newNoteOpen}
