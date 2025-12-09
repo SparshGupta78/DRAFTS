@@ -2,50 +2,34 @@ import { useEffect, useRef, useState } from "react"
 import { ArrowDown, ArrowTopRight, Close, Delete, Filter, Plus, Retry } from "../../assets/Icons"
 import DropDown from "../DropDown/DropDown"
 import DropDownItem from "../DropDown/DropDownItem"
-import type { NoteType } from "../../types/note.type"
-import { AllNotesAPI } from "../../services/user.service"
-import { useParams } from "react-router-dom"
-import { useNotificationContext } from "../../contexts/notification.context"
 import { extractTextFromJSON } from "../../utils/tiptapTextExtractor"
+import type { NoteType } from "../../types/note.type"
 
 type props = {
   allNotesOpen: boolean,
-  setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  allNotes: NoteType[],
+  allNotesFetchingStatus: -1 | 0 | 1,
+  notesFetch: () => Promise<void>
 }
 
-const AllNotes = ({allNotesOpen, setAllNotesOpen, setNewNoteOpen}: props) => {
-
-  const { username } = useParams()
-  const { createNotification } = useNotificationContext()
+const AllNotes = ({
+  allNotesOpen,
+  setAllNotesOpen,
+  setNewNoteOpen,
+  allNotes,
+  allNotesFetchingStatus,
+  notesFetch
+}: props) => {
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [filter, setFilter] = useState<'All' | 'Pinned' | 'Unpinned'>('All')
   const [search, setSearch] = useState('')
   const dialogRef = useRef(null)
   const filters = ['All', 'Pinned', 'Un-pinned']
-  const [notes, setNotes] = useState<NoteType[]>([])
-  const [fetchingStatus, setFetchingStatus] = useState<-1 | 0 | 1>(1)
-
-  const notesFetch = async () => {
-    setFetchingStatus(0)
-    try {
-      if (!username) return setFetchingStatus(-1)
-      const res = await AllNotesAPI(username)
-      setNotes(res.data)
-      setFetchingStatus(1)
-    } catch {
-      createNotification({
-        title: "Unable to Fetch Notes",
-        message: "We couldn't retrieve your notes. Please try again.",
-        type: "error"
-      })
-      setFetchingStatus(-1)
-    }
-  }
 
   useEffect(() => {
-    notesFetch()
     const handler = () => {
       setWindowWidth(window.innerWidth)
     }
@@ -78,7 +62,23 @@ const AllNotes = ({allNotesOpen, setAllNotesOpen, setNewNoteOpen}: props) => {
             <div className="px-3 py-1.75 flex flex-col-reverse sm:flex-row justify-between items-center gap-2.5 relative">
               <div className="w-full sm:w-fit ml-1 flex justify-between sm:justify-start items-center gap-2.5">
                 <div className="flex items-center gap-2">
-                  <div className="text-sm text-[var(--black-5)] text-nowrap">7 Notes</div>
+                  <div className="text-sm text-[var(--black-5)] text-nowrap">
+                    {
+                      allNotesFetchingStatus === 1
+                      ?
+                      (
+                        allNotes.length > 0
+                        ?
+                        `${allNotes.length} Notes`
+                        :
+                        `${allNotes.length} Note`
+                      )
+                      :
+                      (
+                        '- Notes'
+                      )
+                    }
+                  </div>
                   <div className="h-4 w-0.5 bg-[var(--black-1)] rounded-full"></div>
                 </div>
                 <div className="flex items-center gap-2.5">
@@ -124,7 +124,7 @@ const AllNotes = ({allNotesOpen, setAllNotesOpen, setNewNoteOpen}: props) => {
                         <div className="mt-1 text-xs">This action cannot be undone.</div>
                       </div>
                       <div className="mt-1.5 text-sm bg-[var(--red-5)] rounded-md text-center p-0.75 text-[var(--white-2)] font-normal select-none duration-300 hover:opacity-70 active:scale-96">
-                        Yes, Delete
+                        Yes, Delete All
                       </div>
                     </div>
                   </DropDown>
@@ -154,10 +154,10 @@ const AllNotes = ({allNotesOpen, setAllNotesOpen, setNewNoteOpen}: props) => {
             </div>
             <div className="w-full h-[calc(100%-78px)] sm:h-[calc(100%-44px)] overflow-x-hidden overflow-y-auto rounded-b-xl">
               <div className="p-2.5 pt-4 flex flex-wrap gap-2.5">
-                {fetchingStatus === 1 && notes.length > 0 
+                {allNotesFetchingStatus === 1 && allNotes.length > 0 
                 ?
                 <>
-                  {notes.map((note, index) => {
+                  {allNotes.map((note, index) => {
                     const date = note.createdAt ? note.createdAt.split('T')[0].split('-') : null
                     const month = date ? new Date(0, Number(date[1])).toLocaleString('en-US', {month: 'long'}) : ''
                     const formattedDate = date ? date[2] + ' ' +  month + ', ' + date[0]: ''
@@ -203,31 +203,31 @@ const AllNotes = ({allNotesOpen, setAllNotesOpen, setNewNoteOpen}: props) => {
                 <div className="w-full h-full flex items-center justify-center p-2.5">
                   <div className="w-full max-w-150 p-2 sm:p-5 text-[var(--black-2)] flex flex-col gap-5">
                     <div className="text-[22px] sm:text-2xl font-normal">
-                      {fetchingStatus === -1 && 'Unable to load notes'}
-                      {fetchingStatus === 0 && 'Loading notes'}
-                      {fetchingStatus === 1 && notes.length === 0 && 'No notes found'}
+                      {allNotesFetchingStatus === -1 && 'Unable to load notes'}
+                      {allNotesFetchingStatus === 0 && 'Loading notes...'}
+                      {allNotesFetchingStatus === 1 && allNotes.length === 0 && 'No notes found'}
                     </div>
                     <div className="text-sm sm:text-[15px]">
-                      {fetchingStatus === -1 && (
+                      {allNotesFetchingStatus === -1 && (
                         <>
                           <div>Something went wrong while retrieving your notes.</div>
                           <div className="mt-1">Please try again.</div>
                         </>
                       )}
-                      {fetchingStatus === 0 && (
+                      {allNotesFetchingStatus === 0 && (
                         <>
                           <div>Retrieving all your notes…</div>
                           <div className="mt-1">Almost there.</div>
                         </>
                       )}
-                      {fetchingStatus === 1 && notes.length === 0 && (
+                      {allNotesFetchingStatus === 1 && allNotes.length === 0 && (
                         <>
                           <div>You haven't created any notes yet.</div>
                           <div className="mt-1">Start by creating your first one.</div>
                         </>
                       )}
                     </div>
-                    {fetchingStatus === -1 && (
+                    {allNotesFetchingStatus === -1 && (
                       <div className="">
                         <button
                           className="w-fit flex items-center gap-1.25 duration-150 hover:opacity-80 active:opacity-60 select-none"
@@ -242,7 +242,7 @@ const AllNotes = ({allNotesOpen, setAllNotesOpen, setNewNoteOpen}: props) => {
                         </button>
                       </div>
                     )}
-                    {fetchingStatus === 1 && notes.length === 0 && (
+                    {allNotesFetchingStatus === 1 && allNotes.length === 0 && (
                       <div className="">
                         <button
                           className="w-fit flex items-center gap-0.5 duration-150 hover:opacity-80 active:opacity-60 select-none"

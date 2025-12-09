@@ -13,8 +13,11 @@ import { useParams } from "react-router-dom"
 import { EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
 import type { Content } from "../../types/tiptap.type"
 import type { TagType } from "../../types/tag.type"
+import { useNotificationContext } from "../../contexts/notification.context"
+import type { UserType } from "../../types/user.type"
 
 type EditorType = {
+  loggedUser: UserType | undefined,
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>
   editorFetch: (noteId: string) => Promise<void>
@@ -23,14 +26,17 @@ type EditorType = {
   content: (Content | null),
   setContent: React.Dispatch<React.SetStateAction<Content>>,
   fetchingStatus: -1 | 0 | 1,
-  isUserDashboard: boolean
-  tags: TagType[]
-  visibility: 'public' | 'private'
-  createdAt: string
-  updatedAt: string
+  isUserDashboard: boolean,
+  tags: TagType[],
+  visibility: 'public' | 'private',
+  createdAt: string,
+  updatedAt: string,
+  setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  notesFetch: () => Promise<void>
 }
 
 const Editor = ({
+  loggedUser,
   setSideNavOpen, 
   setNewNoteOpen, 
   editorFetch, 
@@ -43,16 +49,24 @@ const Editor = ({
   tags,
   visibility,
   createdAt,
-  updatedAt
+  updatedAt,
+  setAllNotesOpen,
+  notesFetch
 }: EditorType) => {
+
+  const { createNotification } = useNotificationContext()
 
   const { username, noteId } = useParams()
 
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [titleEdit, setTitleEdit] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<-1 | 0 | 1>(1)
-  const controllerRef = useRef<AbortController>(null)
-  const timeRef = useRef(0)
+  const [initialLoad, setInitialLoad] = useState(true)
+
+  const controllerRef = useRef<AbortController | null>(null)
+  const timeRef = useRef<number | null>(0)
   const prevContentRef = useRef<Content | null>(null)
+
   const update = updatedAt.length > 0 ? updatedAt.split('T')[0].split('-') : []
   const month = update.length > 0 ? new Date(0, Number(update[1])).toLocaleString('en-US', {month: 'long'}) : ''
   const formattedUpdatedAt = update.length > 0 ? month + ' ' + update[2] + ', ' + update[0] : null
@@ -63,7 +77,12 @@ const Editor = ({
       const res = await EditorTitleUpdateAPI(noteId, title)
       console.log(res.data)
     } catch (error) {
-      console.log("Error: ", error)
+      createNotification({
+          title: "Update Failed",
+          message: "Unable to update the heading. Please try again.",
+          type: "error"
+        }
+      )
     }
   }
 
@@ -75,21 +94,21 @@ const Editor = ({
         return
       }
 
-      if (!prevContentRef.current || JSON.stringify(prevContentRef.current) === JSON.stringify(content)) return
-      prevContentRef.current = content
+      if (prevContentRef.current && JSON.stringify(prevContentRef.current) === JSON.stringify(content)) return
 
-      setAutoSaveStatus(0)
       timeRef.current = setTimeout(async () => {
+        setAutoSaveStatus(0)
         if (controllerRef.current) controllerRef.current.abort()
         controllerRef.current = new AbortController()
         const signal = controllerRef.current.signal
         try {
           await EditorContentSaveAPI(noteId, content, signal)
+          prevContentRef.current = content
           setAutoSaveStatus(1)
         } catch {
           setAutoSaveStatus(-1)
         }
-      }, 1000)
+      }, 2500)
     } catch (error) {
       setAutoSaveStatus(-1)
     }
@@ -109,8 +128,7 @@ const Editor = ({
     ],
     onUpdate: ({editor}) => {
       const json = editor.getJSON()
-      if (JSON.stringify(prevContentRef.current) !== JSON.stringify(content)) {
-        prevContentRef.current = json
+      if (JSON.stringify(prevContentRef.current) !== JSON.stringify(json)) {
         setContent(json)
       }
     }
@@ -140,6 +158,12 @@ const Editor = ({
     clearMarks: () => editor.chain().focus().unsetAllMarks().run(),
     clearNodes: () => editor.chain().focus().clearNodes().run(),
   }
+  
+  useEffect(() => {
+    const windowSizeHandler = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', windowSizeHandler)
+    return () => window.removeEventListener('resize', windowSizeHandler)
+  }, [])
 
   useEffect(() => {
     if (editor) {
@@ -148,18 +172,30 @@ const Editor = ({
   }, [isUserDashboard, editor])
 
   useEffect(() => {
+    if (initialLoad) {
+      setInitialLoad(false)
+      return
+    }
     if (content) autoSave()
   }, [content])
 
   useEffect(() => {
-    if (editor && fetchingStatus === 1) {
+    if (editor && fetchingStatus === 1 && content) {
       editor.commands.setContent(content)
+      prevContentRef.current = content
     }
-  }, [editor, fetchingStatus])
+  }, [editor, fetchingStatus, content])
 
   useEffect(() => {
     if (username && noteId) editorFetch(noteId)
   }, [username, noteId])
+
+  useEffect(() => {
+    return () => {
+      if (timeRef.current) clearTimeout(timeRef.current)
+      if (controllerRef.current) controllerRef.current.abort()
+    }
+  }, [])
 
   return (
     <div className="w-full h-full md:h-screen md:w-[calc(100%-290px)] p-3.5 md:p-5 md:pl-2.5 flex justify-center">
@@ -180,29 +216,33 @@ const Editor = ({
                       <input 
                         name="heading" 
                         type="text" 
-                        className={`block w-[calc(100%-38px)] sm:w-fit max-w-[calc(100%-38px)] overflow-auto text-nowrap truncate outline-none duration-300 ${titleEdit ? 'text-lg md:text-xl px-1' : 'text-xl md:text-2xl'}`}  
+                        className={`block sm:w-fit overflow-auto text-nowrap truncate outline-none duration-300 ${titleEdit ? 'text-lg md:text-xl px-1' : 'text-xl md:text-2xl'} ${username === loggedUser?.username ? 'w-[calc(100%-38px)] max-w-[calc(100%-38px)]' : 'w-full max-w-full'}`}
                         value={title}
                         onChange={e => setTitle(e.target.value)} 
                         disabled={!titleEdit}
                         autoComplete="off"
                       />
-                      <div className="flex">
-                        <div 
-                          className={`bg-[var(--white-3)] p-1.5 rounded-full hover:scale-90 active:scale-90 duration-150 ${titleEdit ? 'hidden' : ''}`} 
-                          onClick={() => setTitleEdit(true)}
-                        >
-                          <Edit dimension={16} color="#1b63ce" />
+                      {username === loggedUser?.username ? (
+                        <div className="flex">
+                          <div 
+                            className={`bg-[var(--white-3)] p-1.5 rounded-full hover:scale-90 active:scale-90 duration-150 ${titleEdit ? 'hidden' : ''}`} 
+                            onClick={() => setTitleEdit(true)}
+                          >
+                            <Edit dimension={16} color="#1b63ce" />
+                          </div>
+                          <div 
+                            className={`bg-[var(--blue-2)] p-0.5 rounded-full hover:scale-90 active:scale-90 duration-150 ${titleEdit ? '' : 'hidden'}`} 
+                            onClick={() => {
+                              headingUpdateHandler()
+                              setTitleEdit(false)
+                            }}
+                          >
+                            <Tick dimension={24} color="#fff" />
+                          </div>
                         </div>
-                        <div 
-                          className={`bg-[var(--blue-2)] p-0.5 rounded-full hover:scale-90 active:scale-90 duration-150 ${titleEdit ? '' : 'hidden'}`} 
-                          onClick={() => {
-                            headingUpdateHandler()
-                            setTitleEdit(false)
-                          }}
-                        >
-                          <Tick dimension={24} color="#fff" />
-                        </div>
-                      </div>
+                      ) : (
+                        ''
+                      )}
                     </div>
                     <div className="mt-1.5 flex items-center gap-1.5">
                       <div className="w-1 h-1 rounded-full bg-[var(--blue-2)]"></div>
@@ -301,7 +341,12 @@ const Editor = ({
                       )
                     }
                     <button
-                      className="flex items-center gap-1.25 duration-150 hover:opacity-80 active:opacity-60 select-none"
+                      className="flex items-center gap-1.25 duration-150 hover:opacity-80 active:opacity-60 select-none w-fit"
+                      onClick={() => {
+                        if (windowWidth < 768) setSideNavOpen(false)
+                        setAllNotesOpen(true)
+                        notesFetch()
+                      }}
                     >
                       <div className="pl-0.75">
                         <ViewAll dimension={16} color="#347CE9" />

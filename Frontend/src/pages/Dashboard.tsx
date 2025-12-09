@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import SideBar from '../components/Dashboard/SideBar';
 import Editor from '../components/Dashboard/Editor';
 import NewNote from '../components/Dashboard/NewNote';
-import { dashboardAPI, EditorFetchAPI, sideBarNotesAPI } from '../services/user.service';
+import { AllNotesAPI, dashboardAPI, EditorFetchAPI, loggedUserAPI, sideBarNotesAPI } from '../services/user.service';
 import { useNotificationContext } from '../contexts/notification.context';
 import type { Content } from '../types/tiptap.type';
 import { useParams } from 'react-router-dom';
@@ -22,6 +22,7 @@ const Dashboard = () => {
   const { createNotification } = useNotificationContext()
 
   const [user, setUser] = useState<UserType>()
+  const [loggedUser, setLoggedUser] = useState<UserType>()
   const [isUserDashboard, setIsUserDashboard] = useState(false)
   const [sideNavOpen, setSideNavOpen] = useState(false)
   const [newNoteOpen, setNewNoteOpen] = useState(false)
@@ -35,18 +36,8 @@ const Dashboard = () => {
   const [createdAt, setCreatedAt] = useState('')
   const [updatedAt, setUpdatedAt] = useState('')
   const [allNotesOpen, setAllNotesOpen] = useState(false)
-
-  useEffect(() => {
-    userFetch()
-  }, [username])
-
-  useEffect(() => {
-    if (username === user?.username) {
-      setIsUserDashboard(true)
-    } else {
-      setIsUserDashboard(false)
-    }
-  }, [username, user])
+  const [allNotes, setAllNotes] = useState<NoteType[]>([])
+  const [allNotesFetchingStatus, setAllNotesFetchingStatus] = useState<-1 | 0 | 1>(1)
 
   const userFetch = async () => {
     try {
@@ -70,6 +61,27 @@ const Dashboard = () => {
         })
         return
       }
+      createNotification({
+        title: "Unable to Fetch User Details",
+        message: "We couldn't retrieve account information. Please try again.",
+        type: "error"
+      })
+    }
+  }
+
+  const loggedUserFetch = async () => {
+    try {
+      const res = await loggedUserAPI()
+      if (!res) {
+        createNotification({
+          title: "Unable to Fetch User Details",
+          message: "We couldn't retrieve your account information. Please try again.",
+          type: "error"
+        })
+        return
+      }
+      setLoggedUser(res.data as UserType)
+    } catch (error) {
       createNotification({
         title: "Unable to Fetch User Details",
         message: "We couldn't retrieve your account information. Please try again.",
@@ -134,6 +146,39 @@ const Dashboard = () => {
     }
   }
 
+  const notesFetch = async () => {
+    setAllNotesFetchingStatus(0)
+    try {
+      if (!username) return setAllNotesFetchingStatus(-1)
+      const res = await AllNotesAPI(username)
+      setAllNotes(res.data)
+      setAllNotesFetchingStatus(1)
+    } catch {
+      createNotification({
+        title: "Unable to Fetch Notes",
+        message: "We couldn't retrieve your notes. Please try again.",
+        type: "error"
+      })
+      setAllNotesFetchingStatus(-1)
+    }
+  }
+
+  useEffect(() => {
+    loggedUserFetch()
+  }, [])
+
+  useEffect(() => {
+    userFetch()
+  }, [username])
+
+  useEffect(() => {
+    if (username === loggedUser?.username) {
+      setIsUserDashboard(true)
+    } else {
+      setIsUserDashboard(false)
+    }
+  }, [username, loggedUser])
+
   if (!user) {
     return (
       <div className="w-screen min-h-screen sm:h-screen bg-[var(--blue-1)] flex items-center justify-center">
@@ -144,7 +189,8 @@ const Dashboard = () => {
 
   return (
     <div className="w-screen min-h-screen sm:h-screen bg-[var(--blue-1)] flex">
-      <SideBar 
+      <SideBar
+        loggedUser={loggedUser}
         sideNavOpen={sideNavOpen}
         setSideNavOpen={setSideNavOpen}
         setNewNoteOpen={setNewNoteOpen}
@@ -153,8 +199,10 @@ const Dashboard = () => {
         noteTitlesFetchStatus={noteTitlesFetchStatus}
         editorFetch={editorFetch}
         setAllNotesOpen={setAllNotesOpen}
+        notesFetch={notesFetch}
       />
       <Editor
+        loggedUser={loggedUser}
         setSideNavOpen={setSideNavOpen}
         setNewNoteOpen={setNewNoteOpen}
         editorFetch={editorFetch}
@@ -168,6 +216,8 @@ const Dashboard = () => {
         visibility={visibility}
         createdAt={createdAt}
         updatedAt={updatedAt}
+        setAllNotesOpen={setAllNotesOpen}
+        notesFetch={notesFetch}
       />
       <NewNote
         newNoteOpen={newNoteOpen}
@@ -178,6 +228,9 @@ const Dashboard = () => {
         allNotesOpen={allNotesOpen}
         setAllNotesOpen={setAllNotesOpen}
         setNewNoteOpen={setNewNoteOpen}
+        allNotes={allNotes}
+        allNotesFetchingStatus={allNotesFetchingStatus}
+        notesFetch={notesFetch}
       />
     </div>
   )

@@ -25,3 +25,5 @@ export const EditorContentSaveAPI = (noteId: string, content: Content, signal: A
 export const EditorTitleUpdateAPI = (noteId: string, title: string) => api.post('/user/editorTitleUpdate', {noteId, title})
 
 export const AllNotesAPI = (username: string) => api.get(`/user/allNotes?username=${username}`)
+
+export const loggedUserAPI = () => api.get(`/user/loggedUser`)

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState, type Dispatch } from "react"
 import { NavLink, useParams } from "react-router-dom"
 import { Account, Delete, Edit, Plus, Retry, Search, Settings } from "../../assets/Icons"
+import type { UserType } from "../../types/user.type"
 
 type SideBarProps = {
+  loggedUser: UserType | undefined,
   sideNavOpen: boolean,
   setSideNavOpen: Dispatch<React.SetStateAction<boolean>>,
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>,
@@ -10,7 +12,8 @@ type SideBarProps = {
   fetchNotesTitle: () => void,
   noteTitlesFetchStatus: -1 | 0 | 1,
   editorFetch: (noteId: string) => Promise<void>,
-  setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  notesFetch: () => Promise<void>
 }
 
 type SideBarNotesType = {
@@ -19,6 +22,7 @@ type SideBarNotesType = {
 }
 
 const SideBar = ({
+  loggedUser,
   sideNavOpen, 
   setSideNavOpen, 
   setNewNoteOpen, 
@@ -26,7 +30,8 @@ const SideBar = ({
   fetchNotesTitle, 
   noteTitlesFetchStatus,
   editorFetch,
-  setAllNotesOpen
+  setAllNotesOpen,
+  notesFetch
 }: SideBarProps) => {
 
   const { username, noteId } = useParams()
@@ -107,6 +112,7 @@ const SideBar = ({
               onClick={() => {
                 if (windowWidth < 768) setSideNavOpen(false)
                 setAllNotesOpen(true)
+                notesFetch()
               }}
             >
               View All
@@ -207,11 +213,23 @@ const SideBar = ({
         </div>
         <div className="w-full h-fit p-2.5 pb-3.5 md:pb-2.5">
           <div className="w-full h-full p-1.5 md:p-1 border-1 border-[var(--black-4)] rounded-full flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <div className="flex justify-center items-center bg-[var(--black-4)] rounded-full p-2 scale-90">
+            <div className="max-w-[calc(100%-46.4px)] flex items-center gap-2">
+              <div className="max-w-full flex justify-center items-center bg-[var(--black-4)] rounded-full p-2 scale-90">
                 <Account dimension={18} />
               </div>
-              <div className="text-[15px] md:text-sm">Raj Yadav</div>
+              {
+              loggedUser
+              ? 
+              (<div className="text-[15px] md:text-sm text-nowrap max-w-full truncate">{
+                loggedUser.firstName+
+                ' '+
+                loggedUser.middleName+
+                ' '+
+                loggedUser.lastName
+              }</div>)
+              :
+              ''
+              }
             </div>
             <div className="flex justify-center items-center bg-[var(--black-4)] rounded-full p-2 scale-90">
               <Settings dimension={20} />

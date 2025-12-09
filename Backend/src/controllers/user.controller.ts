@@ -24,7 +24,7 @@ export const newNote = async (req: Request, res: Response) => {
     return res.status(400).json({error: "Bad request"})
   }
   const noteID = nanoid(30)
-  const fnote: Note = {...note, noteID, content: []}
+  const fnote: Note = {...note, noteID, content: { type: "doc", content: [] }}
   try {
     const newNote = new NoteSchema(fnote)
     await newNote.save()
@@ -155,6 +155,16 @@ export const allNotes = async (req: Request, res: Response) => {
     const publicNotes = filteredNotes.filter(note => note.visibility === 'public')
     return res.status(200).json(publicNotes)
   } catch {
+    res.status(500).json({error: "Internal server error"})
+  }
+}
+
+export const loggedUser = (req: Request, res: Response) => {
+  try {
+    const user = req.user as Omit<User, 'notes'> | undefined
+    if (!user) return res.status(400).json({error: "Bad request"})
+    res.status(200).json(user)
+  } catch (error) {
     res.status(500).json({error: "Internal server error"})
   }
 }
