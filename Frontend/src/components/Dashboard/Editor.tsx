@@ -9,8 +9,8 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { Delete, Edit, Pin, Plus, Retry, Tick, ViewAll } from "../../assets/Icons"
 import { useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
-import { EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
+import { useNavigate, useParams } from "react-router-dom"
+import { DeleteNoteAPI, EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
 import type { Content } from "../../types/tiptap.type"
 import type { TagType } from "../../types/tag.type"
 import { useNotificationContext } from "../../contexts/notification.context"
@@ -32,7 +32,8 @@ type EditorType = {
   createdAt: string,
   updatedAt: string,
   setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  notesFetch: () => Promise<void>
+  notesFetch: () => Promise<void>,
+  fetchNotesTitle: () => Promise<void>
 }
 
 const Editor = ({
@@ -51,8 +52,11 @@ const Editor = ({
   createdAt,
   updatedAt,
   setAllNotesOpen,
-  notesFetch
+  notesFetch,
+  fetchNotesTitle
 }: EditorType) => {
+
+  const navigate = useNavigate()
 
   const { createNotification } = useNotificationContext()
 
@@ -111,6 +115,35 @@ const Editor = ({
       }, 2500)
     } catch (error) {
       setAutoSaveStatus(-1)
+    }
+  }
+
+  const deleteNote = async () => {
+    try {
+      if (!username || !noteId) return
+      const res = await DeleteNoteAPI(username, noteId)
+      console.log(res)
+      if (res.status === 204) {
+        createNotification({
+          title: "Deletion Successful",
+          message: "Your note has been deleted successfully.",
+          type: ""
+        })
+        navigate(`/${username}`)
+        fetchNotesTitle()
+      } else {
+        createNotification({
+          title: "Deletion Failed",
+          message: "The note could not be deleted. Please try again.",
+          type: "error"
+        })
+      }
+    } catch (error) {
+      createNotification({
+        title: "Deletion Failed",
+        message: "The note could not be deleted. Please try again.",
+        type: "error"
+      })
     }
   }
 

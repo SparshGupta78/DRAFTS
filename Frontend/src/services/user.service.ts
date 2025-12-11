@@ -27,3 +27,5 @@ export const EditorTitleUpdateAPI = (noteId: string, title: string) => api.post(
 export const AllNotesAPI = (username: string) => api.get(`/user/allNotes?username=${username}`)
 
 export const loggedUserAPI = () => api.get(`/user/loggedUser`)
+
+export const DeleteNoteAPI = (username: string, noteId: string) => api.get(`/user/deleteNote?username=${username}&noteId=${noteId}`)

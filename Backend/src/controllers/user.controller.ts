@@ -168,3 +168,21 @@ export const loggedUser = (req: Request, res: Response) => {
     res.status(500).json({error: "Internal server error"})
   }
 }
+
+export const deleteNote = async (req: Request, res:  Response) => {
+  try {
+    const {username, noteId} = req.query
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if (!username || !noteId || !loggedUser) return res.status(400).json({error: "Bad request"})
+    if (username !== loggedUser.username) return res.status(400).json({error: "Bad request"})
+    const deleteNote = await NoteSchema.findOneAndDelete({noteID: noteId})
+    if (!deleteNote) return res.status(404).json({error: "Note not found"})
+    await UserSchema.findOneAndUpdate(
+      {username},
+      {$pull: {notes: noteId}}
+    )
+    res.status(204).json({})
+   } catch (error) {
+    res.status(500).json({error: "Internal server error"})
+  }
+}

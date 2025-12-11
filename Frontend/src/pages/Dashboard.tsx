@@ -218,6 +218,7 @@ const Dashboard = () => {
         updatedAt={updatedAt}
         setAllNotesOpen={setAllNotesOpen}
         notesFetch={notesFetch}
+        fetchNotesTitle={fetchNotesTitle}
       />
       <NewNote
         newNoteOpen={newNoteOpen}
