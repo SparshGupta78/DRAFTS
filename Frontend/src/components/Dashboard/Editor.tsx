@@ -7,7 +7,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
-import { Delete, Edit, Pin, Plus, Retry, Tick, ViewAll } from "../../assets/Icons"
+import { Close, Edit, Plus, Retry, ThreeDots, Tick, ViewAll } from "../../assets/Icons"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { DeleteNoteAPI, EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
@@ -15,6 +15,8 @@ import type { Content } from "../../types/tiptap.type"
 import type { TagType } from "../../types/tag.type"
 import { useNotificationContext } from "../../contexts/notification.context"
 import type { UserType } from "../../types/user.type"
+import DropDown from "../DropDown/DropDown"
+import DropDownItem from "../DropDown/DropDownItem"
 
 type EditorType = {
   loggedUser: UserType | undefined,
@@ -66,6 +68,9 @@ const Editor = ({
   const [titleEdit, setTitleEdit] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<-1 | 0 | 1>(1)
   const [initialLoad, setInitialLoad] = useState(true)
+  const [editorOption, setEditorOption] = useState('')
+
+  const editorOptions = ["Delete note", "Pin note", "Make note public", "Add tag"]
 
   const controllerRef = useRef<AbortController | null>(null)
   const timeRef = useRef<number | null>(0)
@@ -79,14 +84,25 @@ const Editor = ({
     try {
       if (!noteId) return
       const res = await EditorTitleUpdateAPI(noteId, title)
-      console.log(res.data)
+      if (res.status === 200) {
+      createNotification({
+        title: "Heading updated",
+        message: "The heading is updated successfully.",
+        type: "default"
+      })
+      } else {
+        createNotification({
+          title: "Heading updation Failed",
+          message: "Unable to update heading. Please try again.",
+          type: "error"
+        })
+      }
     } catch (error) {
       createNotification({
-          title: "Update Failed",
-          message: "Unable to update the heading. Please try again.",
+          title: "Heading updation Failed",
+          message: "Unable to update heading. Please try again.",
           type: "error"
-        }
-      )
+        })
     }
   }
 
@@ -122,7 +138,6 @@ const Editor = ({
     try {
       if (!username || !noteId) return
       const res = await DeleteNoteAPI(username, noteId)
-      console.log(res)
       if (res.status === 204) {
         createNotification({
           title: "Deletion Successful",
@@ -243,9 +258,9 @@ const Editor = ({
               (noteId && fetchingStatus === 1) 
               ? 
               (<div className="w-full h-full overflow-x-hidden overflow-y-auto">
-                <div className="w-full flex flex-wrap gap-3.5 justify-between">
-                  <div className="w-full sm:w-fit max-w-full">
-                    <div className={`w-full sm:w-fit rounded-full max-w-full flex sm:flex-row-reverse items-center gap-2.5 duration-300 ${titleEdit ? 'bg-[var(--white-3)] p-2 md:p-1.75' : 'bg-transparent border-transparent'}`}>
+                <div className="w-full">
+                  <div className="w-full flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-1.5">
+                    <div className={`w-full sm:w-fit max-w-full rounded-full flex sm:flex-row-reverse items-center gap-2.5 duration-300 ${titleEdit ? 'bg-[var(--white-3)] p-2 md:p-1.75' : 'bg-transparent border-transparent'}`}>
                       <input 
                         name="heading" 
                         type="text" 
@@ -277,32 +292,73 @@ const Editor = ({
                         ''
                       )}
                     </div>
-                    <div className="mt-1.5 flex items-center gap-1.5">
-                      <div className="w-1 h-1 rounded-full bg-[var(--blue-2)]"></div>
-                      <div className="text-xs text-[var(--black-2)] text-nowrap truncate">
-                        {formattedUpdatedAt ? `Last updated at ${formattedUpdatedAt}` : ''}
-                      </div>
+                    <div className="w-full sm:w-fit flex items-center justify-between sm:justify-start gap-1.5">
+                      {visibility && <div className="text-sm text-[var(--black-2)] font-normal px-2.5 py-1 rounded-full border-2 border-[var(--black-6)] h-fit w-fit capitalize">
+                        {visibility}
+                      </div>}
+                      <DropDown
+                        trigger={
+                          <button className="group h-fit aspect-square border-2 border-[var(--black-6)] rounded-full flex items-center">
+                            <div className="group-hover:scale-95 group-active:scale-85 duration-300 p-1 rounded-full bg-[var(--black-4)]">
+                              <ThreeDots dimension={20} color="#4C4C4C" />
+                            </div>
+                          </button>
+                        }
+                        preStyle={false}
+                        contentStyle="p-0.75 bg-[var(--black-6)] rounded-lg flex flex-col gap-0.75"
+                        align={'right'}
+                      >
+                        {editorOptions && editorOptions.map((option, i) => {
+                          return (
+                            <DropDownItem
+                            key={option}
+                            setValue={setEditorOption}
+                            data={option}
+                            preStyle={false}
+                            className={`bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97 ${i == 0 ? 'rounded-t-md rounded-b-[2px]' : ''} ${i != 0 && i != (editorOptions.length - 1) ? 'rounded-[2px]' : ''} ${i == (editorOptions.length - 1) ? 'rounded-b-md rounded-t-[2px]' : ''}`}
+                          >
+                            {option}
+                          </DropDownItem>
+                          )
+                        })}
+                      </DropDown>
                     </div>
                   </div>
-                  <div className="w-full sm:w-fit flex justify-between gap-2.5 md:flex-col">
-                    <div className="w-fit md:w-full flex justify-end gap-1.5">
-                      <button className="group h-fit p-1 bg-[var(--blue-1)] rounded-full flex items-center">
-                        <div className="group-hover:scale-90 group-active:scale-90 duration-300 p-1 rounded-full bg-[var(--blue-2)]">
-                          <Pin dimension={14} />
-                        </div>
-                        <span className="px-1.5 text-xs text-[var(--blue-2)] font-[500]">Pin</span>
-                      </button>
-                      <button className="group h-fit p-1 bg-[var(--red-3)] rounded-full flex items-center">
-                        <div className="group-hover:scale-90 group-active:scale-90 duration-300 p-1 rounded-full bg-[var(--red-4)]">
-                          <Delete dimension={14} color="#ffe3e3" />
-                        </div>
-                        <span className="px-1.5 text-xs text-[var(--red-4)] font-[500]">Delete</span>
-                      </button>
+                  <div className="mt-2.5 w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-1.5">
+                    <div className="w-full sm:max-w-[352px] relative">
+                      <div className="absolute left-0 top-0 w-1.5 h-6 bg-gradient-to-r from-[var(--white-1)] to-transparent"></div>
+                      <div className="px-1.5 w-full flex items-center gap-1.25 overflow-x-auto overflow-y-hidden">
+                        {
+                          tags.length > 0
+                          ?
+                          (
+                            tags.map((tag, _) => {
+                              return (
+                                <div key={tag.tagId} className="flex items-center gap-1 pl-2.25 pr-1.5 py-0.5 bg-[var(--blue-1)] rounded-full">
+                                  <span className="text-sm text-[var(--blue-2)] text-nowrap w-fit max-w-22 truncate">{tag.tag}</span>
+                                  <div className="h-fit w-fit hover:opacity-65 active:opacity-50 duration-300">
+                                    <Close dimension={14} color="#1b63ce" />
+                                  </div>
+                                </div>
+                              )
+                            })
+                          )
+                          :
+                          <span className="text-xs italic text-[var(--black-2)]">No tags added</span>
+                        }
+                      </div>
+                      <div className="absolute right-0 top-0 w-1.5 h-6 bg-gradient-to-r from-transparent to-[var(--white-1)]"></div>
                     </div>
-                    <div className="w-fit min-w-12 md:w-full max-w-full mt-1.5 truncate overflow-hidden text-xs text-[var(--black-2)] text-right">
-                      {autoSaveStatus === -1 && ('Error saving note')}
-                      {autoSaveStatus === 0 && ('Saving...')}
-                      {autoSaveStatus === 1 && ('Saved')}
+                    <div className="w-full sm:w-fit flex items-center justify-between sm:justify-start gap-1.5">
+                      <div className="text-xs text-[var(--black-2)] text-nowrap truncate">
+                        {formattedUpdatedAt ? `${formattedUpdatedAt}` : ''}
+                      </div>
+                      <div className="h-3.5 w-0.5 bg-[var(--black-1)] rounded-full hidden sm:block"></div>
+                      <div className="w-fit max-w-full truncate overflow-hidden text-xs text-[var(--black-2)]">
+                        {autoSaveStatus === -1 && ('Error saving note')}
+                        {autoSaveStatus === 0 && ('Saving...')}
+                        {autoSaveStatus === 1 && ('Saved')}
+                      </div>
                     </div>
                   </div>
                 </div>
