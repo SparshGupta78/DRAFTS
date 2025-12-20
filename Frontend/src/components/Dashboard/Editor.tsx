@@ -10,13 +10,15 @@ import TaskItem from '@tiptap/extension-task-item'
 import { Close, Edit, Plus, Retry, ThreeDots, Tick, ViewAll } from "../../assets/Icons"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { DeleteNoteAPI, EditorContentSaveAPI, EditorTitleUpdateAPI } from "../../services/user.service"
+import { DeleteNoteAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, TogglePinStatusAPI } from "../../services/user.service"
 import type { Content } from "../../types/tiptap.type"
 import type { TagType } from "../../types/tag.type"
 import { useNotificationContext } from "../../contexts/notification.context"
 import type { UserType } from "../../types/user.type"
 import DropDown from "../DropDown/DropDown"
 import DropDownItem from "../DropDown/DropDownItem"
+import Alert from "./Alert"
+import type { AlertContentType } from "../../types/alertContent.type"
 
 type EditorType = {
   loggedUser: UserType | undefined,
@@ -36,6 +38,11 @@ type EditorType = {
   setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
   notesFetch: () => Promise<void>,
   fetchNotesTitle: () => Promise<void>
+}
+
+type editorOptionsType = {
+  option: string,
+  tag: AlertContentType
 }
 
 const Editor = ({
@@ -68,13 +75,19 @@ const Editor = ({
   const [titleEdit, setTitleEdit] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<-1 | 0 | 1>(1)
   const [initialLoad, setInitialLoad] = useState(true)
-  const [editorOption, setEditorOption] = useState('')
-
-  const editorOptions = ["Delete note", "Pin note", "Make note public", "Add tag"]
+  const [alertOpen, setAlertOpen] = useState(false)
+  const [alertContentType, setAlertContentType] = useState<AlertContentType>('delete')
 
   const controllerRef = useRef<AbortController | null>(null)
   const timeRef = useRef<number | null>(0)
   const prevContentRef = useRef<Content | null>(null)
+
+  const editorOptions: editorOptionsType[] = [
+    {option: "Delete note", tag: "delete"},
+    {option: "Pin note", tag: 'pin'},
+    {option: "Make note public", tag: (visibility === 'private' ? 'makePublic' : 'makePrivate')},
+    {option: "Add tag", tag: 'addTag'}
+  ]
 
   const update = updatedAt.length > 0 ? updatedAt.split('T')[0].split('-') : []
   const month = update.length > 0 ? new Date(0, Number(update[1])).toLocaleString('en-US', {month: 'long'}) : ''
@@ -247,6 +260,7 @@ const Editor = ({
 
   return (
     <div className="w-full h-full md:h-screen md:w-[calc(100%-290px)] p-3.5 md:p-5 md:pl-2.5 flex justify-center">
+      <Alert alertOpen={alertOpen} setAlertOpen={setAlertOpen} alertContentType={alertContentType} />
       <div className="w-full h-full flex flex-col items-center gap-0.5">
         <ToolBox 
           setSideNavOpen={setSideNavOpen}
@@ -308,16 +322,20 @@ const Editor = ({
                         contentStyle="p-0.75 bg-[var(--black-6)] rounded-lg flex flex-col gap-0.75"
                         align={'right'}
                       >
-                        {editorOptions && editorOptions.map((option, i) => {
+                        {editorOptions && editorOptions.map((item, i) => {
                           return (
                             <DropDownItem
-                            key={option}
-                            setValue={setEditorOption}
-                            data={option}
+                            key={item.tag}
+                            setValue={() => {}}
+                            data={item.tag}
                             preStyle={false}
                             className={`bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97 ${i == 0 ? 'rounded-t-md rounded-b-[2px]' : ''} ${i != 0 && i != (editorOptions.length - 1) ? 'rounded-[2px]' : ''} ${i == (editorOptions.length - 1) ? 'rounded-b-md rounded-t-[2px]' : ''}`}
+                            onClick={() => {
+                              setAlertContentType(item.tag)
+                              setAlertOpen(true)
+                            }}
                           >
-                            {option}
+                            {item.option}
                           </DropDownItem>
                           )
                         })}

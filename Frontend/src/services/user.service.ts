@@ -29,3 +29,5 @@ export const AllNotesAPI = (username: string) => api.get(`/user/allNotes?usernam
 export const loggedUserAPI = () => api.get(`/user/loggedUser`)
 
 export const DeleteNoteAPI = (username: string, noteId: string) => api.get(`/user/deleteNote?username=${username}&noteId=${noteId}`)
+
+export const TogglePinStatusAPI = (username: string, noteId: string, status: ('pin' | 'unpin')) => api.get(`/user/togglePinStatus?username=${username}&noteId=${noteId}&status=${status}`)

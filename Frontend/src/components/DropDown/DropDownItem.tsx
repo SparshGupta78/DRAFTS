@@ -5,13 +5,17 @@ type props = {
   setValue: React.Dispatch<React.SetStateAction<any>>,
   data: string,
   preStyle?: boolean,
-  className?: string
+  className?: string,
+  onClick?: () => void
 }
 
-const DropDownItem = ({children, setValue, data, preStyle = true, className = ''}: props) => {
+const DropDownItem = ({children, setValue, data, preStyle = true, className = '', onClick}: props) => {
 
   const clickHandler = () => {
     setValue(data)
+    if(onClick) {
+      onClick()
+    }
   }
 
   return (

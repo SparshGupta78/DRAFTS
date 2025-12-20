@@ -1,0 +1,1 @@
+export type AlertContentType = "delete" | "makePrivate" | "makePublic" | "pin" | "unpin" | "addTag"
