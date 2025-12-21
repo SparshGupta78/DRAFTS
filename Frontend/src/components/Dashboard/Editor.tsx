@@ -10,7 +10,7 @@ import TaskItem from '@tiptap/extension-task-item'
 import { Close, Edit, Plus, Retry, ThreeDots, Tick, ViewAll } from "../../assets/Icons"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { DeleteNoteAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, TogglePinStatusAPI } from "../../services/user.service"
+import { AddTagAPI, DeleteNoteAPI, DeleteTagAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, ToggleVisibilityStatusAPI } from "../../services/user.service"
 import type { Content } from "../../types/tiptap.type"
 import type { TagType } from "../../types/tag.type"
 import { useNotificationContext } from "../../contexts/notification.context"
@@ -85,7 +85,7 @@ const Editor = ({
   const editorOptions: editorOptionsType[] = [
     {option: "Delete note", tag: "delete"},
     {option: "Pin note", tag: 'pin'},
-    {option: "Make note public", tag: (visibility === 'private' ? 'makePublic' : 'makePrivate')},
+    {option: `Make note ${visibility === 'private' ? 'public' : 'private'}`, tag: (visibility === 'private' ? 'makePublic' : 'makePrivate')},
     {option: "Add tag", tag: 'addTag'}
   ]
 
@@ -155,7 +155,7 @@ const Editor = ({
         createNotification({
           title: "Deletion Successful",
           message: "Your note has been deleted successfully.",
-          type: ""
+          type: "default"
         })
         navigate(`/${username}`)
         fetchNotesTitle()
@@ -170,6 +170,83 @@ const Editor = ({
       createNotification({
         title: "Deletion Failed",
         message: "The note could not be deleted. Please try again.",
+        type: "error"
+      })
+    }
+  }
+
+  const toggleVisibilityStatus = async () => {
+    try {
+      if (!username || !noteId) return
+      const response = await ToggleVisibilityStatusAPI(username, noteId, (visibility === 'private' ? 'public' : 'private'))
+      if (!response) {
+        createNotification({
+          title: "Visibility Update Failed",
+          message: "Unable to change note visibility. Please try again.",
+          type: "error"
+        })
+        return
+      }
+      if (response !== visibility) {
+        visibility = response
+      }
+      editorFetch(noteId)
+    } catch (error) {
+      createNotification({
+        title: "Visibility Update Failed",
+        message: "Unable to change note visibility. Please try again.",
+        type: "error"
+      })
+    }
+  }
+
+  const addTag = async (newTags: TagType[]) => {
+    try {
+      if (!newTags || !username || !noteId) return
+      if (tags.length >= 5) {
+        createNotification({
+          title: "Tag Limit Exceeded",
+          message: "A note can have up to 5 tags only.",
+          type: "default"
+        })
+        return
+      }
+      const res = await AddTagAPI(username, noteId, newTags)
+      if (!res) {
+        createNotification({
+          title: "Tag Update Failed",
+          message: "Unable to set the tag for this note. Please try again.",
+          type: "error"
+        })
+      }
+      tags.push(res.data)
+      editorFetch(noteId)
+    } catch (error) {
+      createNotification({
+        title: "Tag Update Failed",
+        message: "Unable to set the tag for this note. Please try again.",
+        type: "error"
+      })
+    }
+  }
+
+  const deleteTag = async (tagId: string) => {
+    try {
+      if (!username || !noteId) return
+      const res = await DeleteTagAPI(username, noteId, tagId)
+      if (!res) {
+        createNotification({
+          title: "Tag Removal Failed",
+          message: "Unable to remove the tag. Please try again.",
+          type: "error"
+        })
+        return
+      }
+      editorFetch(noteId)
+    } catch (error) {
+      createNotification({
+        title: "Tag Removal Failed",
+        message: "Unable to remove the tag. Please try again.",
         type: "error"
       })
     }
@@ -260,7 +337,15 @@ const Editor = ({
 
   return (
     <div className="w-full h-full md:h-screen md:w-[calc(100%-290px)] p-3.5 md:p-5 md:pl-2.5 flex justify-center">
-      <Alert alertOpen={alertOpen} setAlertOpen={setAlertOpen} alertContentType={alertContentType} />
+      <Alert
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        alertContentType={alertContentType}
+        deleteNote={deleteNote}
+        toggleVisibilityStatus={toggleVisibilityStatus}
+        addTag={addTag}
+        currentTags={tags}
+      />
       <div className="w-full h-full flex flex-col items-center gap-0.5">
         <ToolBox 
           setSideNavOpen={setSideNavOpen}
@@ -354,7 +439,10 @@ const Editor = ({
                               return (
                                 <div key={tag.tagId} className="flex items-center gap-1 pl-2.25 pr-1.5 py-0.5 bg-[var(--blue-1)] rounded-full">
                                   <span className="text-sm text-[var(--blue-2)] text-nowrap w-fit max-w-22 truncate">{tag.tag}</span>
-                                  <div className="h-fit w-fit hover:opacity-65 active:opacity-50 duration-300">
+                                  <div
+                                    className="h-fit w-fit hover:opacity-65 active:opacity-50 duration-300"
+                                    onClick={() => deleteTag(tag.tagId)}
+                                  >
                                     <Close dimension={14} color="#1b63ce" />
                                   </div>
                                 </div>

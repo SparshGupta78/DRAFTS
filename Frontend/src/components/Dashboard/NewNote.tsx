@@ -46,7 +46,7 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
       if (prev.length >= 5) {
         return prev
       }
-      return [{tagId: crypto.randomUUID(), tag: tagInput}, ...prev]
+      return [...prev, {tagId: crypto.randomUUID(), tag: tagInput}]
     })
   }
 

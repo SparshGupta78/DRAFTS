@@ -186,3 +186,61 @@ export const deleteNote = async (req: Request, res:  Response) => {
     res.status(500).json({error: "Internal server error"})
   }
 }
+
+export const toggleVisibilityStatus = async (req: Request, res: Response) => {
+  try {
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if (!loggedUser) return res.status(401).json({ error: 'Unauthorized' })
+    const {username, noteId, status} = req.query
+    if (!username || !noteId || !status) return res.status(400).json({error: "Bad request"})
+    if (username !== loggedUser.username) return res.status(400).json({error: "Bad request"})
+    const updatedNote = await NoteSchema.findOneAndUpdate(
+      {noteID: noteId},
+      {$set: {visibility: status}},
+      {new: true}
+    )
+    if (!updatedNote) return res.status(404).json({ error: 'Note not found' })
+    if (updatedNote.visibility !== status) return res.status(500).json({error: "Internal server error"})
+    return res.status(200).json({ status: updatedNote.visibility })
+  } catch {
+    res.status(500).json({error: "Internal server error"})
+  }
+}
+
+export const addTags = async (req: Request, res: Response) => {
+  try {
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if (!loggedUser) return res.status(401).json({ error: 'Unauthorized' })
+    const {username, noteId, tags} = req.body
+    if (!username || !noteId || !Array.isArray(tags) || tags.length === 0) return res.status(400).json({error: "Bad request"})
+    if (username !== loggedUser.username) return res.status(403).json({error: "Forbidden"})
+    const updatedNote = await NoteSchema.findOneAndUpdate(
+      {noteID: noteId},
+      {$push: {tags: {$each: tags}}},
+      {new: true}
+    )
+    if (!updatedNote) return res.status(404).json({error: "Note not found"})
+    res.status(200).json({tags: updatedNote.tags})
+  } catch {
+    res.status(500).json({error: "Internal server error"})
+  }
+}
+
+export const deleteTag = async (req: Request, res: Response) => {
+  try {
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if (!loggedUser) return res.status(401).json({ error: 'Unauthorized' })
+    const {username, noteId, tagId} = req.query
+    if (!username || !noteId || !tagId) return res.status(400).json({error: "Bad request"})
+    if (username !== loggedUser.username) return res.status(403).json({error: "Forbidden"})
+    const updatedNote = await NoteSchema.findOneAndUpdate(
+      {noteID: noteId},
+      {$pull: {tags: {tagId}}},
+      {new: true}
+    )
+    if (!updatedNote) return res.status(404).json({error: "Note not found"})
+    res.status(200).json({tags: updatedNote.tags})
+  } catch {
+    res.status(500).json({error: "Internal server error"})
+  }
+}

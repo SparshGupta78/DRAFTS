@@ -1,4 +1,5 @@
 import type { CreateNewNote } from "../types/CreateNewNote.type";
+import type { TagType } from "../types/tag.type";
 import type { Content } from "../types/tiptap.type";
 import api from "./axios.config";
 
@@ -30,4 +31,8 @@ export const loggedUserAPI = () => api.get(`/user/loggedUser`)
 
 export const DeleteNoteAPI = (username: string, noteId: string) => api.get(`/user/deleteNote?username=${username}&noteId=${noteId}`)
 
-export const TogglePinStatusAPI = (username: string, noteId: string, status: ('pin' | 'unpin')) => api.get(`/user/togglePinStatus?username=${username}&noteId=${noteId}&status=${status}`)
+export const ToggleVisibilityStatusAPI = (username: string, noteId: string, status: ('private' | 'public')): Promise<'public' | 'private'> => api.get(`/user/toggleVisibilityStatus?username=${username}&noteId=${noteId}&status=${status}`)
+
+export const AddTagAPI = (username: string, noteId: string, tags: TagType[]) => api.post('/user/addTag', {username,noteId,tags})
+
+export const DeleteTagAPI = (username: string, noteId: string, tagId: string) => api.get(`/user/deleteTag?username=${username}&noteId=${noteId}&tagId=${tagId}`)
