@@ -1,4 +1,65 @@
+import { useNavigate } from "react-router-dom";
+import type { AuthResponseType } from "../types/authResponse.type";
 import api from "./axios.config";
+import { useNotificationContext } from "../contexts/notification.context";
 
-export const signUpAPI = (data: any) => api.post('/auth/signup', data)
-export const signInAPI = (data: any) => api.post('/auth/signin', data)
+const useAuthAPI = () => {
+  
+  const navigate = useNavigate()
+  const { createNotification } = useNotificationContext()
+
+  const signUpAPI = async (data: any) => {
+    const res = await api.post('/auth/signup', data)
+    const response: (AuthResponseType | null) = res.data
+    if (!response) {
+      createNotification({
+        title: "Something Went Wrong",
+        message: "Signup could not be completed at this moment. Please try again shortly.",
+        type: "error"
+      })
+      return
+    }
+    const {error, token} = response
+    if (error) {
+      createNotification({
+        title: "Something Went Wrong",
+        message: "Signup could not be completed at this moment. Please try again shortly.",
+        type: "error"
+      })
+    }
+    if (token) {
+      localStorage.setItem('token', JSON.stringify({token: response.token, createdAt: Date.now()}))
+      navigate(`/${data.username}`)
+    }
+  }
+  
+  const signInAPI = async (data: any) => {
+    try {
+      const res = await api.post('/auth/signin', data)
+      const response: AuthResponseType | null = res.data
+      if (!response?.token) {
+        createNotification({
+          title: "Something Went Wrong",
+          message: "Signin could not be completed at this moment. Please try again shortly.",
+          type: "error"
+        })
+      } else {
+        localStorage.setItem('token', JSON.stringify({token: response.token, createdAt: Date.now()}))
+        navigate(`/${data.username}`)
+      }
+    } catch (err: any) {
+      createNotification({
+        title: "Something Went Wrong",
+        message: "Signup could not be completed at this moment. Please try again shortly.",
+        type: "error"
+      })
+    }
+  }
+
+  return {
+    signInAPI,
+    signUpAPI
+  }
+}
+
+export default useAuthAPI

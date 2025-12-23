@@ -1,8 +1,8 @@
 import { useRef, useState } from "react"
 import { Close } from "../../assets/Icons"
 import { useNotificationContext } from "../../contexts/notification.context"
-import { newNoteAPI } from "../../services/user.service"
-import { useNavigate, useParams } from "react-router-dom"
+import useUserAPI from "../../services/user.service"
+import { useParams } from "react-router-dom"
 import type { TagType } from "../../types/tag.type"
 import type { CreateNewNote } from "../../types/CreateNewNote.type"
 
@@ -14,7 +14,7 @@ type NewNoteType = {
 
 const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) => {
 
-  const navigate = useNavigate()
+  const { newNoteAPI } = useUserAPI()
 
   const { username } = useParams()
 
@@ -73,32 +73,10 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
         type: "error"
       })
     }
-    try {
-      if (!username) {
-        return
-      }
-      const payload: CreateNewNote = {title, tags, visibility}
-      const newNoteId = await newNoteAPI(payload)
-      if (!newNoteId) {
-        createNotification({
-          title: "Failed to Create Note",
-          message: "An error occurred while creating the note. Please try again.",
-          type: "error"
-        })
-      } else {
-        navigate(`/${username}/${newNoteId.data.noteID}`)
-        clearDialog()
-        fetchNotesTitle()
-      }
-      setFieldDisable(false)
-    } catch (error) {
-      setFieldDisable(false)
-      return createNotification({
-        title: "Failed to Create Note",
-        message: "An error occurred while creating the note. Please try again.",
-        type: "error"
-      })
-    }
+    if (!username) return
+    const payload: CreateNewNote = {title, tags, visibility}
+    await newNoteAPI(payload, username, clearDialog, fetchNotesTitle)
+    setFieldDisable(false)
   }
 
   const outsideClickHandler = (e :React.MouseEvent<HTMLDivElement, MouseEvent>) => {

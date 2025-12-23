@@ -9,8 +9,8 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { Close, Edit, Plus, Retry, ThreeDots, Tick, ViewAll } from "../../assets/Icons"
 import { useEffect, useRef, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { AddTagAPI, DeleteNoteAPI, DeleteTagAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, ToggleVisibilityStatusAPI } from "../../services/user.service"
+import { useParams } from "react-router-dom"
+import useUserAPI from "../../services/user.service"
 import type { Content } from "../../types/tiptap.type"
 import type { TagType } from "../../types/tag.type"
 import { useNotificationContext } from "../../contexts/notification.context"
@@ -32,6 +32,7 @@ type EditorType = {
   fetchingStatus: -1 | 0 | 1,
   isUserDashboard: boolean,
   tags: TagType[],
+  setTags: React.Dispatch<React.SetStateAction<TagType[]>>,
   visibility: 'public' | 'private',
   createdAt: string,
   updatedAt: string,
@@ -57,6 +58,7 @@ const Editor = ({
   fetchingStatus,
   isUserDashboard,
   tags,
+  setTags,
   visibility,
   createdAt,
   updatedAt,
@@ -65,7 +67,7 @@ const Editor = ({
   fetchNotesTitle
 }: EditorType) => {
 
-  const navigate = useNavigate()
+  const { AddTagAPI, DeleteNoteAPI, DeleteTagAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, ToggleVisibilityStatusAPI } = useUserAPI()
 
   const { createNotification } = useNotificationContext()
 
@@ -94,29 +96,8 @@ const Editor = ({
   const formattedUpdatedAt = update.length > 0 ? month + ' ' + update[2] + ', ' + update[0] : null
 
   const headingUpdateHandler = async () => {
-    try {
-      if (!noteId) return
-      const res = await EditorTitleUpdateAPI(noteId, title)
-      if (res.status === 200) {
-      createNotification({
-        title: "Heading updated",
-        message: "The heading is updated successfully.",
-        type: "default"
-      })
-      } else {
-        createNotification({
-          title: "Heading updation Failed",
-          message: "Unable to update heading. Please try again.",
-          type: "error"
-        })
-      }
-    } catch (error) {
-      createNotification({
-          title: "Heading updation Failed",
-          message: "Unable to update heading. Please try again.",
-          type: "error"
-        })
-    }
+    if (!noteId) return
+    await EditorTitleUpdateAPI(noteId, title)
   }
 
   const autoSave = () => {
@@ -134,13 +115,9 @@ const Editor = ({
         if (controllerRef.current) controllerRef.current.abort()
         controllerRef.current = new AbortController()
         const signal = controllerRef.current.signal
-        try {
-          await EditorContentSaveAPI(noteId, content, signal)
-          prevContentRef.current = content
-          setAutoSaveStatus(1)
-        } catch {
-          setAutoSaveStatus(-1)
-        }
+        prevContentRef.current = content
+        const status = await EditorContentSaveAPI(noteId, content, signal, prevContentRef)
+        setAutoSaveStatus(status)
       }, 2500)
     } catch (error) {
       setAutoSaveStatus(-1)
@@ -148,108 +125,39 @@ const Editor = ({
   }
 
   const deleteNote = async () => {
-    try {
-      if (!username || !noteId) return
-      const res = await DeleteNoteAPI(username, noteId)
-      if (res.status === 204) {
-        createNotification({
-          title: "Deletion Successful",
-          message: "Your note has been deleted successfully.",
-          type: "default"
-        })
-        navigate(`/${username}`)
-        fetchNotesTitle()
-      } else {
-        createNotification({
-          title: "Deletion Failed",
-          message: "The note could not be deleted. Please try again.",
-          type: "error"
-        })
-      }
-    } catch (error) {
-      createNotification({
-        title: "Deletion Failed",
-        message: "The note could not be deleted. Please try again.",
-        type: "error"
-      })
-    }
+    if (!username || !noteId) return
+    await DeleteNoteAPI(username, noteId, fetchNotesTitle)
   }
 
   const toggleVisibilityStatus = async () => {
-    try {
-      if (!username || !noteId) return
-      const response = await ToggleVisibilityStatusAPI(username, noteId, (visibility === 'private' ? 'public' : 'private'))
-      if (!response) {
-        createNotification({
-          title: "Visibility Update Failed",
-          message: "Unable to change note visibility. Please try again.",
-          type: "error"
-        })
-        return
-      }
-      if (response !== visibility) {
-        visibility = response
-      }
+    if (!username || !noteId) return
+    const response = await ToggleVisibilityStatusAPI(username, noteId, (visibility === 'private' ? 'public' : 'private'))
+    if (response && response !== visibility) {
+      visibility = response
       editorFetch(noteId)
-    } catch (error) {
-      createNotification({
-        title: "Visibility Update Failed",
-        message: "Unable to change note visibility. Please try again.",
-        type: "error"
-      })
     }
   }
 
   const addTag = async (newTags: TagType[]) => {
-    try {
-      if (!newTags || !username || !noteId) return
-      if (tags.length >= 5) {
-        createNotification({
-          title: "Tag Limit Exceeded",
-          message: "A note can have up to 5 tags only.",
-          type: "default"
-        })
-        return
-      }
-      const res = await AddTagAPI(username, noteId, newTags)
-      if (!res) {
-        createNotification({
-          title: "Tag Update Failed",
-          message: "Unable to set the tag for this note. Please try again.",
-          type: "error"
-        })
-      }
-      tags.push(res.data)
-      editorFetch(noteId)
-    } catch (error) {
+    if (!newTags || !username || !noteId) return
+    if (tags.length >= 5) {
       createNotification({
-        title: "Tag Update Failed",
-        message: "Unable to set the tag for this note. Please try again.",
-        type: "error"
+        title: "Tag Limit Exceeded",
+        message: "A note can have up to 5 tags only.",
+        type: "default"
       })
+      return
+    }
+    const resTags = await AddTagAPI(username, noteId, newTags)
+    if(resTags) {
+      setTags(resTags)
+      editorFetch(noteId)
     }
   }
 
   const deleteTag = async (tagId: string) => {
-    try {
-      if (!username || !noteId) return
-      const res = await DeleteTagAPI(username, noteId, tagId)
-      if (!res) {
-        createNotification({
-          title: "Tag Removal Failed",
-          message: "Unable to remove the tag. Please try again.",
-          type: "error"
-        })
-        return
-      }
-      editorFetch(noteId)
-    } catch (error) {
-      createNotification({
-        title: "Tag Removal Failed",
-        message: "Unable to remove the tag. Please try again.",
-        type: "error"
-      })
-    }
+    if (!username || !noteId) return
+    await DeleteTagAPI(username, noteId, tagId, editorFetch)
   }
 
   const editor = useEditor({

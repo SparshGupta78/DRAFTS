@@ -1,13 +1,12 @@
 import { useState, type FormEvent } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import ai from '../assets/ai.svg'
-import type { AuthResponseType } from "../types/authResponse.type"
-import { signInAPI } from "../services/auth.service"
+import useAuthAPI from "../services/auth.service"
 import { useNotificationContext } from "../contexts/notification.context"
 
 const SignIn = () => {
 
-  const navigate = useNavigate()
+  const { signInAPI } = useAuthAPI()
 
   const { createNotification } = useNotificationContext()
 
@@ -49,30 +48,7 @@ const SignIn = () => {
       setBtnsDisable(false)
       return
     }
-
-    try {
-      const res = await signInAPI({ username, password })
-      const response: AuthResponseType | null = res.data
-
-      if (!response?.token) {
-        createNotification({
-          title: "Something Went Wrong",
-          message: "Signin could not be completed at this moment. Please try again shortly.",
-          type: "error"
-        })
-        setBtnsDisable(false)
-        return
-      }
-      localStorage.setItem('token', JSON.stringify({token: response.token, createdAt: Date.now()}))
-      navigate(`/${username}`)
-    } catch (err: any) {
-      createNotification({
-        title: "Something Went Wrong",
-        message: "Signup could not be completed at this moment. Please try again shortly.",
-        type: "error"
-      })
-    }
-
+    signInAPI({ username, password })
     setBtnsDisable(false)
   }
 

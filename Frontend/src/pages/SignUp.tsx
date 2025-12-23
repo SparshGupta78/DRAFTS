@@ -1,14 +1,15 @@
 import { useState, type FormEvent } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import ai from '../assets/ai.svg'
-import type { AuthResponseType } from "../types/authResponse.type"
-import { signUpAPI } from "../services/auth.service"
-import { usernameCheckerAPI } from "../services/drafts.service"
+import useAuthAPI from "../services/auth.service"
+import useDraftsAPI from "../services/drafts.service"
 import { useNotificationContext } from "../contexts/notification.context"
 
 const SignUp = () => {
 
-  const navigate = useNavigate()
+  const { signUpAPI } = useAuthAPI()
+
+  const { usernameCheckerAPI } = useDraftsAPI()
 
   const { createNotification } = useNotificationContext()
 
@@ -56,18 +57,8 @@ const SignUp = () => {
       setUsernameStatus(4)
       return
     }
-    try {
-      const res = await usernameCheckerAPI(currentUsername)
-      const result: ({matched?: string} | null) = res.data
-      if (!result) {
-        setUsernameStatus(3)
-      } else {
-        if (result.matched) setUsernameStatus(2)
-        else setUsernameStatus(1)
-      }
-    } catch (error) {
-      setUsernameStatus(3)
-    }
+    const status = await usernameCheckerAPI(currentUsername)
+    setUsernameStatus(status)
   }
 
   const [btnsDisable, setBtnsDisable] = useState(false)
@@ -92,28 +83,7 @@ const SignUp = () => {
     setFormErrors(errors)
     const hasError = Object.values(errors).some(v => v)
     if (!hasError) {
-      const res = await signUpAPI({ firstName, middleName, lastName, email, username, password })
-      const response: (AuthResponseType | null) = res.data
-      if (!response) {
-        createNotification({
-          title: "Something Went Wrong",
-          message: "Signup could not be completed at this moment. Please try again shortly.",
-          type: "error"
-        })
-        return
-      }
-      const {error, token} = response
-      if (error) {
-        createNotification({
-          title: "Something Went Wrong",
-          message: "Signup could not be completed at this moment. Please try again shortly.",
-          type: "error"
-        })
-      }
-      if (token) {
-        localStorage.setItem('token', JSON.stringify({token: response.token, createdAt: Date.now()}))
-        navigate(`/${username}`)
-      }
+      signUpAPI({ firstName, middleName, lastName, email, username, password })
     } else {
       createNotification({
         title: "Invalid Input",

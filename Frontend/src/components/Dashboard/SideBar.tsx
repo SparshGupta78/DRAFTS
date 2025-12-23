@@ -13,7 +13,8 @@ type SideBarProps = {
   noteTitlesFetchStatus: -1 | 0 | 1,
   editorFetch: (noteId: string) => Promise<void>,
   setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  notesFetch: () => Promise<void>
+  notesFetch: () => Promise<void>,
+  setAccountOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type SideBarNotesType = {
@@ -31,7 +32,8 @@ const SideBar = ({
   noteTitlesFetchStatus,
   editorFetch,
   setAllNotesOpen,
-  notesFetch
+  notesFetch,
+  setAccountOpen
 }: SideBarProps) => {
 
   const { username, noteId } = useParams()
@@ -211,28 +213,36 @@ const SideBar = ({
           </div>
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-b from-transparent to-[var(--white-2)] pointer-events-none z-10"></div>
         </div>
-        <div className="w-full h-fit p-2.5 pb-3.5 md:pb-2.5">
-          <div className="w-full h-full p-1.5 md:p-1 border-1 border-[var(--black-4)] rounded-full flex items-center justify-between gap-2">
+        <div className="w-full h-fit p-2.5 pb-3.5 md:pb-2.5 cursor-default">
+          <div
+            className="w-full h-full p-1.5 md:p-1 border-1 border-[var(--blue-1)] hover:border-[var(--blue-4)] rounded-full flex items-center justify-between gap-2 outline-3 outline-[var(--white-2)] hover:outline-[var(--blue-1)] duration-300 active:scale-98"
+            onClick={() => setAccountOpen(true)}
+          >
             <div className="max-w-[calc(100%-46.4px)] flex items-center gap-2">
-              <div className="max-w-full flex justify-center items-center bg-[var(--black-4)] rounded-full p-2 scale-90">
-                <Account dimension={18} />
+              <div className="max-w-full flex justify-center items-center bg-[var(--blue-1)] rounded-full p-2 scale-90">
+                <Account dimension={18} color="#1b63ce" />
               </div>
               {
               loggedUser
               ? 
-              (<div className="text-[15px] md:text-sm text-nowrap max-w-full truncate">{
-                loggedUser.firstName+
-                ' '+
-                loggedUser.middleName+
-                ' '+
-                loggedUser.lastName
-              }</div>)
+              (<div className="w-full max-w-full flex flex-col">
+                <span className="text-[15px] md:text-sm text-nowrap truncate text-[var(--black-3)]">
+                  {loggedUser.firstName +
+                  ' ' +
+                  loggedUser.middleName +
+                  ' ' +
+                  loggedUser.lastName}
+                </span>
+                <span className="text-xs text-[var(--black-2)] text-nowrap truncate font-normal">
+                  {loggedUser.username}
+                </span>
+              </div>)
               :
               ''
               }
             </div>
-            <div className="flex justify-center items-center bg-[var(--black-4)] rounded-full p-2 scale-90">
-              <Settings dimension={20} />
+            <div className="flex justify-center items-center bg-[var(--blue-1)] rounded-full p-2 scale-90">
+              <Settings dimension={20} color="#1b63ce" />
             </div>
           </div>
         </div>

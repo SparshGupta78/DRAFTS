@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import SideBar from '../components/Dashboard/SideBar';
 import Editor from '../components/Dashboard/Editor';
 import NewNote from '../components/Dashboard/NewNote';
-import { AllNotesAPI, dashboardAPI, EditorFetchAPI, loggedUserAPI, sideBarNotesAPI } from '../services/user.service';
-import { useNotificationContext } from '../contexts/notification.context';
+import useUserAPI from '../services/user.service';
 import type { Content } from '../types/tiptap.type';
 import { useParams } from 'react-router-dom';
 import type { UserType } from '../types/user.type';
 import AllNotes from '../components/Dashboard/AllNotes';
 import type { NoteType } from '../types/note.type';
 import type { TagType } from '../types/tag.type';
+import Account from '../components/Dashboard/Account';
 
 type SideBarNotesType = {
   noteID: string,
@@ -18,8 +18,9 @@ type SideBarNotesType = {
 
 const Dashboard = () => {
 
+  const { AllNotesAPI, dashboardAPI, EditorFetchAPI, loggedUserAPI, sideBarNotesAPI } = useUserAPI()
+
   const {username} = useParams()
-  const { createNotification } = useNotificationContext()
 
   const [user, setUser] = useState<UserType>()
   const [loggedUser, setLoggedUser] = useState<UserType>()
@@ -37,130 +38,43 @@ const Dashboard = () => {
   const [updatedAt, setUpdatedAt] = useState('')
   const [allNotesOpen, setAllNotesOpen] = useState(false)
   const [allNotes, setAllNotes] = useState<NoteType[]>([])
+  const [accountOpen, setAccountOpen] = useState(false)
   const [allNotesFetchingStatus, setAllNotesFetchingStatus] = useState<-1 | 0 | 1>(1)
 
   const userFetch = async () => {
-    try {
-      if (!username) return
-      const res = await dashboardAPI(username)
-      if (!res) {
-        createNotification({
-          title: "Unable to Fetch User Details",
-          message: "We couldn't retrieve your account information. Please try again.",
-          type: "error"
-        })
-        return
-      }
-      setUser(res.data as UserType)
-    } catch(err: any) {
-      if (err?.response?.status === 404) {
-        createNotification({
-          title: "User Not Found",
-          message: "No account exists with this username.",
-          type: "default"
-        })
-        return
-      }
-      createNotification({
-        title: "Unable to Fetch User Details",
-        message: "We couldn't retrieve account information. Please try again.",
-        type: "error"
-      })
-    }
+    if(!username) return
+    const res = await dashboardAPI(username)
+    setUser(res)
   }
 
   const loggedUserFetch = async () => {
-    try {
-      const res = await loggedUserAPI()
-      if (!res) {
-        createNotification({
-          title: "Unable to Fetch User Details",
-          message: "We couldn't retrieve your account information. Please try again.",
-          type: "error"
-        })
-        return
-      }
-      setLoggedUser(res.data as UserType)
-    } catch (error) {
-      createNotification({
-        title: "Unable to Fetch User Details",
-        message: "We couldn't retrieve your account information. Please try again.",
-        type: "error"
-      })
-    }
+    const user = await loggedUserAPI()
+    if (user) setLoggedUser(user)
   }
 
   const fetchNotesTitle = async () => {
     if (!username) return
-    try {
-      setNoteTitlesFetchStatus(0)
-      const fetchedNotes = await sideBarNotesAPI(username)
-      if (!fetchedNotes || !Array.isArray(fetchedNotes)) {
-        createNotification({
-          title: "Unable to Fetch Notes",
-          message: "We encountered an issue retrieving your notes. Please try again shortly.",
-          type: "error"
-        })
-        setNoteTitlesFetchStatus(-1)
-        return
-      }
-      setNoteTitles(fetchedNotes)
-      setNoteTitlesFetchStatus(1)
-    } catch(error) {
-      createNotification({
-        title: "Unable to Fetch Notes",
-        message: "We encountered an issue retrieving your notes. Please try again shortly.",
-        type: "error"
-      })
-      setNoteTitlesFetchStatus(-1)
-    }
+    const fetchedNotes = await sideBarNotesAPI(username, setNoteTitlesFetchStatus)
+    if (fetchedNotes) setNoteTitles(fetchedNotes)
   }
 
   const editorFetch = async (noteId: string) => {
-    try {
-      setFetchingStatus(0)
-      const res = await EditorFetchAPI(noteId)
-      if (!res) {
-        createNotification({
-          title: "Unable to Load Note",
-          message: "Could not fetch this note. Please try again.",
-          type: "error"
-        })
-        return setFetchingStatus(-1)
-      }
-      const note = res as NoteType
+    const note = await EditorFetchAPI(noteId, setFetchingStatus)
+    if(note) {
       setTitle(note.title)
       setContent(note.content)
       setTags(note.tags)
       setVisibiility(note.visibility)
       if (note.createdAt) setCreatedAt(note.createdAt)
       if (note.updatedAt) setUpdatedAt(note.updatedAt)
-      setFetchingStatus(1)
-    } catch (error) {
-      createNotification({
-        title: "Unable to Load Note",
-        message: "Could not fetch this note. Please try again.",
-        type: "error"
-      })
-      setFetchingStatus(-1)
     }
   }
 
   const notesFetch = async () => {
+    if (!username) return setAllNotesFetchingStatus(-1)
     setAllNotesFetchingStatus(0)
-    try {
-      if (!username) return setAllNotesFetchingStatus(-1)
-      const res = await AllNotesAPI(username)
-      setAllNotes(res.data)
-      setAllNotesFetchingStatus(1)
-    } catch {
-      createNotification({
-        title: "Unable to Fetch Notes",
-        message: "We couldn't retrieve your notes. Please try again.",
-        type: "error"
-      })
-      setAllNotesFetchingStatus(-1)
-    }
+    const notes = await AllNotesAPI(username, setAllNotesFetchingStatus)
+    if (notes) setAllNotes(notes)
   }
 
   useEffect(() => {
@@ -200,6 +114,7 @@ const Dashboard = () => {
         editorFetch={editorFetch}
         setAllNotesOpen={setAllNotesOpen}
         notesFetch={notesFetch}
+        setAccountOpen={setAccountOpen}
       />
       <Editor
         loggedUser={loggedUser}
@@ -213,6 +128,7 @@ const Dashboard = () => {
         fetchingStatus={fetchingStatus}
         isUserDashboard={isUserDashboard}
         tags={tags}
+        setTags={setTags}
         visibility={visibility}
         createdAt={createdAt}
         updatedAt={updatedAt}
@@ -232,6 +148,10 @@ const Dashboard = () => {
         allNotes={allNotes}
         allNotesFetchingStatus={allNotesFetchingStatus}
         notesFetch={notesFetch}
+      />
+      <Account
+        accountOpen={accountOpen}
+        setAccountOpen={setAccountOpen}
       />
     </div>
   )
