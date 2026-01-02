@@ -377,7 +377,7 @@ const Editor = ({
                   </div>
                 </div>
                 <div className="w-full h-0.5 rounded-full bg-[var(--blue-1)] my-2.5"></div>
-                <div className="w-full md:h-[calc(100%-76px)] px-1">
+                <div className={`w-full px-1 ${titleEdit ? 'md:h-[calc(100%-88px)]' : 'md:h-[calc(100%-98px)]'}`}>
                   <EditorContent className="w-full h-full" editor={editor} />
                 </div>
               </div>)

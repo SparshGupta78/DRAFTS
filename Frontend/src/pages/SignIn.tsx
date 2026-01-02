@@ -48,7 +48,7 @@ const SignIn = () => {
       setBtnsDisable(false)
       return
     }
-    signInAPI({ username, password })
+    await signInAPI({ username, password })
     setBtnsDisable(false)
   }
 

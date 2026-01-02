@@ -51,11 +51,11 @@ export const signin = async (req: Request, res: Response) => {
   try {
     const existingUser: (User | null) = await UserSchema.findOne({username})
     if (!existingUser) {
-      return res.status(400).json({error: "User not found"})
+      return res.status(404).json({error: "User not found"})
     }
     const passwordMatch = await bcryptjs.compare(password, existingUser.password)
     if (!passwordMatch) {
-      return res.status(400).json({error: "Invalid credentials"})
+      return res.status(401).json({error: "Invalid credentials"})
     }
     const token = jwt.sign(
       {
