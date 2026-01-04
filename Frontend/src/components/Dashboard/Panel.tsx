@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react'
 import { Account as AccountIcon, Close, Edit, Editor, LogOut, Settings } from '../../assets/Icons'
 import type { UserType } from '../../types/user.type'
 import type { userTypeExtended } from '../../types/userExtended.type'
+import Switch from '../Switch/Switch'
 
 type props = {
   accountOpen: boolean,
@@ -16,6 +17,7 @@ const Panel = ({
 }: props) => {
 
   const [panel, setPanel] = useState<'account' | 'editor' | 'settings'>('account')
+  const [spellCheck, setSpellCheck] = useState<0 | 1>(0)
 
   const dialogRef = useRef(null)
 
@@ -136,12 +138,15 @@ const Panel = ({
               )}
               {panel === 'editor' && (
                 <div className="p-2.5 w-full flex flex-col gap-2.5">
-                  <div className="flex">
-                    <div className='p-2.5'>
+                  <div className="p-2.5 flex items-center justify-between gap-2.5">
+                    <div>
                       <div className='text-sm text-[var(--black-3)] font-normal'>Spell Check</div>
                       <div className='text-xs text-[var(--black-2)]'>Highlight misspelled words as you type.</div>
                     </div>
-                    
+                    <Switch 
+                      state={spellCheck}
+                      onClick={() => setSpellCheck(prev => (prev === 0 ? 1 : 0))} 
+                    />
                   </div>
                 </div>
               )}
