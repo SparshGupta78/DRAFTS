@@ -6,6 +6,7 @@ import { useNotificationContext } from "../contexts/notification.context";
 import type { UserType } from "../types/user.type";
 import { useNavigate } from "react-router-dom";
 import type { NoteType } from "../types/note.type";
+import type { userTypeExtended } from "../types/userExtended.type";
 
 const useUserAPI = () => {
 
@@ -200,7 +201,7 @@ const useUserAPI = () => {
         })
         return
       }
-      return res.data as UserType
+      return res.data as userTypeExtended
     } catch (error) {
       createNotification({
         title: "Unable to Fetch User Details",

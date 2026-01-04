@@ -106,7 +106,7 @@ const Alert = ({
         ref={dialogRef}
       >
         <div className="px-3 py-2 bg-[var(--black-4)] flex items-center justify-between gap-1.5 rounded-t-xl border-b-1 border-[var(--black-1)]">
-          <div className="pl-0.25 font-normal">
+          <div className="pl-0.25">
             {alertContentType === 'delete' ? "Delete Note" : ""}
             {(alertContentType === 'makePublic' || alertContentType === 'makePrivate') ? "Change Visibility" : ""}
             {(alertContentType === 'pin' || alertContentType === 'unpin') ? "Pin/Unpin Note" : ""}

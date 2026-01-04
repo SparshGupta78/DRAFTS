@@ -216,7 +216,10 @@ const SideBar = ({
         <div className="w-full h-fit p-2.5 pb-3.5 md:pb-2.5 cursor-default">
           <div
             className="w-full h-full p-1.5 md:p-1 border-1 border-[var(--blue-1)] hover:border-[var(--blue-4)] rounded-full flex items-center justify-between gap-2 outline-3 outline-[var(--white-2)] hover:outline-[var(--blue-1)] duration-300 active:scale-98"
-            onClick={() => setAccountOpen(true)}
+            onClick={() => {
+              if (windowWidth < 768) setSideNavOpen(false)
+              setAccountOpen(true)
+            }}
           >
             <div className="max-w-[calc(100%-46.4px)] flex items-center gap-2">
               <div className="max-w-full flex justify-center items-center bg-[var(--blue-1)] rounded-full p-2 scale-90">

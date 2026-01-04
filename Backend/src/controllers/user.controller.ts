@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { nanoid } from "nanoid";
-import UserSchema from '../model/user.model'
+import UserSchema from '../model/user.model';
+import UserAuth from "../types/userAuth.type";
 import User from "../types/userRes.type";
 import Note from "../types/note.type";
 import NoteSchema from "../model/note.model"
@@ -159,11 +160,15 @@ export const allNotes = async (req: Request, res: Response) => {
   }
 }
 
-export const loggedUser = (req: Request, res: Response) => {
+export const loggedUser = async (req: Request, res: Response) => {
   try {
-    const user = req.user as Omit<User, 'notes'> | undefined
+    const user = req.user as Omit<UserAuth, 'password'> | undefined
     if (!user) return res.status(400).json({error: "Bad request"})
-    res.status(200).json(user)
+    const userExtended = await UserSchema.findOne(
+      {username: user.username},
+      {_id: 0, firstName: 1, middleName: 1, lastName: 1, email: 1, username: 1}
+    )
+    res.status(200).json(userExtended)
   } catch (error) {
     res.status(500).json({error: "Internal server error"})
   }

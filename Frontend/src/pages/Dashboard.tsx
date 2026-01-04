@@ -9,7 +9,8 @@ import type { UserType } from '../types/user.type';
 import AllNotes from '../components/Dashboard/AllNotes';
 import type { NoteType } from '../types/note.type';
 import type { TagType } from '../types/tag.type';
-import Account from '../components/Dashboard/Account';
+import Panel from '../components/Dashboard/Panel';
+import type { userTypeExtended } from '../types/userExtended.type';
 
 type SideBarNotesType = {
   noteID: string,
@@ -23,7 +24,7 @@ const Dashboard = () => {
   const {username} = useParams()
 
   const [user, setUser] = useState<UserType>()
-  const [loggedUser, setLoggedUser] = useState<UserType>()
+  const [loggedUser, setLoggedUser] = useState<userTypeExtended>()
   const [isUserDashboard, setIsUserDashboard] = useState(false)
   const [sideNavOpen, setSideNavOpen] = useState(false)
   const [newNoteOpen, setNewNoteOpen] = useState(false)
@@ -149,9 +150,10 @@ const Dashboard = () => {
         allNotesFetchingStatus={allNotesFetchingStatus}
         notesFetch={notesFetch}
       />
-      <Account
+      <Panel
         accountOpen={accountOpen}
         setAccountOpen={setAccountOpen}
+        loggedUser={loggedUser}
       />
     </div>
   )
