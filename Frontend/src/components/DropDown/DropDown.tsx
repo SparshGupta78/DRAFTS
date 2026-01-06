@@ -10,6 +10,7 @@ type props = {
   contentStyle?: string,
   align?: "left" | "right",
   position?: "top" | "bottom"
+  onContentClickClose?: boolean
 }
 
 const DropDown = ({
@@ -20,6 +21,7 @@ const DropDown = ({
     contentStyle = '',
     align = "left",
     position = "bottom",
+    onContentClickClose = false
   }: props) => {
 
   const [open, setOpen] = useState(false)
@@ -43,7 +45,18 @@ const DropDown = ({
       <DropDownTrigger preStyle={preStyle} triggerStyle={triggerStyle} setOpen={setOpen}>
         {trigger}
       </DropDownTrigger>
-      <DropDownContent preStyle={preStyle} contentStyle={contentStyle} align={align} position={position} open={open}>
+      <DropDownContent
+        preStyle={preStyle}
+        contentStyle={contentStyle}
+        align={align}
+        position={position}
+        open={open}
+        onClick={() => {
+          if (onContentClickClose) {
+            setOpen(false)
+          }
+        }}
+      >
         {children}
       </DropDownContent>
     </div>

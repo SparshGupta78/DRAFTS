@@ -11,11 +11,7 @@ import type { NoteType } from '../types/note.type';
 import type { TagType } from '../types/tag.type';
 import Panel from '../components/Dashboard/Panel';
 import type { userTypeExtended } from '../types/userExtended.type';
-
-type SideBarNotesType = {
-  noteID: string,
-  title: string
-}
+import type { SideBarNotesType } from '../types/titles.type';
 
 const Dashboard = () => {
 
@@ -39,7 +35,7 @@ const Dashboard = () => {
   const [updatedAt, setUpdatedAt] = useState('')
   const [allNotesOpen, setAllNotesOpen] = useState(false)
   const [allNotes, setAllNotes] = useState<NoteType[]>([])
-  const [accountOpen, setAccountOpen] = useState(false)
+  const [panelOpen, setPanelOpen] = useState(false)
   const [allNotesFetchingStatus, setAllNotesFetchingStatus] = useState<-1 | 0 | 1>(1)
 
   const userFetch = async () => {
@@ -115,7 +111,7 @@ const Dashboard = () => {
         editorFetch={editorFetch}
         setAllNotesOpen={setAllNotesOpen}
         notesFetch={notesFetch}
-        setAccountOpen={setAccountOpen}
+        setAccountOpen={setPanelOpen}
       />
       <Editor
         loggedUser={loggedUser}
@@ -151,9 +147,10 @@ const Dashboard = () => {
         notesFetch={notesFetch}
       />
       <Panel
-        accountOpen={accountOpen}
-        setAccountOpen={setAccountOpen}
+        panelOpen={panelOpen}
+        setPanelOpen={setPanelOpen}
         loggedUser={loggedUser}
+        noteTitles={noteTitles}
       />
     </div>
   )
