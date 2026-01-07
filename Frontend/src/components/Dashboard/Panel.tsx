@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Account as AccountIcon, ArrowDown, Close, Data, Edit, Editor, LogOut, Settings } from '../../assets/Icons'
 import type { userTypeExtended } from '../../types/userExtended.type'
 import AccountPanel from './Panel/AccountPanel'
@@ -6,6 +6,8 @@ import EditorPanel from './Panel/EditorPanel'
 import SettingsPanel from './Panel/SettingsPanel'
 import DataPanel from './Panel/DataPanel'
 import type { SideBarNotesType } from '../../types/titles.type'
+import DropDown from '../DropDown/DropDown'
+import { useNavigate } from 'react-router-dom'
 
 type props = {
   panelOpen: boolean,
@@ -21,6 +23,9 @@ const Panel = ({
   noteTitles
 }: props) => {
 
+  const navigate = useNavigate()
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [panel, setPanel] = useState<'account' | 'editor' | 'data' | 'settings'>('account')
   const dialogRef = useRef(null)
 
@@ -30,6 +35,17 @@ const Panel = ({
       setPanel('account')
     }
   }
+
+  const logoutHandler = () => {
+    localStorage.removeItem('token')
+    navigate('/login')
+  }
+
+  useEffect(() => {
+    const windowSizeHandler = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', windowSizeHandler)
+    return () => window.removeEventListener('resize', windowSizeHandler)
+  }, [])
 
   return (
     <div className={`fixed inset-0 z-100 bg-black/15 backdrop-blur-[2px] duration-300 ${panelOpen ? 'pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
@@ -66,12 +82,32 @@ const Panel = ({
                     </span>
                   </div>
                   <div className="w-0.5 h-4.75 rounded-full bg-[var(--black-1)] hidden sm:block"></div>
-                  <button className="mr-2.5 sm:mr-0 flex items-center gap-1 hover:opacity-75 duration-300">
-                    <div className="rotate-180">
-                      <LogOut dimension={15} color='#FF0000' />
+                  <DropDown
+                    trigger={
+                      <button className="mr-2.5 sm:mr-0 flex items-center gap-1 hover:opacity-75 duration-300">
+                        <div className="rotate-180">
+                          <LogOut dimension={15} color='#FF0000' />
+                        </div>
+                        <span className='text-sm text-[var(--red-4)] font-normal text-nowrap'>Log Out</span>
+                      </button>
+                    }
+                    preStyle={false}
+                    align={windowWidth < 768 ? 'right' : 'left'}
+                  >
+                    <div className="p-2.5 w-60 bg-[var(--black-6)] rounded-lg shadow-[var(--shadow-1)]">
+                      <div className="text-center p-2">
+                        <div className="text-sm font-normal text-[var(--red-5)]">Are you sure to log out?</div>
+                        <div className="mt-1 text-xs text-[var(--black-5)]">Logging out will end your session and return you to the login screen.</div>
+                      </div>
+                      <button
+                        type="button"
+                        className='mt-1.5 w-full text-sm bg-[var(--red-5)] rounded-md text-center p-0.75 text-[var(--white-2)] font-normal select-none duration-300 hover:opacity-70 active:scale-96'
+                        onClick={logoutHandler}
+                      >
+                        Logout
+                      </button>
                     </div>
-                    <span className='text-sm text-[var(--red-4)] font-normal text-nowrap'>Log Out</span>
-                  </button>
+                  </DropDown>
                 </div>
                 <div className="sm:mr-2.5 w-full sm:w-fit flex justify-center items-center gap-3 relative">
                   <button
