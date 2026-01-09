@@ -93,11 +93,12 @@ const Panel = ({
                     }
                     preStyle={false}
                     align={windowWidth < 768 ? 'right' : 'left'}
+                    contentStyle='mt-2.5'
                   >
-                    <div className="p-2.5 w-60 bg-[var(--black-6)] rounded-lg shadow-[var(--shadow-1)]">
+                    <div className="p-2.5 w-65 bg-[var(--black-6)] rounded-lg shadow-[var(--shadow-1)]">
                       <div className="text-center p-2">
                         <div className="text-sm font-normal text-[var(--red-5)]">Are you sure to log out?</div>
-                        <div className="mt-1 text-xs text-[var(--black-5)]">Logging out will end your session and return you to the login screen.</div>
+                        <div className="mt-1 text-[13px] text-[var(--black-5)]">Logging out will end your session and return you to the login screen.</div>
                       </div>
                       <button
                         type="button"

@@ -1,5 +1,5 @@
 type props = {
-  state: 0 | 1,
+  state: boolean,
   onClick: () => void
 }
 

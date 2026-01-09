@@ -12,8 +12,11 @@ import type { TagType } from '../types/tag.type';
 import Panel from '../components/Dashboard/Panel';
 import type { userTypeExtended } from '../types/userExtended.type';
 import type { SideBarNotesType } from '../types/titles.type';
+import { usePreferencesContext } from '../contexts/preferences.context';
 
 const Dashboard = () => {
+
+  const { preferences } = usePreferencesContext()
 
   const { AllNotesAPI, dashboardAPI, EditorFetchAPI, loggedUserAPI, sideBarNotesAPI } = useUserAPI()
 
@@ -99,7 +102,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="w-screen min-h-screen sm:h-screen bg-[var(--blue-1)] flex">
+    <div className={`w-screen min-h-screen sm:h-screen bg-[var(--blue-1)] flex justify-center duration-300 ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'flex-row-reverse' : ''}`}>
       <SideBar
         loggedUser={loggedUser}
         sideNavOpen={sideNavOpen}
@@ -115,6 +118,7 @@ const Dashboard = () => {
       />
       <Editor
         loggedUser={loggedUser}
+        sideNavOpen={sideNavOpen}
         setSideNavOpen={setSideNavOpen}
         setNewNoteOpen={setNewNoteOpen}
         editorFetch={editorFetch}

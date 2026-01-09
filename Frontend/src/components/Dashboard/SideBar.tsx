@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type Dispatch } from "react"
 import { NavLink, useParams } from "react-router-dom"
 import { Account, Delete, Edit, Plus, Retry, Search, Settings } from "../../assets/Icons"
 import type { UserType } from "../../types/user.type"
+import { usePreferencesContext } from "../../contexts/preferences.context"
 
 type SideBarProps = {
   loggedUser: UserType | undefined,
@@ -24,11 +25,11 @@ type SideBarNotesType = {
 
 const SideBar = ({
   loggedUser,
-  sideNavOpen, 
-  setSideNavOpen, 
-  setNewNoteOpen, 
-  noteTitles, 
-  fetchNotesTitle, 
+  sideNavOpen,
+  setSideNavOpen,
+  setNewNoteOpen,
+  noteTitles,
+  fetchNotesTitle,
   noteTitlesFetchStatus,
   editorFetch,
   setAllNotesOpen,
@@ -36,11 +37,15 @@ const SideBar = ({
   setAccountOpen
 }: SideBarProps) => {
 
+  const { preferences } = usePreferencesContext()
+
   const { username, noteId } = useParams()
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [searchOpen, setSearchOpen] = useState(false)
   const [sideNavActiveBg, setSideNavActiveBg] = useState(windowWidth > 768 ? 40 : 46.5)
+
+  const sidebarPosition = preferences?.settings.appearance.sidebar.position
 
   useEffect(() => {
     const windowSizeHandler = () => setWindowWidth(window.innerWidth)
@@ -67,8 +72,8 @@ const SideBar = ({
   }, [noteTitles, noteId])
 
   return (
-    <div className={`duration-300 fixed md:relative inset-0 w-full md:w-fit h-full flex z-900 md:z-0 md:p-5 md:pr-2.5 ${sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-      <div className={`duration-300 w-[min(80%,340px)] md:w-65 h-full bg-[var(--white-2)] md:rounded-xl ${sideNavOpen ? 'translate-x-[-0%]' : 'translate-x-[-100%]'}`}>
+    <div className={`duration-300 fixed md:relative inset-0 w-full h-full flex z-900 md:z-0 md:p-5 ${sidebarPosition && sidebarPosition === 'Right' ? 'md:pl-2.5 flex-row-reverse' : 'md:pr-2.5'} ${sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${(preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? 'md:w-0' : 'md:w-fit' }`}>
+      <div className={`duration-300 w-[min(80%,340px)] md:w-65 h-full bg-[var(--white-2)] md:rounded-xl ${sideNavOpen ? 'translate-x-0' : `${sidebarPosition && sidebarPosition === 'Right' ? 'translate-x-full' : '-translate-x-full'}`}`}>
         <div className="w-full h-fit px-2.5 py-3.5 md:pb-2.5 flex flex-col gap-3.5">
           <div className="w-fit h-hull text-lg md:text-base font-[500] tracking-[3px]">DRAFTS</div>
           <div 
@@ -177,7 +182,7 @@ const SideBar = ({
                   {noteTitles.map((note, _) => {
                     return (
                       <NavLink key={note.noteID} to={`/${username}/${note.noteID}`}onClick={() => editorFetch(note.noteID)}>
-                        <div className="w-full pl-5.5 pr-2.5 py-3 md:py-2.5 flex items-center justify-between gap-2.5">
+                        <div className={`w-full py-3 md:py-2.5 flex items-center justify-between gap-2.5 ${sidebarPosition && sidebarPosition === 'Right' ? 'pl-4 pr-5.5' : 'pl-5.5 pr-2.5'}`}>
                           <span className={`text-[15px] text-nowrap truncate duration-300 delay-100 ${note.noteID == noteId ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'}`}>
                             {note.title}
                           </span>
@@ -198,13 +203,13 @@ const SideBar = ({
                   className="absolute duration-300 left-0 w-full h-fit z-0" 
                   style={{top: `${(currentNoteIndex * sideNavActiveBg - 13)}px`, display: `${currentNoteIndex == -1 ? 'none' : 'block'}`}}>
                   <div className="bg-[var(--blue-1)] w-full h-3">
-                    <div className="bg-[var(--white-2)] w-full h-full rounded-br-xl"></div>
+                    <div className={`bg-[var(--white-2)] w-full h-full ${sidebarPosition && sidebarPosition === 'Right' ? 'rounded-bl-xl' : 'rounded-br-xl'}`}></div>
                   </div>
-                  <div className="bg-[var(--blue-1)] ml-2.5 w-[calc(100%-10px)] h-12 md:h-10 rounded-l-full">
+                  <div className={`bg-[var(--blue-1)] w-[calc(100%-10px)] h-12 md:h-10 ${sidebarPosition && sidebarPosition === 'Right' ? 'mr-2.5 rounded-r-full' : 'ml-2.5 rounded-l-full'}`}>
                     <div className="h-full w-[calc(100%-12px)] rounded-l-full"></div>
                   </div>
                   <div className="bg-[var(--blue-1)] w-full h-3">
-                    <div className="bg-[var(--white-2)] w-full h-full rounded-tr-xl"></div>
+                    <div className={`bg-[var(--white-2)] w-full h-full ${sidebarPosition && sidebarPosition === 'Right' ? 'rounded-tl-xl' : 'rounded-tr-xl'}`}></div>
                   </div>
                 </div>
               </div>

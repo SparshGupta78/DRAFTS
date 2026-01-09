@@ -19,9 +19,11 @@ import DropDown from "../DropDown/DropDown"
 import DropDownItem from "../DropDown/DropDownItem"
 import Alert from "./Alert"
 import type { AlertContentType } from "../../types/alertContent.type"
+import { usePreferencesContext } from "../../contexts/preferences.context"
 
-type EditorType = {
+type props = {
   loggedUser: UserType | undefined,
+  sideNavOpen: boolean,
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>
   editorFetch: (noteId: string) => Promise<void>
@@ -48,12 +50,13 @@ type editorOptionsType = {
 
 const Editor = ({
   loggedUser,
-  setSideNavOpen, 
-  setNewNoteOpen, 
-  editorFetch, 
-  title, 
-  setTitle, 
-  content, 
+  sideNavOpen,
+  setSideNavOpen,
+  setNewNoteOpen,
+  editorFetch,
+  title,
+  setTitle,
+  content,
   setContent,
   fetchingStatus,
   isUserDashboard,
@@ -65,13 +68,15 @@ const Editor = ({
   setAllNotesOpen,
   notesFetch,
   fetchNotesTitle
-}: EditorType) => {
+}: props) => {
 
   const { AddTagAPI, DeleteNoteAPI, DeleteTagAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, ToggleVisibilityStatusAPI } = useUserAPI()
 
   const { createNotification } = useNotificationContext()
 
   const { username, noteId } = useParams()
+
+  const { preferences } = usePreferencesContext()
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [titleEdit, setTitleEdit] = useState(false)
@@ -208,7 +213,11 @@ const Editor = ({
   useEffect(() => {
     const windowSizeHandler = () => setWindowWidth(window.innerWidth)
     window.addEventListener('resize', windowSizeHandler)
-    return () => window.removeEventListener('resize', windowSizeHandler)
+    return () => {
+      window.removeEventListener('resize', windowSizeHandler)
+      if (timeRef.current) clearTimeout(timeRef.current)
+      if (controllerRef.current) controllerRef.current.abort()
+    }
   }, [])
 
   useEffect(() => {
@@ -236,15 +245,8 @@ const Editor = ({
     if (username && noteId) editorFetch(noteId)
   }, [username, noteId])
 
-  useEffect(() => {
-    return () => {
-      if (timeRef.current) clearTimeout(timeRef.current)
-      if (controllerRef.current) controllerRef.current.abort()
-    }
-  }, [])
-
   return (
-    <div className="w-full h-full md:h-screen md:w-[calc(100%-290px)] p-3.5 md:p-5 md:pl-2.5 flex justify-center">
+    <div className={`w-full h-full md:h-screen p-3.5 md:p-5 md:pl-2.5 flex justify-center duration-300 ${(preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? `md:w-[calc(100%-30px)] ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'translate-x-3' : '-translate-x-3'}` : 'md:w-[calc(100%-290px)]'}`}>
       <Alert
         alertOpen={alertOpen}
         setAlertOpen={setAlertOpen}
@@ -255,12 +257,14 @@ const Editor = ({
         currentTags={tags}
       />
       <div className="w-full h-full flex flex-col items-center gap-0.5">
-        <ToolBox 
-          setSideNavOpen={setSideNavOpen}
-          toolkit={toolkit}
-        />
+        <div className="w-full flex items-center">
+          <ToolBox
+            setSideNavOpen={setSideNavOpen}
+            toolkit={toolkit}
+          />
+        </div>
         <div className="w-full h-full md:h-[calc(100%-46px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-xl md:rounded-t-sm md:rounded-b-xl flex items-center justify-center mt-13 mb-10 md:mt-0 md:mb-0">
-          <div className="w-full max-w-180 h-full md:min-h-0 bg-[var(--white-1)] rounded-xl md:rounded-sm p-3.5">
+          <div className={`w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-xl md:rounded-sm p-3.5 ${(preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'}`}>
             {
               (noteId && fetchingStatus === 1) 
               ? 
@@ -378,7 +382,7 @@ const Editor = ({
                 </div>
                 <div className="w-full h-0.5 rounded-full bg-[var(--blue-1)] my-2.5"></div>
                 <div className={`w-full px-1 ${titleEdit ? 'md:h-[calc(100%-88px)]' : 'md:h-[calc(100%-98px)]'}`}>
-                  <EditorContent className="w-full h-full" editor={editor} />
+                  <EditorContent className="w-full h-full" editor={editor} spellCheck={(preferences && !preferences.editor.spellCheck) ? false : true} />
                 </div>
               </div>)
               :

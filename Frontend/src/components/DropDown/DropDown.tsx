@@ -11,6 +11,7 @@ type props = {
   align?: "left" | "right",
   position?: "top" | "bottom"
   onContentClickClose?: boolean
+  disabled?: boolean
 }
 
 const DropDown = ({
@@ -21,7 +22,8 @@ const DropDown = ({
     contentStyle = '',
     align = "left",
     position = "bottom",
-    onContentClickClose = false
+    onContentClickClose = false,
+    disabled = false
   }: props) => {
 
   const [open, setOpen] = useState(false)
@@ -42,7 +44,12 @@ const DropDown = ({
 
   return (
     <div ref={ref} className="relative">
-      <DropDownTrigger preStyle={preStyle} triggerStyle={triggerStyle} setOpen={setOpen}>
+      <DropDownTrigger
+        preStyle={preStyle}
+        triggerStyle={triggerStyle}
+        setOpen={setOpen}
+        disabled={disabled}
+      >
         {trigger}
       </DropDownTrigger>
       <DropDownContent

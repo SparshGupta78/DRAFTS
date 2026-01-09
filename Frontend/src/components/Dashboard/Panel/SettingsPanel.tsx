@@ -1,16 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DropDownItem from '../../DropDown/DropDownItem'
 import DropDown from '../../DropDown/DropDown'
 import { ArrowDown } from '../../../assets/Icons'
 import Switch from '../../Switch/Switch'
+import { usePreferencesContext } from '../../../contexts/preferences.context'
 
 const SettingsPanel = () => {
+
+  const { preferences, updatePreference } = usePreferencesContext()
 
   const [language, setLanguage] = useState<'English'>('English')
   const [theme, setTheme] = useState<'System' | 'Light' | 'Dark'>('Light')
   const [accentColor, setAccentColor] = useState<'Blue'>('Blue')
   const [sidebarPosition, setSidebarPosition] = useState<'Left' | 'Right'>('Left')
-  const [showSidebar, setShowSidebar] = useState<0 | 1>(0)
+  const [showSidebar, setShowSidebar] = useState(true)
   const [startupBehavior, setStartupBehavior] = useState<'Dashboard' | 'Last opened note'>('Dashboard')
   
   const startupBehaviors = ['Dashboard', 'Last opened note']
@@ -19,13 +22,29 @@ const SettingsPanel = () => {
   const accentColors = ['Blue']
   const sidebarPositions = ['Left', 'Right']
 
+  const sidebarPositionHandler = () => {
+    updatePreference('settings.appearance.sidebar.position', sidebarPosition === 'Left' ? 'Right' : 'Left')
+  }
+
+  const showSidebarHandler = () => {
+    if(!preferences) return
+    const status = updatePreference("settings.appearance.sidebar.visible", !preferences.settings.appearance.sidebar.visible)
+    if(status) setShowSidebar(prev => !prev)
+  }
+
+  useEffect(() => {
+    if(!preferences) return
+    setSidebarPosition(preferences.settings.appearance.sidebar.position)
+    setShowSidebar(preferences.settings.appearance.sidebar.visible)
+  }, [preferences])
+
   return (
     <div className="w-full p-2.5">
       <div>
         <div className="text-sm font-normal text-[var(--black-2)]">
           General
         </div>
-        <div className="my-1.5 w-full h-0.25 rounded-full bg-[var(--black-1)]"></div>
+        <hr className="my-1.5 w-full border-[var(--black-1)]" />
       </div>
       <div className="p-2.5 flex items-center justify-between gap-2.5">
         <div>
@@ -59,7 +78,7 @@ const SettingsPanel = () => {
         }))}
       </DropDown>
       </div>
-      <div className="mx-2.5 w-[calc(100%-20px)] h-0.25 bg-[var(--black-4)]"></div>
+      <hr className="mx-2.5 w-[calc(100%-20px)] border-[var(--black-4)]" />
       <div className="p-2.5 flex items-center justify-between gap-2.5">
         <div>
           <div className='text-sm text-[var(--black-3)] font-normal'>Startup Behavior</div>
@@ -96,7 +115,7 @@ const SettingsPanel = () => {
         <div className="mt-1.5 text-sm font-normal text-[var(--black-2)]">
           Appearance
         </div>
-        <div className="my-1.5 w-full h-0.25 rounded-full bg-[var(--black-1)]"></div>
+        <hr className="my-1.5 w-full border-[var(--black-1)]" />
       </div>
       <div className="p-2.5 flex items-center justify-between gap-2.5">
         <div>
@@ -130,7 +149,7 @@ const SettingsPanel = () => {
         }))}
       </DropDown>
       </div>
-      <div className="mx-2.5 w-[calc(100%-20px)] h-0.25 bg-[var(--black-4)]"></div>
+      <hr className="mx-1.5 w-[calc(100%-20px)] border-[var(--black-4)]" />
       <div className="p-2.5 flex items-center justify-between gap-2.5">
         <div>
           <div className='text-sm text-[var(--black-3)] font-normal'>Accent Color</div>
@@ -163,7 +182,7 @@ const SettingsPanel = () => {
         }))}
       </DropDown>
       </div>
-      <div className="mx-2.5 w-[calc(100%-20px)] h-0.25 bg-[var(--black-4)]"></div>
+      <hr className="mx-1.5 w-[calc(100%-20px)] border-[var(--black-4)]" />
       <div className="p-2.5 flex items-center justify-between gap-2.5">
       <div>
         <div className='text-sm text-[var(--black-3)] font-normal'>Show Sidebar</div>
@@ -171,10 +190,10 @@ const SettingsPanel = () => {
       </div>
       <Switch
         state={showSidebar}
-        onClick={() => setShowSidebar(prev => (prev === 0 ? 1 : 0))} 
+        onClick={showSidebarHandler}
       />
       </div>
-      <div className="mx-2.5 w-[calc(100%-20px)] h-0.25 bg-[var(--black-4)]"></div>
+      <hr className="mx-1.5 w-[calc(100%-20px)] border-[var(--black-4)]" />
       <div className="p-2.5 flex items-center justify-between gap-2.5">
         <div>
           <div className='text-sm text-[var(--black-3)] font-normal'>Sidebar Position</div>
@@ -200,6 +219,7 @@ const SettingsPanel = () => {
               data={sp}
               preStyle={false}
               className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${sidebarPosition === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              onClick={sidebarPositionHandler}
             >
               {sp}
             </DropDownItem>

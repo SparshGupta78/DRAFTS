@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight, ArrowDown, Blockquote, Bold, Code, Highlighter, Italic, Link, Redo, Strikethrough, Subscript, Superscript, Underline, Undo, UnoderedList, HorizontalRule, Paragraph, ClearMarks, ClearNodes, Unlink } from "../../assets/Icons";
+import { usePreferencesContext } from "../../contexts/preferences.context";
 
 type ToolBoxType = {
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -31,6 +32,8 @@ type ToolBoxType = {
 
 const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
 
+  const { preferences } = usePreferencesContext()
+
   const [windowWidth, setwindowWidth] = useState(window.innerWidth)
   useEffect(() => {
     const resizeHandler = () => setwindowWidth(window.innerWidth)
@@ -46,19 +49,22 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
   }, [windowWidth])
 
   return (
-    <div className="bg-[var(--white-3)] rounded-b-xl md:rounded-t-xl md:rounded-b-sm fixed md:relative top-0 left-2 md:left-0 w-[calc(100%-16px)] md:w-full h-fit z-10">
-      <div className={`h-fit p-2 md:pb-2 rounded-b-xl md:rounded-xl flex flex-wrap items-center gap-2.5 relative duration-300 ${toolbarOpen ? 'pb-6' : 'pb-3'}`}>
+    <div className="bg-[var(--white-3)] md:bg-transparent rounded-b-xl fixed md:relative top-0 left-2 md:left-0 w-[calc(100%-16px)] md:w-full h-fit z-10">
+      <div className={`h-fit p-2 md:p-0 md:pb-0 rounded-b-xl flex flex-wrap items-center gap-2.5 relative duration-300 ${toolbarOpen ? 'pb-6' : 'pb-3'}`}>
         <div className="w-full max-w-full duration-300">
-          <div className={`md:w-full flex items-center flex-wrap md:flex-nowrap duration-300 ${toolbarOpen ? 'gap-2.5' : 'gap-0'}`}>
-            <div className="h-fit w-full md:w-fit flex items-center justify-between gap-2.5">
-              <div className="w-fit h-fit p-0.5 rounded-sm active:bg-[var(--white-3)] active:scale-80 duration-100 md:hidden" onClick={() => setSideNavOpen(prev => !prev)}>
+          <div className="md:w-full flex items-center flex-wrap md:flex-nowrap duration-300">
+            <div className="h-fit md:h-14 w-full md:w-fit flex items-center justify-between gap-0.5">
+              <div
+                className={`bg-[var(--white-3)] h-full aspect-square active:bg-[var(--white-3)] flex items-center justify-center rounded-sm rounded-tl-xl active:scale-94 duration-300 ${(preferences && !preferences.settings.appearance.sidebar.visible) ? '' : 'md:hidden'}`}
+                onClick={() => setSideNavOpen(prev => !prev)}
+              >
                 {/* menu-toggle-button */}
                 <div className="w-7 h-fit flex flex-col items-center justify-center gap-1.25">
                   <div className="w-85/100 h-0.5 rounded-sm bg-[var(--black-3)]"></div>
                   <div className="w-65/100 h-0.5 rounded-sm bg-[var(--black-1)]"></div>
                 </div>
               </div>
-              <div className="flex items-center gap-0.5">
+              <div className={`md:pl-2.5 h-full bg-[var(--white-3)] flex items-center gap-0.5 ${(preferences && !preferences.settings.appearance.sidebar.visible) ? 'rounded-l-sm' : 'rounded-bl-sm rounded-tl-xl'}`}>
                 <div className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]" onClick={() => toolkit.undo()}>
                   <Undo dimension={windowWidth > 425 ? 20 : 22} />
                 </div>
@@ -67,8 +73,10 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                 </div>
               </div>
             </div>
-            <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)] hidden md:block"></div>
-            <div className={`max-w-full md:max-w-[calc(100%-80px)] overflow-x-auto overflow-y-hidden bg-[var(--white-1)] md:bg-transparent rounded-lg md:rounded-none px-2 md:p-0 duration-300 h-fit ${toolbarOpen ? 'py-2 max-h-75 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="p-2.5 h-14 w-5.5 bg-[var(--white-3)] hidden md:flex items-center">
+              <div className="h-6 w-0.5 rounded-full bg-[var(--black-1)]"></div>
+            </div>
+            <div className={`bg-[var(--white-1)] md:bg-[var(--white-3)] max-w-full md:max-w-[calc(100%-80px)] overflow-x-auto overflow-hidden rounded-lg md:rounded-none md:rounded-tr-xl md:rounded-br-sm px-2 md:p-2.5 duration-300 h-fit ${toolbarOpen ? 'py-2 md:py-2.5 max-h-75 opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="w-max flex items-center gap-2.5">
                 <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
                   <div 
