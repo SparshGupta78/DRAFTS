@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Account, AccountEdit, Edit } from "../../../assets/Icons"
 import type { userTypeExtended } from "../../../types/userExtended.type"
+import DropDown from "../../DropDown/DropDown"
 
 type props = {
   loggedUser: userTypeExtended | undefined
@@ -9,6 +10,11 @@ type props = {
 const AccountPanel = ({loggedUser}: props) => {
 
   const [accountConfirm, setAccountConfirm] = useState(false)
+  const [password, setPassword] = useState('')
+
+  const confirmHandler = () => {
+    
+  }
 
   return (
     <div className="w-full p-2.5 flex flex-col gap-2.5">
@@ -96,13 +102,39 @@ const AccountPanel = ({loggedUser}: props) => {
           <label htmlFor="author" className="text-sm font-normal text-[var(--red-4)] duration-300 hover:opacity-65">I confirm that I have reviewed the information above and agree to permanently delete my account.</label>
         </div>
         <div className="mt-2.5 flex justify-end">
-          <button
-            type="button"
-            className="px-3 py-1.5 w-fit text-sm text-[var(--white-2)] font-normal bg-[var(--red-5)] rounded-md whitespace-nowrap duration-300 hover:opacity-75 active:scale-98 disabled:opacity-60 disabled:active:scale-100"
+          <DropDown
+            trigger={
+              <button
+                type="button"
+                className="px-3 py-1.5 w-fit text-sm text-[var(--white-2)] font-normal bg-[var(--red-5)] rounded-md whitespace-nowrap duration-300 hover:opacity-75 active:scale-98 disabled:opacity-60 disabled:active:scale-100"
+                disabled={!accountConfirm}
+              >
+                Delete account
+              </button>
+            }
+            align="right"
+            position="top"
+            preStyle={false}
+            contentStyle="mb-2.5"
             disabled={!accountConfirm}
           >
-            Delete account
-          </button>
+            <div className="p-2.5 w-85 bg-[var(--black-6)] rounded-lg shadow-[var(--shadow-1)]">
+              <div className="mt-1 text-xs font-normal text-[var(--black-2)]">Enter your password</div>
+              <input
+                type="password"
+                className="mt-1.5 px-2.5 py-1 bg-[var(--white-2)] text-sm w-full rounded-md border-1 duration-100 border-[var(--black-4)] outline-0 outline-[var(--black-4)] hover:outline-2 active:outline-2 focus:outline-3 focus:border-[var(--black-1)]"
+                value={password}
+                onChange={e => setPassword(e.currentTarget.value)}
+              />
+              <button
+                type="button"
+                className='mt-3.5 w-full text-sm bg-[var(--red-5)] rounded-md text-center p-1 text-[var(--white-2)] font-normal select-none duration-300 hover:opacity-70 active:scale-96'
+                onClick={confirmHandler}
+              >
+                Confirm
+              </button>
+            </div>
+          </DropDown>
         </div>
       </div>
     </div>
