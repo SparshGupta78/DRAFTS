@@ -144,16 +144,16 @@ export const allNotes = async (req: Request, res: Response) => {
       {_id: 0, notes: 1}
     )
     if (!noteIdsDoc || !noteIdsDoc.notes) return res.status(500).json({error: "Internal server error"})
-    const notesIds = noteIdsDoc.notes
-    const notes = await Promise.all(notesIds.map(async (noteID) => {
+    const notesIds: string[] = noteIdsDoc.notes
+    const notes = await Promise.all(notesIds.map(async (noteID: string) => {
       const note = await NoteSchema.findOne({noteID})
       return note ? note : null
     }))
-    const filteredNotes = notes.filter(note => note !== null)
+    const filteredNotes = notes.filter((note): note is NonNullable<typeof note> => note !== null)
     if (username === user.username) {
       return res.status(200).json(filteredNotes)
     }
-    const publicNotes = filteredNotes.filter(note => note.visibility === 'public')
+    const publicNotes = filteredNotes.filter((note: { visibility: string }) => note.visibility === 'public')
     return res.status(200).json(publicNotes)
   } catch {
     res.status(500).json({error: "Internal server error"})
