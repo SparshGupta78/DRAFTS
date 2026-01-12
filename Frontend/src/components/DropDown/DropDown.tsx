@@ -29,7 +29,7 @@ const DropDown = ({
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
-  const clickHandler = (e: PointerEvent) => {
+  const clickHandler = (e: MouseEvent) => {
     if (ref.current && !(ref.current as HTMLElement).contains(e.target as Node)) {
       setOpen(false)
     }
