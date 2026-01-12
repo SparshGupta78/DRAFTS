@@ -3,6 +3,7 @@ import { NavLink, useParams } from "react-router-dom"
 import { Account, Delete, Edit, Plus, Retry, Search, Settings } from "../../assets/Icons"
 import type { UserType } from "../../types/user.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
+import { useWindowWidthContext } from "../../contexts/windowWidth.context"
 
 type SideBarProps = {
   loggedUser: UserType | undefined,
@@ -41,17 +42,12 @@ const SideBar = ({
 
   const { username, noteId } = useParams()
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const windowWidth = useWindowWidthContext()
+
   const [searchOpen, setSearchOpen] = useState(false)
   const [sideNavActiveBg, setSideNavActiveBg] = useState(windowWidth > 768 ? 40 : 46.5)
 
   const sidebarPosition = preferences?.settings.appearance.sidebar.position
-
-  useEffect(() => {
-    const windowSizeHandler = () => setWindowWidth(window.innerWidth)
-    window.addEventListener('resize', windowSizeHandler)
-    return () => window.removeEventListener('resize', windowSizeHandler)
-  }, [])
 
   useEffect(() => {
     if (windowWidth >= 768) {

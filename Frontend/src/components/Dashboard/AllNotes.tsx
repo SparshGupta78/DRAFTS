@@ -4,6 +4,7 @@ import DropDown from "../DropDown/DropDown"
 import DropDownItem from "../DropDown/DropDownItem"
 import { extractTextFromJSON } from "../../utils/tiptapTextExtractor"
 import type { NoteType } from "../../types/note.type"
+import { useWindowWidthContext } from "../../contexts/windowWidth.context"
 
 type props = {
   allNotesOpen: boolean,
@@ -23,19 +24,12 @@ const AllNotes = ({
   notesFetch
 }: props) => {
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const windowWidth = useWindowWidthContext()
+
   const [filter, setFilter] = useState<'All' | 'Pinned' | 'Unpinned'>('All')
   const [search, setSearch] = useState('')
   const dialogRef = useRef(null)
   const filters = ['All', 'Pinned', 'Un-pinned']
-
-  useEffect(() => {
-    const handler = () => {
-      setWindowWidth(window.innerWidth)
-    }
-    window.addEventListener('resize', handler)
-    return () => window.removeEventListener('resize', handler)
-  }, [])
 
   const outsideClickHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (dialogRef.current && !(dialogRef.current as HTMLElement).contains(e.target as Node)) {

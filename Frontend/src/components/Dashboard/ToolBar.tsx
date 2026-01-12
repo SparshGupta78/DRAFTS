@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight, ArrowDown, Blockquote, Bold, Code, Highlighter, Italic, Link, Redo, Strikethrough, Subscript, Superscript, Underline, Undo, UnoderedList, HorizontalRule, Paragraph, ClearMarks, ClearNodes, Unlink } from "../../assets/Icons";
 import { usePreferencesContext } from "../../contexts/preferences.context";
+import { useWindowWidthContext } from "../../contexts/windowWidth.context";
 
 type ToolBoxType = {
   setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -34,12 +35,7 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
 
   const { preferences } = usePreferencesContext()
 
-  const [windowWidth, setwindowWidth] = useState(window.innerWidth)
-  useEffect(() => {
-    const resizeHandler = () => setwindowWidth(window.innerWidth)
-    window.addEventListener('resize', resizeHandler)
-    return () => window.removeEventListener('resize', resizeHandler)
-  }, [])
+  const windowWidth = useWindowWidthContext()
   
   const [toolbarOpen, setToolbarOpen] = useState(false)
 

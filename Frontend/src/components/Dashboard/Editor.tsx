@@ -20,6 +20,7 @@ import DropDownItem from "../DropDown/DropDownItem"
 import Alert from "./Alert"
 import type { AlertContentType } from "../../types/alertContent.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
+import { useWindowWidthContext } from "../../contexts/windowWidth.context"
 
 type props = {
   loggedUser: UserType | undefined,
@@ -78,7 +79,8 @@ const Editor = ({
 
   const { preferences } = usePreferencesContext()
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const windowWidth = useWindowWidthContext()
+
   const [titleEdit, setTitleEdit] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<-1 | 0 | 1>(1)
   const [initialLoad, setInitialLoad] = useState(true)
@@ -209,16 +211,6 @@ const Editor = ({
     clearMarks: () => editor.chain().focus().unsetAllMarks().run(),
     clearNodes: () => editor.chain().focus().clearNodes().run(),
   }
-  
-  useEffect(() => {
-    const windowSizeHandler = () => setWindowWidth(window.innerWidth)
-    window.addEventListener('resize', windowSizeHandler)
-    return () => {
-      window.removeEventListener('resize', windowSizeHandler)
-      if (timeRef.current) clearTimeout(timeRef.current)
-      if (controllerRef.current) controllerRef.current.abort()
-    }
-  }, [])
 
   useEffect(() => {
     if (editor) {

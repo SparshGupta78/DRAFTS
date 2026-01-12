@@ -8,6 +8,7 @@ import DataPanel from './Panel/DataPanel'
 import type { SideBarNotesType } from '../../types/titles.type'
 import DropDown from '../DropDown/DropDown'
 import { useNavigate } from 'react-router-dom'
+import { useWindowWidthContext } from '../../contexts/windowWidth.context'
 
 type props = {
   panelOpen: boolean,
@@ -25,7 +26,8 @@ const Panel = ({
 
   const navigate = useNavigate()
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const windowWidth = useWindowWidthContext()
+  
   const [panel, setPanel] = useState<'account' | 'editor' | 'data' | 'settings'>('account')
   const dialogRef = useRef(null)
 
@@ -40,12 +42,6 @@ const Panel = ({
     localStorage.removeItem('token')
     navigate('/login')
   }
-
-  useEffect(() => {
-    const windowSizeHandler = () => setWindowWidth(window.innerWidth)
-    window.addEventListener('resize', windowSizeHandler)
-    return () => window.removeEventListener('resize', windowSizeHandler)
-  }, [])
 
   return (
     <div className={`fixed inset-0 z-100 bg-black/15 backdrop-blur-[2px] duration-300 ${panelOpen ? 'pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>

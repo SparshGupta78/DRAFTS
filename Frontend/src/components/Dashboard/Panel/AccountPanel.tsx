@@ -118,7 +118,7 @@ const AccountPanel = ({loggedUser}: props) => {
             contentStyle="mb-2.5"
             disabled={!accountConfirm}
           >
-            <div className="p-2.5 w-85 bg-[var(--black-6)] rounded-lg shadow-[var(--shadow-1)]">
+            <div className="p-2.5 w-65 sm:w-85 bg-[var(--black-6)] rounded-lg shadow-[var(--shadow-1)]">
               <div className="mt-1 text-xs font-normal text-[var(--black-2)]">Enter your password</div>
               <input
                 type="password"
