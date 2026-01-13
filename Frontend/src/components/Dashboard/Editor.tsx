@@ -238,7 +238,7 @@ const Editor = ({
   }, [username, noteId])
 
   return (
-    <div className={`w-full h-full md:h-screen p-3.5 md:p-5 md:pl-2.5 flex justify-center duration-300 ${(preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? `md:w-[calc(100%-30px)] ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'translate-x-3' : '-translate-x-3'}` : 'md:w-[calc(100%-290px)]'}`}>
+    <div className={`w-full h-full md:h-screen p-3.5 md:p-5 flex justify-center duration-300 ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'md:pr-2.5' : 'md:pl-2.5'} ${(preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? `md:w-[calc(100%-30px)] ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'md:translate-x-2.5' : 'md:-translate-x-2.5'}` : 'md:w-[calc(100%-290px)]'}`}>
       <Alert
         alertOpen={alertOpen}
         setAlertOpen={setAlertOpen}
