@@ -221,3 +221,35 @@ body {
   width: 56px;
   transition: all 0.6s;
 }
+
+/* Loader */
+
+.oFwfioeW {
+  animation: loader-animation 1500ms infinite linear;
+}
+
+.hwR3gWf {
+  animation: loader-animation 1500ms 400ms infinite linear;
+}
+
+@keyframes loader-animation {
+  0% {
+    width: 100%;
+  }
+  50% {
+    width: 75%;
+  }
+}
+
+.hglVsNd {
+  animation: loader-line-animation 1000ms forwards ease-in-out;
+}
+
+@keyframes loader-line-animation {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
