@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTags, allNotes, dashboard, deleteNote, deleteTag, editorFetch, editorSave, editorTitleUpdate, findAllTitle, loggedUser, newNote, toggleVisibilityStatus } from "../controllers/user.controller";
+import { addTags, allNotes, dashboard, deleteAccount, deleteNote, deleteTag, editorFetch, editorSave, editorTitleUpdate, findAllTitle, loggedUser, newNote, toggleVisibilityStatus } from "../controllers/user.controller";
 
 const userRouter = Router()
 
@@ -15,5 +15,6 @@ userRouter.get('/deleteNote', deleteNote)
 userRouter.get('/toggleVisibilityStatus', toggleVisibilityStatus)
 userRouter.post('/addTag', addTags)
 userRouter.get('/deleteTag', deleteTag)
+userRouter.post('/deleteAccount', deleteAccount)
 
 export default userRouter

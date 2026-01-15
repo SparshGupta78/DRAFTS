@@ -318,7 +318,42 @@ const useUserAPI = () => {
       })
     }
   }
-  
+
+  const DeleteAccount = async (password: string) => {
+    try {
+      if(password === '') {
+        createNotification({
+          title: "Password Required",
+          message: "Please enter your password to proceed with account deletion.",
+          type: "error"
+        })
+        return false
+      }
+      await api.post('/user/deleteAccount', { password })
+      createNotification({
+        title: "Account Deleted",
+        message: "The account has been deleted successfully.",
+        type: "default"
+      })
+      return true
+    } catch(error: any) {
+        if(error?.response.status === 401) {
+          createNotification({
+            title: "Incorrect Password",
+            message: "The password entered is incorrect. Account deletion was not completed.",
+            type: "error"
+          })
+          return false
+        }
+      createNotification({
+        title: "Account Deletion Failed",
+        message: "The account could not be deleted. Please try again.",
+        type: "error"
+      })
+      return true
+    }
+  }
+
   return {
     dashboardAPI,
     newNoteAPI,
@@ -332,6 +367,7 @@ const useUserAPI = () => {
     AllNotesAPI,
     AddTagAPI,
     DeleteTagAPI,
+    DeleteAccount
   }
   
 }

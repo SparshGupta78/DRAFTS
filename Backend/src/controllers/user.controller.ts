@@ -5,6 +5,7 @@ import UserAuth from "../types/userAuth.type";
 import User from "../types/userRes.type";
 import Note from "../types/note.type";
 import NoteSchema from "../model/note.model"
+import bcryptjs from 'bcryptjs'
 
 export const dashboard = async (req: Request, res: Response) => {
   const username = req.query.username as string
@@ -247,5 +248,27 @@ export const deleteTag = async (req: Request, res: Response) => {
     res.status(200).json({tags: updatedNote.tags})
   } catch {
     res.status(500).json({error: "Internal server error"})
+  }
+}
+
+export const deleteAccount = async (req: Request, res: Response) => {
+  try {
+    const { password } = req.body
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if(!password || !loggedUser) return res.status(400).json({message: "Bad request"})
+    const user = await UserSchema.findOne(
+      { username: loggedUser.username },
+      {_id: 0, password: 1, notes: 1}
+    ).lean()
+    if(!user) return res.status(500).json({message: "Internal server error"})
+    const status = await bcryptjs.compare(password, user.password)
+    if(!status) return res.status(401).json({message: "Invalid password"})
+    if (user.notes?.length) {
+      await NoteSchema.deleteMany({ noteID: { $in: user.notes } })
+    }
+    await UserSchema.findOneAndDelete({ username: loggedUser.username })
+    res.status(200).json({message: "success"})
+  } catch {
+    res.status(500).json({message: "Internal server error"})
   }
 }
