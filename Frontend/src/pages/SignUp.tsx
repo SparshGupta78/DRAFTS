@@ -83,7 +83,7 @@ const SignUp = () => {
     setFormErrors(errors)
     const hasError = Object.values(errors).some(v => v)
     if (!hasError) {
-      signUpAPI({ firstName, middleName, lastName, email, username, password })
+      await signUpAPI({ firstName, middleName, lastName, email, username, password })
     } else {
       createNotification({
         title: "Invalid Input",
