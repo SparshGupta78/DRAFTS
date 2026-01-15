@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type Dispatch } from "react"
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
 import { Account, Delete, Edit, Plus, Retry, Search, Settings } from "../../assets/Icons"
 import type { UserType } from "../../types/user.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
@@ -38,6 +38,8 @@ const SideBar = ({
   setAccountOpen
 }: SideBarProps) => {
 
+  const navigate = useNavigate()
+
   const { preferences } = usePreferencesContext()
 
   const { username, noteId } = useParams()
@@ -48,6 +50,12 @@ const SideBar = ({
   const [sideNavActiveBg, setSideNavActiveBg] = useState(windowWidth > 768 ? 40 : 46.5)
 
   const sidebarPosition = preferences?.settings.appearance.sidebar.position
+
+  const noteTitleFetch = (noteID: string) => {
+    navigate(`/${username}/${noteID}`)
+    editorFetch(noteID)
+    if(windowWidth < 768) setSideNavOpen(false)
+  }
 
   useEffect(() => {
     if (windowWidth >= 768) {
@@ -177,21 +185,25 @@ const SideBar = ({
                 <div className="relative z-10 w-full h-full">
                   {noteTitles.map((note, _) => {
                     return (
-                      <NavLink key={note.noteID} to={`/${username}/${note.noteID}`}onClick={() => editorFetch(note.noteID)}>
-                        <div className={`w-full py-3 md:py-2.5 flex items-center justify-between gap-2.5 ${sidebarPosition && sidebarPosition === 'Right' ? 'pl-4 pr-5.5' : 'pl-5.5 pr-2.5'}`}>
-                          <span className={`text-[15px] text-nowrap truncate duration-300 delay-100 ${note.noteID == noteId ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'}`}>
-                            {note.title}
-                          </span>
-                          <div className={`flex items-center justify-center gap-3.5 duration-300 delay-100 ${note.noteID == noteId ? 'opacity-100 w-fit' : 'opacity-0 w-0'}`}>
-                            <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
-                              <Edit dimension={19} />
-                            </div>
-                            <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
-                              <Delete dimension={19} />
-                            </div>
+                      // <NavLink key={note.noteID} to={`/${username}/${note.noteID}`}onClick={() => editorFetch(note.noteID)}>
+                      <div
+                        className={`w-full py-3 md:py-2.5 flex items-center justify-between gap-2.5 ${sidebarPosition && sidebarPosition === 'Right' ? 'pl-4 pr-5.5' : 'pl-5.5 pr-2.5'}`}
+                        key={note.noteID}
+                        onClick={() => noteTitleFetch(note.noteID)}
+                      >
+                        <span className={`text-[15px] text-nowrap truncate duration-300 delay-100 ${note.noteID == noteId ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'}`}>
+                          {note.title}
+                        </span>
+                        <div className={`flex items-center justify-center gap-3.5 duration-300 delay-100 ${note.noteID == noteId ? 'opacity-100 w-fit' : 'opacity-0 w-0'}`}>
+                          <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
+                            <Edit dimension={19} />
+                          </div>
+                          <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
+                            <Delete dimension={19} />
                           </div>
                         </div>
-                      </NavLink>
+                      </div>
+                      // </NavLink>
                     )
                   })}
                 </div>
