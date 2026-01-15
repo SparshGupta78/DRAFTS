@@ -32,10 +32,17 @@ const SettingsPanel = () => {
     if(status) setShowSidebar(prev => !prev)
   }
 
+  const startupBehaviorHandler = () => {
+    updatePreference('settings.general.startupBehavior', startupBehavior === 'Dashboard' ? 'Last opened note' : 'Dashboard')
+  }
+
   useEffect(() => {
     if(!preferences) return
     setSidebarPosition(preferences.settings.appearance.sidebar.position)
     setShowSidebar(preferences.settings.appearance.sidebar.visible)
+    setStartupBehavior(preferences.settings.general.startupBehavior)
+
+    if(preferences.settings.general.startupBehavior === 'Dashboard') localStorage.removeItem('startup')
   }, [preferences])
 
   return (
@@ -104,6 +111,7 @@ const SettingsPanel = () => {
               data={sp}
               preStyle={false}
               className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${startupBehavior === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              onClick={startupBehaviorHandler}
             >
               {sp}
             </DropDownItem>

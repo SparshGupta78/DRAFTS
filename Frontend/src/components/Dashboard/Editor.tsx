@@ -255,7 +255,7 @@ const Editor = ({
             toolkit={toolkit}
           />
         </div>
-        <div className="w-full h-full md:h-[calc(100%-46px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-xl md:rounded-t-sm md:rounded-b-xl flex items-center justify-center mt-13 mb-10 md:mt-0 md:mb-0">
+        <div className="w-full h-full md:h-[calc(100%-56px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-xl md:rounded-t-sm md:rounded-b-xl flex items-center justify-center mt-13 mb-10 md:mt-0 md:mb-0 overflow-hidden">
           <div className={`w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-xl md:rounded-sm p-3.5 ${(preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'}`}>
             {
               (noteId && fetchingStatus === 1) 

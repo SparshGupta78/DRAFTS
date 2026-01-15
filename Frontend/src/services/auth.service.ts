@@ -62,7 +62,8 @@ const useAuthAPI = () => {
         return
       }
       localStorage.setItem('token', JSON.stringify({token: response.token, createdAt: Date.now()}))
-      navigate(`/${data.username}`)
+      const path = localStorage.getItem('startup')
+      navigate(path ? path : `/${data.username}`)
     } catch (err: any) {
       createNotification({
         title: "Something Went Wrong",

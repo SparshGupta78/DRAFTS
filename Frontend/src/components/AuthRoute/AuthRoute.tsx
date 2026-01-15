@@ -17,6 +17,7 @@ const AuthRoute = ({children}: props) => {
   if (expire) {
     localStorage.removeItem('token')
     localStorage.removeItem('preferences')
+    localStorage.removeItem('startup')
     return <Navigate to='/signin' replace state={{from: location.pathname}} />
   }
   return (

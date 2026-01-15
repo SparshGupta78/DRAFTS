@@ -4,6 +4,7 @@ import { Account, Delete, Edit, Plus, Retry, Search, Settings } from "../../asse
 import type { UserType } from "../../types/user.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
 import { useWindowWidthContext } from "../../contexts/windowWidth.context"
+import setStartupBehaviour from "../../utils/startupBehaviour"
 
 type SideBarProps = {
   loggedUser: UserType | undefined,
@@ -54,6 +55,7 @@ const SideBar = ({
   const noteTitleFetch = (noteID: string) => {
     navigate(`/${username}/${noteID}`)
     editorFetch(noteID)
+    setStartupBehaviour(`/${username}/${noteID}`, preferences)
     if(windowWidth < 768) setSideNavOpen(false)
   }
 
