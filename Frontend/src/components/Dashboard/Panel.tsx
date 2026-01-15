@@ -40,6 +40,7 @@ const Panel = ({
 
   const logoutHandler = () => {
     localStorage.removeItem('token')
+    localStorage.removeItem('preferences')
     navigate('/login')
   }
 

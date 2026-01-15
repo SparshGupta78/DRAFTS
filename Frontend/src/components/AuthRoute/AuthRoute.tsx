@@ -16,6 +16,7 @@ const AuthRoute = ({children}: props) => {
   const expire = (Date.now() - createdAt) > 1 * 60 * 60 * 1000
   if (expire) {
     localStorage.removeItem('token')
+    localStorage.removeItem('preferences')
     return <Navigate to='/signin' replace state={{from: location.pathname}} />
   }
   return (

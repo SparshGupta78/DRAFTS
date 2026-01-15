@@ -335,6 +335,9 @@ const useUserAPI = () => {
         message: "The account has been deleted successfully.",
         type: "default"
       })
+      localStorage.removeItem('preferences')
+      localStorage.removeItem('token')
+      navigate('/signin')
       return true
     } catch(error: any) {
         if(error?.response.status === 401) {
