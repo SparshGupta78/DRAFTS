@@ -272,3 +272,25 @@ export const deleteAccount = async (req: Request, res: Response) => {
     res.status(500).json({message: "Internal server error"})
   }
 }
+
+export const deleteAllNotes = async (req: Request, res: Response) => {
+  try {
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if(!loggedUser) return res.status(400).json({message: "Bad request"})
+    const user = await UserSchema.findOne(
+      {username: loggedUser.username},
+      {_id: 0, notes: 1}
+    ).lean()
+    if(!user) return res.status(500).json({message: "Internal server error"})
+    if(user.notes.length > 0) {
+      await NoteSchema.deleteMany({noteID: {$in: user.notes}})
+    }
+    await UserSchema.findOneAndUpdate(
+      {username: loggedUser.username},
+      {$set: {notes: []}}
+    )
+    res.status(200).json({message: "success"})
+  } catch (error) {
+    res.status(500).json({message: "Internal server error"})
+  }
+}

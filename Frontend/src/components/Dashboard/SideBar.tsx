@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type Dispatch } from "react"
-import { NavLink, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Account, Delete, Edit, Plus, Retry, Search, Settings } from "../../assets/Icons"
 import type { UserType } from "../../types/user.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
@@ -187,7 +187,6 @@ const SideBar = ({
                 <div className="relative z-10 w-full h-full">
                   {noteTitles.map((note, _) => {
                     return (
-                      // <NavLink key={note.noteID} to={`/${username}/${note.noteID}`}onClick={() => editorFetch(note.noteID)}>
                       <div
                         className={`w-full py-3 md:py-2.5 flex items-center justify-between gap-2.5 ${sidebarPosition && sidebarPosition === 'Right' ? 'pl-4 pr-5.5' : 'pl-5.5 pr-2.5'}`}
                         key={note.noteID}
@@ -205,7 +204,6 @@ const SideBar = ({
                           </div>
                         </div>
                       </div>
-                      // </NavLink>
                     )
                   })}
                 </div>

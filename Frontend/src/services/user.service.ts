@@ -357,6 +357,26 @@ const useUserAPI = () => {
     }
   }
 
+  const DeleteAllNotes = async (username: string) => {
+    try {
+      await api.get('/user/deleteAllNotes')
+      createNotification({
+        title: "All Notes Deleted",
+        message: "All notes have been deleted successfully.",
+        type: 'default'
+      })
+      navigate(`/${username}`)
+      return true
+    } catch  {
+      createNotification({
+        title: "Deletion Failed",
+        message: "Unable to delete all notes. Please try again.",
+        type: "error"
+      })
+      return false
+    }
+  }
+
   return {
     dashboardAPI,
     newNoteAPI,
@@ -370,7 +390,8 @@ const useUserAPI = () => {
     AllNotesAPI,
     AddTagAPI,
     DeleteTagAPI,
-    DeleteAccount
+    DeleteAccount,
+    DeleteAllNotes
   }
   
 }

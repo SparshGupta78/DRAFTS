@@ -53,7 +53,7 @@ const AccountPanel = ({loggedUser}: props) => {
           <hr className="w-full border-[var(--black-1)]" />
           <div className="w-full flex">
             <div className="w-1/2 truncate text-sm text-[var(--black-2)]">Middle name</div>
-            <div className="w-1/2 truncate text-sm text-[var(--black-3)]">{loggedUser ? loggedUser.middleName : '-'}</div>
+            <div className="w-1/2 truncate text-sm text-[var(--black-3)]">{loggedUser ? (loggedUser.middleName !== '' ? loggedUser.middleName : <span className="text-[var(--black-2)] text-xs italic">Not set</span>) : '-'}</div>
           </div>
           <hr className="w-full border-[var(--black-1)]" />
           <div className="w-full flex">

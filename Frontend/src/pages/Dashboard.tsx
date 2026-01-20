@@ -149,6 +149,7 @@ const Dashboard = () => {
         allNotes={allNotes}
         allNotesFetchingStatus={allNotesFetchingStatus}
         notesFetch={notesFetch}
+        fetchNotesTitle={fetchNotesTitle}
       />
       <Panel
         panelOpen={panelOpen}

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTags, allNotes, dashboard, deleteAccount, deleteNote, deleteTag, editorFetch, editorSave, editorTitleUpdate, findAllTitle, loggedUser, newNote, toggleVisibilityStatus } from "../controllers/user.controller";
+import { addTags, allNotes, dashboard, deleteAccount, deleteAllNotes, deleteNote, deleteTag, editorFetch, editorSave, editorTitleUpdate, findAllTitle, loggedUser, newNote, toggleVisibilityStatus } from "../controllers/user.controller";
 
 const userRouter = Router()
 
@@ -12,6 +12,7 @@ userRouter.post('/editorTitleUpdate', editorTitleUpdate)
 userRouter.get('/allNotes', allNotes)
 userRouter.get('/loggedUser', loggedUser)
 userRouter.get('/deleteNote', deleteNote)
+userRouter.get('/deleteAllNotes', deleteAllNotes)
 userRouter.get('/toggleVisibilityStatus', toggleVisibilityStatus)
 userRouter.post('/addTag', addTags)
 userRouter.get('/deleteTag', deleteTag)

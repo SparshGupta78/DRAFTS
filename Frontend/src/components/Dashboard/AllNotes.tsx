@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { ArrowDown, ArrowTopRight, Close, Delete, Filter, Plus, Retry } from "../../assets/Icons"
 import DropDown from "../DropDown/DropDown"
 import DropDownItem from "../DropDown/DropDownItem"
 import { extractTextFromJSON } from "../../utils/tiptapTextExtractor"
 import type { NoteType } from "../../types/note.type"
 import { useWindowWidthContext } from "../../contexts/windowWidth.context"
+import useUserAPI from "../../services/user.service"
+import { useParams } from "react-router-dom"
 
 type props = {
   allNotesOpen: boolean,
@@ -12,7 +14,8 @@ type props = {
   setNewNoteOpen: React.Dispatch<React.SetStateAction<boolean>>,
   allNotes: NoteType[],
   allNotesFetchingStatus: -1 | 0 | 1,
-  notesFetch: () => Promise<void>
+  notesFetch: () => Promise<void>,
+  fetchNotesTitle: () => Promise<void>
 }
 
 const AllNotes = ({
@@ -21,15 +24,29 @@ const AllNotes = ({
   setNewNoteOpen,
   allNotes,
   allNotesFetchingStatus,
-  notesFetch
+  notesFetch,
+  fetchNotesTitle
 }: props) => {
 
+  const { DeleteAllNotes } = useUserAPI()
+
   const windowWidth = useWindowWidthContext()
+
+  const { username } = useParams()
 
   const [filter, setFilter] = useState<'All' | 'Pinned' | 'Unpinned'>('All')
   const [search, setSearch] = useState('')
   const dialogRef = useRef(null)
   const filters = ['All', 'Pinned', 'Un-pinned']
+
+  const deleteAllNotesHandler = async () => {
+    if(!username) return
+    const res = await DeleteAllNotes(username)
+    if(res) {
+      await notesFetch()
+      await fetchNotesTitle()
+    }
+  }
 
   const outsideClickHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (dialogRef.current && !(dialogRef.current as HTMLElement).contains(e.target as Node)) {
@@ -117,9 +134,12 @@ const AllNotes = ({
                         <div className="text-sm font-normal">Are you sure you want to delete all notes?</div>
                         <div className="mt-1 text-xs">This action cannot be undone.</div>
                       </div>
-                      <div className="mt-1.5 text-sm bg-[var(--red-5)] rounded-md text-center p-0.75 text-[var(--white-2)] font-normal select-none duration-300 hover:opacity-70 active:scale-96">
+                      <button
+                        className="mt-1.5 w-full text-sm bg-[var(--red-5)] rounded-md text-center p-0.75 text-[var(--white-2)] font-normal select-none duration-300 hover:opacity-70 active:scale-96"
+                        onClick={deleteAllNotesHandler}
+                      >
                         Yes, Delete All
-                      </div>
+                      </button>
                     </div>
                   </DropDown>
                 </div>
@@ -135,10 +155,10 @@ const AllNotes = ({
                     onChange={(e) => setSearch(e.target.value)}
                   />
                   <div
-                    className="absolute right-0 top-0 h-8 w-8 flex items-center justify-center"
+                    className="absolute right-0 top-0 h-full w-8 flex items-center justify-center"
                     onClick={() => setSearch('')}
                   >
-                    <div className={`duration-300 ${search.length > 0 ? 'scale-100 opacity-100' : 'opacity-0 scale-0'}`}>
+                    <div className={`hover:opacity-65 duration-300 ${search.length > 0 ? 'scale-100 opacity-100' : 'opacity-0 scale-0'}`}>
                       <Close dimension={18} color="#4C4C4C" />
                     </div>
                   </div>

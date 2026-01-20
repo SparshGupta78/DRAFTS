@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Account as AccountIcon, ArrowDown, Close, Data, Edit, Editor, LogOut, Settings } from '../../assets/Icons'
+import React, { useRef, useState } from 'react'
+import { Account as AccountIcon, Close, Data, Editor, LogOut, Settings } from '../../assets/Icons'
 import type { userTypeExtended } from '../../types/userExtended.type'
 import AccountPanel from './Panel/AccountPanel'
 import EditorPanel from './Panel/EditorPanel'
