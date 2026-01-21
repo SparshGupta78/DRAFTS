@@ -86,12 +86,9 @@ const Dashboard = () => {
   }, [username])
 
   useEffect(() => {
-    if (username === loggedUser?.username) {
-      setIsUserDashboard(true)
-    } else {
-      setIsUserDashboard(false)
-    }
-  }, [username, loggedUser])
+    if(!loggedUser) return
+    setIsUserDashboard(loggedUser.username === username)
+  }, [loggedUser, username])
 
   if (!user) {
     return (
@@ -115,6 +112,7 @@ const Dashboard = () => {
         setAllNotesOpen={setAllNotesOpen}
         notesFetch={notesFetch}
         setAccountOpen={setPanelOpen}
+        isUserDashboard={isUserDashboard}
       />
       <Editor
         loggedUser={loggedUser}
@@ -150,6 +148,7 @@ const Dashboard = () => {
         allNotesFetchingStatus={allNotesFetchingStatus}
         notesFetch={notesFetch}
         fetchNotesTitle={fetchNotesTitle}
+        isUserDashboard={isUserDashboard}
       />
       <Panel
         panelOpen={panelOpen}

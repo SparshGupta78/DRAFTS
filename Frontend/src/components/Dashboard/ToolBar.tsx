@@ -3,8 +3,8 @@ import { AlignCenter, AlignJustify, AlignLeft, AlignRight, ArrowDown, Blockquote
 import { usePreferencesContext } from "../../contexts/preferences.context";
 import { useWindowWidthContext } from "../../contexts/windowWidth.context";
 
-type ToolBoxType = {
-  setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>
+type props = {
+  setSideNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
   toolkit: {
     undo: () => boolean;
     redo: () => boolean;
@@ -28,10 +28,11 @@ type ToolBoxType = {
     align: (alignment: "left" | "center" | "right" | "justify") => boolean;
     heading: (level: 2 | 1 | 3 | 4 | 5 | 6) => boolean;
     setLink: (link?: string) => boolean;
-  }
+  },
+  isUserDashboard: boolean
 }
 
-const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
+const ToolBox = ({setSideNavOpen, toolkit, isUserDashboard}: props) => {
 
   const { preferences } = usePreferencesContext()
 
@@ -75,136 +76,156 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
             <div className={`bg-[var(--white-1)] md:bg-[var(--white-3)] max-w-full md:max-w-[calc(100%-80px)] overflow-x-auto overflow-hidden rounded-lg md:rounded-none md:rounded-tr-xl md:rounded-br-sm px-2 md:p-2.5 duration-300 h-fit ${toolbarOpen ? 'py-2 md:py-2.5 max-h-75 opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="w-max flex items-center gap-2.5">
                 <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div 
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.bold()}
+                    disabled={!isUserDashboard}
                   >
                     <Bold dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.italic()}
+                    disabled={!isUserDashboard}
                   >
                     <Italic dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.underline()}
+                    disabled={!isUserDashboard}
                   >
                     <Underline dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.strikethrough()}
+                    disabled={!isUserDashboard}
                   >
                     <Strikethrough dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.highlight()}
+                    disabled={!isUserDashboard}
                   >
                     <div className="-translate-y-0.25 scale-75">
                       <Highlighter dimension={windowWidth > 425 ? 20 : 24} />
                     </div>
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.setLink('https://github.com/SparshGupta78')}
+                    disabled={!isUserDashboard}
                   >
                     <Link dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.removeLink()}
+                    disabled={!isUserDashboard}
                   >
                     <Unlink dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
+                  </button>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
                 <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div 
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.superscript()}
+                    disabled={!isUserDashboard}
                   >
                     <Superscript dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.subscript()}
+                    disabled={!isUserDashboard}
                   >
                     <Subscript dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
+                  </button>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
                 <div className="h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div 
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.align('left')}
+                    disabled={!isUserDashboard}
                   >
                     <AlignLeft dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.align('center')}
+                    disabled={!isUserDashboard}
                   >
                     <AlignCenter dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.align('right')}
+                    disabled={!isUserDashboard}
                   >
                     <AlignRight dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.align('justify')}
+                    disabled={!isUserDashboard}
                   >
                     <AlignJustify dimension={windowWidth > 425 ? 20 : 24} />
-                  </div>
+                  </button>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
                 <div className="p-1 h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div 
+                  <button
                     className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.heading(1)}
+                    disabled={!isUserDashboard}
                   >
                     H1
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.heading(2)}
+                    disabled={!isUserDashboard}
                   >
                     H2
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.heading(3)}
+                    disabled={!isUserDashboard}
                   >
                     H3
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.heading(4)}
+                    disabled={!isUserDashboard}
                   >
                     H4
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.heading(5)}
+                    disabled={!isUserDashboard}
                   >
                     H5
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="text-sm md:text-xs p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)]"
                     onClick={() => toolkit.heading(6)}
+                    disabled={!isUserDashboard}
                   >
                     H6
-                  </div>
+                  </button>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div 
+                <button
                   className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
                   onClick={() => toolkit.code()}
+                  disabled={!isUserDashboard}
                 >
                   <div className="">
                     <Code dimension={windowWidth > 425 ? 20 : 24} />
@@ -212,41 +233,45 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   <div className="text-sm md:text-xs text-nowrap">
                     Code
                   </div>
-                </div>
+                </button>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
                 <div className="p-1 h-fit w-fit flex items-center justify-evenly gap-0.5">
-                  <div 
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center gap-1"
                     onClick={() => toolkit.unorderedList()}
+                    disabled={!isUserDashboard}
                   >
                     <div className="">
                       <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
                     </div>
                     <div className="text-sm md:text-xs text-nowrap">Unordered list</div>
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center gap-1"
                     onClick={() => toolkit.orderedList()}
+                    disabled={!isUserDashboard}
                   >
                     <div className="">
                       <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
                     </div>
                     <div className="text-sm md:text-xs text-nowrap">Ordered list</div>
-                  </div>
-                  <div 
+                  </button>
+                  <button
                     className="p-1 rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center gap-1"
                     onClick={() => toolkit.taskList()}
+                    disabled={!isUserDashboard}
                   >
                     <div className="">
                       <UnoderedList dimension={windowWidth > 425 ? 20 : 24} />
                     </div>
                     <div className="text-sm md:text-xs text-nowrap">Task list</div>
-                  </div>
+                  </button>
                 </div>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div 
+                <button
                   className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
                   onClick={() => toolkit.blockquote()}
+                  disabled={!isUserDashboard}
                 >
                   <div className="">
                     <Blockquote dimension={windowWidth > 425 ? 20 : 24} />
@@ -254,11 +279,12 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   <div className="text-sm md:text-xs text-nowrap">
                     Blockquote
                   </div>
-                </div>
+                </button>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div 
+                <button
                   className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
                   onClick={() => toolkit.horizontalRule()}
+                  disabled={!isUserDashboard}
                 >
                   <div className="">
                     <HorizontalRule dimension={windowWidth > 425 ? 20 : 24} />
@@ -266,11 +292,12 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   <div className="text-sm md:text-xs text-nowrap">
                     Horizontal rule
                   </div>
-                </div>
+                </button>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div 
+                <button
                   className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
                   onClick={() => toolkit.paragraph()}
+                  disabled={!isUserDashboard}
                 >
                   <div className="">
                     <Paragraph dimension={windowWidth > 425 ? 20 : 24} />
@@ -278,11 +305,12 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   <div className="text-sm md:text-xs text-nowrap">
                     Paragraph
                   </div>
-                </div>
+                </button>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div 
+                <button
                   className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
                   onClick={() => toolkit.clearMarks()}
+                  disabled={!isUserDashboard}
                 >
                   <div className="">
                     <ClearMarks dimension={windowWidth > 425 ? 20 : 24} />
@@ -290,11 +318,12 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   <div className="text-sm md:text-xs text-nowrap">
                     CLear marks
                   </div>
-                </div>
+                </button>
                 <div className="h-6 w-0.5 rounded-full  bg-[var(--blue-1)]"></div>
-                <div 
+                <button
                   className="p-1 h-fit w-fit rounded-sm duration-200 hover:bg-[var(--blue-1)] active:bg-[var(--blue-1)] flex items-center justify-evenly gap-1"
                   onClick={() => toolkit.clearNodes()}
+                  disabled={!isUserDashboard}
                 >
                   <div className="">
                     <ClearNodes dimension={windowWidth > 425 ? 20 : 24} />
@@ -302,21 +331,22 @@ const ToolBox = ({setSideNavOpen, toolkit}: ToolBoxType) => {
                   <div className="text-sm md:text-xs text-nowrap">
                     CLear nodes
                   </div>
-                </div>
+                </button>
               </div>
             </div>
           </div>
         </div>
         <div className="md:hidden absolute bottom-1 left-0 w-full h-fit flex items-center justify-center gap-1">
-          <div 
+          <button
             className="w-fit flex items-center justify-center gap-1 select-none" 
             onClick={() => setToolbarOpen(prev => !prev)}
+            disabled={!isUserDashboard}
             >
             <div className={`duration-300 ${toolbarOpen ? 'rotate-x-180' : 'rotate-x-0'}`}>
               <ArrowDown dimension={10} color="#347CE9" />
             </div>
             {toolbarOpen ? <span className="text-xs text-[var(--blue-2)]">Close toolbar</span> : <span className="text-xs text-[var(--blue-2)]">Open toolbar</span>}
-          </div>
+          </button>
         </div>
       </div>
     </div>

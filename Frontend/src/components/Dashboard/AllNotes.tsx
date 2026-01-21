@@ -6,7 +6,7 @@ import { extractTextFromJSON } from "../../utils/tiptapTextExtractor"
 import type { NoteType } from "../../types/note.type"
 import { useWindowWidthContext } from "../../contexts/windowWidth.context"
 import useUserAPI from "../../services/user.service"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
 type props = {
   allNotesOpen: boolean,
@@ -15,7 +15,8 @@ type props = {
   allNotes: NoteType[],
   allNotesFetchingStatus: -1 | 0 | 1,
   notesFetch: () => Promise<void>,
-  fetchNotesTitle: () => Promise<void>
+  fetchNotesTitle: () => Promise<void>,
+  isUserDashboard: boolean
 }
 
 const AllNotes = ({
@@ -25,7 +26,8 @@ const AllNotes = ({
   allNotes,
   allNotesFetchingStatus,
   notesFetch,
-  fetchNotesTitle
+  fetchNotesTitle,
+  isUserDashboard
 }: props) => {
 
   const { DeleteAllNotes } = useUserAPI()
@@ -78,7 +80,7 @@ const AllNotes = ({
                       allNotesFetchingStatus === 1
                       ?
                       (
-                        allNotes.length > 0
+                        allNotes.length > 1
                         ?
                         `${allNotes.length} Notes`
                         :
@@ -92,57 +94,59 @@ const AllNotes = ({
                   </div>
                   <div className="h-4 w-0.5 bg-[var(--black-1)] rounded-full"></div>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <DropDown 
-                    trigger={
-                      <button className="flex items-center duration-150 hover:opacity-75 active:opacity-60">
-                        <span className="text-sm text-[var(--blue-2)] mr-1 text-nowrap">Filter</span>
-                        <Filter dimension={14} color="#347CE9" />
-                        <ArrowDown dimension={8} color="#347CE9" />
-                      </button>
-                    }
-                    preStyle={false}
-                    contentStyle="p-1.25 bg-[var(--black-6)] rounded-lg"
-                    align={windowWidth < 640 ? 'right' : 'left'}
-                  >
-                    {filters && filters.map((item => {
-                      return (
-                        <DropDownItem
-                          key={item}
-                          setValue={setFilter}
-                          data={item}
-                          preStyle={false}
-                          className={`text-sm text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${filter === item ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+                {isUserDashboard && (
+                  <div className="flex items-center gap-2.5">
+                    <DropDown 
+                      trigger={
+                        <button className="flex items-center duration-150 hover:opacity-75 active:opacity-60">
+                          <span className="text-sm text-[var(--blue-2)] mr-1 text-nowrap">Filter</span>
+                          <Filter dimension={14} color="#347CE9" />
+                          <ArrowDown dimension={8} color="#347CE9" />
+                        </button>
+                      }
+                      preStyle={false}
+                      contentStyle="p-1.25 bg-[var(--black-6)] rounded-lg"
+                      align={windowWidth < 640 ? 'right' : 'left'}
+                    >
+                      {filters && filters.map((item => {
+                        return (
+                          <DropDownItem
+                            key={item}
+                            setValue={setFilter}
+                            data={item}
+                            preStyle={false}
+                            className={`text-sm text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${filter === item ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+                          >
+                            {item}
+                          </DropDownItem>
+                        )
+                      }))}
+                    </DropDown>
+                    <DropDown
+                      trigger={
+                        <button className="text-sm text-[var(--red-4)] duration-150 hover:opacity-75 active:opacity-60 text-nowrap">
+                          Delete All
+                        </button>
+                      }
+                      preStyle={false}
+                      contentStyle="p-1.5 bg-[var(--black-6)] rounded-lg"
+                      align={windowWidth < 640 ? 'right' : 'left'}
+                    >
+                      <div className="w-50">
+                        <div className="text-center p-2 text-[var(--black-5)]">
+                          <div className="text-sm font-normal">Are you sure you want to delete all notes?</div>
+                          <div className="mt-1 text-xs">This action cannot be undone.</div>
+                        </div>
+                        <button
+                          className="mt-1.5 w-full text-sm bg-[var(--red-5)] rounded-md text-center p-0.75 text-[var(--white-2)] font-normal select-none duration-300 hover:opacity-70 active:scale-96"
+                          onClick={deleteAllNotesHandler}
                         >
-                          {item}
-                        </DropDownItem>
-                      )
-                    }))}
-                  </DropDown>
-                  <DropDown
-                    trigger={
-                      <button className="text-sm text-[var(--red-4)] duration-150 hover:opacity-75 active:opacity-60 text-nowrap">
-                        Delete All
-                      </button>
-                    }
-                    preStyle={false}
-                    contentStyle="p-1.5 bg-[var(--black-6)] rounded-lg"
-                    align={windowWidth < 640 ? 'right' : 'left'}
-                  >
-                    <div className="w-50">
-                      <div className="text-center p-2 text-[var(--black-5)]">
-                        <div className="text-sm font-normal">Are you sure you want to delete all notes?</div>
-                        <div className="mt-1 text-xs">This action cannot be undone.</div>
+                          Yes, Delete All
+                        </button>
                       </div>
-                      <button
-                        className="mt-1.5 w-full text-sm bg-[var(--red-5)] rounded-md text-center p-0.75 text-[var(--white-2)] font-normal select-none duration-300 hover:opacity-70 active:scale-96"
-                        onClick={deleteAllNotesHandler}
-                      >
-                        Yes, Delete All
-                      </button>
-                    </div>
-                  </DropDown>
-                </div>
+                    </DropDown>
+                  </div>
+                )}
               </div>
               <div className="w-full sm:w-fit">
                 <div className="relative rounded-md">
@@ -180,12 +184,19 @@ const AllNotes = ({
                         <div className="w-full flex justify-between items-center gap-2.5">
                           <div className="text-xs text-[var(--black-2)]">{formattedDate}</div>
                           <div className="flex items-center gap-3">
-                            <div className="h-fit">
+                            <Link
+                              to={`/${username}/${note.noteID}`}
+                              className="h-fit"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <ArrowTopRight dimension={14} color="#1e1e1e" />
-                            </div>
-                            <div className="h-fit">
-                              <Delete dimension={16} color="#1e1e1e" />
-                            </div>
+                            </Link>
+                            {isUserDashboard && (
+                              <div className="h-fit">
+                                <Delete dimension={16} color="#1e1e1e" />
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="w-full text-lg font-normal text-nowrap line-clamp-1">
@@ -224,21 +235,28 @@ const AllNotes = ({
                     <div className="text-sm sm:text-[15px]">
                       {allNotesFetchingStatus === -1 && (
                         <>
-                          <div>Something went wrong while retrieving your notes.</div>
+                          <div>Something went wrong while retrieving the notes.</div>
                           <div className="mt-1">Please try again.</div>
                         </>
                       )}
                       {allNotesFetchingStatus === 0 && (
                         <>
-                          <div>Retrieving all your notes…</div>
+                          <div>Retrieving all the notes…</div>
                           <div className="mt-1">Almost there.</div>
                         </>
                       )}
                       {allNotesFetchingStatus === 1 && allNotes.length === 0 && (
-                        <>
-                          <div>You haven't created any notes yet.</div>
-                          <div className="mt-1">Start by creating your first one.</div>
-                        </>
+                          isUserDashboard ? (
+                            <>
+                              <div>You haven't created any notes yet.</div>
+                              <div className="mt-1">Start by creating your first one.</div>
+                            </>
+                          ) : (
+                            <>
+                              <div>{username} haven't created any public notes yet.</div>
+                              <div className="mt-1">When {username} shares public notes, they'll appear here.</div>
+                            </>
+                          )
                       )}
                     </div>
                     {allNotesFetchingStatus === -1 && (
@@ -256,7 +274,7 @@ const AllNotes = ({
                         </button>
                       </div>
                     )}
-                    {allNotesFetchingStatus === 1 && allNotes.length === 0 && (
+                    {isUserDashboard && allNotesFetchingStatus === 1 && allNotes.length === 0 && (
                       <div className="">
                         <button
                           className="w-fit flex items-center gap-0.5 duration-150 hover:opacity-80 active:opacity-60 select-none"

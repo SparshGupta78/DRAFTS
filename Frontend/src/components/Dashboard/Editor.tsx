@@ -253,6 +253,7 @@ const Editor = ({
           <ToolBox
             setSideNavOpen={setSideNavOpen}
             toolkit={toolkit}
+            isUserDashboard={isUserDashboard}
           />
         </div>
         <div className="w-full h-full md:h-[calc(100%-56px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-xl md:rounded-t-sm md:rounded-b-xl flex items-center justify-center mt-13 mb-10 md:mt-0 md:mb-0 overflow-hidden">
@@ -299,36 +300,38 @@ const Editor = ({
                       {visibility && <div className="text-sm text-[var(--black-2)] font-normal px-2.5 py-1 rounded-full border-2 border-[var(--black-6)] h-fit w-fit capitalize">
                         {visibility}
                       </div>}
-                      <DropDown
-                        trigger={
-                          <button className="group h-fit aspect-square border-2 border-[var(--black-6)] rounded-full flex items-center">
-                            <div className="group-hover:scale-95 group-active:scale-85 duration-300 p-1 rounded-full bg-[var(--black-4)]">
-                              <ThreeDots dimension={20} color="#4C4C4C" />
-                            </div>
-                          </button>
-                        }
-                        preStyle={false}
-                        contentStyle="p-0.75 bg-[var(--black-6)] rounded-lg flex flex-col gap-0.75"
-                        align={'right'}
-                      >
-                        {editorOptions && editorOptions.map((item, i) => {
-                          return (
-                            <DropDownItem
-                            key={item.tag}
-                            setValue={() => {}}
-                            data={item.tag}
-                            preStyle={false}
-                            className={`bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97 ${i == 0 ? 'rounded-t-md rounded-b-[2px]' : ''} ${i != 0 && i != (editorOptions.length - 1) ? 'rounded-[2px]' : ''} ${i == (editorOptions.length - 1) ? 'rounded-b-md rounded-t-[2px]' : ''}`}
-                            onClick={() => {
-                              setAlertContentType(item.tag)
-                              setAlertOpen(true)
-                            }}
-                          >
-                            {item.option}
-                          </DropDownItem>
-                          )
-                        })}
-                      </DropDown>
+                      {isUserDashboard && (
+                        <DropDown
+                          trigger={
+                            <button className="group h-fit aspect-square border-2 border-[var(--black-6)] rounded-full flex items-center">
+                              <div className="group-hover:scale-95 group-active:scale-85 duration-300 p-1 rounded-full bg-[var(--black-4)]">
+                                <ThreeDots dimension={20} color="#4C4C4C" />
+                              </div>
+                            </button>
+                          }
+                          preStyle={false}
+                          contentStyle="p-0.75 bg-[var(--black-6)] rounded-lg flex flex-col gap-0.75"
+                          align={'right'}
+                        >
+                          {editorOptions && editorOptions.map((item, i) => {
+                            return (
+                              <DropDownItem
+                              key={item.tag}
+                              setValue={() => {}}
+                              data={item.tag}
+                              preStyle={false}
+                              className={`bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97 ${i == 0 ? 'rounded-t-md rounded-b-[2px]' : ''} ${i != 0 && i != (editorOptions.length - 1) ? 'rounded-[2px]' : ''} ${i == (editorOptions.length - 1) ? 'rounded-b-md rounded-t-[2px]' : ''}`}
+                              onClick={() => {
+                                setAlertContentType(item.tag)
+                                setAlertOpen(true)
+                              }}
+                            >
+                              {item.option}
+                            </DropDownItem>
+                            )
+                          })}
+                        </DropDown>
+                      )}
                     </div>
                   </div>
                   <div className="mt-2.5 w-full flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-1.5">
@@ -341,14 +344,16 @@ const Editor = ({
                           (
                             tags.map((tag, _) => {
                               return (
-                                <div key={tag.tagId} className="flex items-center gap-1 pl-2.25 pr-1.5 py-0.5 bg-[var(--blue-1)] rounded-full">
+                                <div key={tag.tagId} className={`flex items-center gap-1 pl-2.25 py-0.5 bg-[var(--blue-1)] rounded-full ${isUserDashboard ? 'pr-1.5' : 'pr-2.5'}`}>
                                   <span className="text-sm text-[var(--blue-2)] text-nowrap w-fit max-w-22 truncate">{tag.tag}</span>
-                                  <div
-                                    className="h-fit w-fit hover:opacity-65 active:opacity-50 duration-300"
-                                    onClick={() => deleteTag(tag.tagId)}
-                                  >
-                                    <Close dimension={14} color="#1b63ce" />
-                                  </div>
+                                  {isUserDashboard && (
+                                    <div
+                                      className="h-fit w-fit hover:opacity-65 active:opacity-50 duration-300"
+                                      onClick={() => deleteTag(tag.tagId)}
+                                    >
+                                      <Close dimension={14} color="#1b63ce" />
+                                    </div>
+                                  )}
                                 </div>
                               )
                             })
@@ -383,7 +388,7 @@ const Editor = ({
                   <div className="text-[22px] sm:text-2xl font-normal">
                     {
                       !noteId
-                        ? "Your workspace is empty"
+                        ? isUserDashboard ? "Your workspace is empty" : "Workspace is empty"
                         : fetchingStatus === 0
                         ? "Loading workspace ..."
                         : fetchingStatus === -1
@@ -397,16 +402,16 @@ const Editor = ({
                         !noteId
                           ? "You don't have any note open right now."
                           : fetchingStatus === 0
-                          ? "We're fetching your notes right now."
+                          ? "Fetching the notes right now."
                           : fetchingStatus === -1
-                          ? "Something went wrong while fetching your notes."
+                          ? "Something went wrong while fetching the notes."
                           : ""
                       }
                     </div>
                     <div className="mt-1">
                       {
                         !noteId
-                          ? "Choose one from your list or create a new note to begin."
+                          ? isUserDashboard ? "Choose one from your list or create a new note to begin." : "Select a note from the list to continue."
                           : fetchingStatus === 0
                           ? "Please wait a moment."
                           : fetchingStatus === -1
@@ -430,13 +435,15 @@ const Editor = ({
                           <span className="text-[var(--blue-2)] font-normal">Retry</span>
                         </button>
                       ) : (
-                        <button
-                          className="w-fit flex items-center gap-0.5 duration-150 hover:opacity-80 active:opacity-60 select-none"
-                          onClick={() => setNewNoteOpen(true)}
-                        >
-                          <Plus dimension={22} color="#347CE9" />
-                          <span className="text-[var(--blue-2)] font-normal">New Note</span>
-                        </button>
+                        isUserDashboard && (
+                          <button
+                            className="w-fit flex items-center gap-0.5 duration-150 hover:opacity-80 active:opacity-60 select-none"
+                            onClick={() => setNewNoteOpen(true)}
+                          >
+                            <Plus dimension={22} color="#347CE9" />
+                            <span className="text-[var(--blue-2)] font-normal">New Note</span>
+                          </button>
+                        )
                       )
                     }
                     <button

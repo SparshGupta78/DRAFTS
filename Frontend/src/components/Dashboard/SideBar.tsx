@@ -6,7 +6,7 @@ import { usePreferencesContext } from "../../contexts/preferences.context"
 import { useWindowWidthContext } from "../../contexts/windowWidth.context"
 import setStartupBehaviour from "../../utils/startupBehaviour"
 
-type SideBarProps = {
+type props = {
   loggedUser: UserType | undefined,
   sideNavOpen: boolean,
   setSideNavOpen: Dispatch<React.SetStateAction<boolean>>,
@@ -17,7 +17,8 @@ type SideBarProps = {
   editorFetch: (noteId: string) => Promise<void>,
   setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
   notesFetch: () => Promise<void>,
-  setAccountOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setAccountOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  isUserDashboard: boolean
 }
 
 type SideBarNotesType = {
@@ -36,8 +37,9 @@ const SideBar = ({
   editorFetch,
   setAllNotesOpen,
   notesFetch,
-  setAccountOpen
-}: SideBarProps) => {
+  setAccountOpen,
+  isUserDashboard
+}: props) => {
 
   const navigate = useNavigate()
 
@@ -82,20 +84,22 @@ const SideBar = ({
       <div className={`duration-300 w-[min(80%,340px)] md:w-65 h-full bg-[var(--white-2)] md:rounded-xl ${sideNavOpen ? 'translate-x-0' : `${sidebarPosition && sidebarPosition === 'Right' ? 'translate-x-full' : '-translate-x-full'}`}`}>
         <div className="w-full h-fit px-2.5 py-3.5 md:pb-2.5 flex flex-col gap-3.5">
           <div className="w-fit h-hull text-lg md:text-base font-[500] tracking-[3px]">DRAFTS</div>
-          <div 
-            className="group p-2 md:p-1 bg-[var(--blue-2)] rounded-full flex items-center gap-2 md:gap-1 active:scale-96 duration-300" 
-            onClick={() => {
-              if (windowWidth < 768) setSideNavOpen(false)
-              setNewNoteOpen(true)
-            }}
-          >
-            <div className="flex justify-center items-center bg-[var(--blue-3)] text-[var(--white-1)] rounded-full p-1 md:scale-80 group-hover:scale-85 duration-300">
-              <Plus color="#ffffff" />
+          {isUserDashboard && (
+            <div 
+              className="group p-2 md:p-1 bg-[var(--blue-2)] rounded-full flex items-center gap-2 md:gap-1 active:scale-96 duration-300" 
+              onClick={() => {
+                if (windowWidth < 768) setSideNavOpen(false)
+                setNewNoteOpen(true)
+              }}
+            >
+              <div className="flex justify-center items-center bg-[var(--blue-3)] text-[var(--white-1)] rounded-full p-1 md:scale-80 group-hover:scale-85 duration-300">
+                <Plus color="#ffffff" />
+              </div>
+              <div className="text-[15px] md:text-[13px] text-[var(--white-1)] select-none">New Note</div>
             </div>
-            <div className="text-[15px] md:text-[13px] text-[var(--white-1)] select-none">New Note</div>
-          </div>
+          )}
         </div>
-        <div className="w-full h-[1px] bg-[var(--blue-1)]"></div>
+        <hr className="w-full border-[var(--blue-1)]" />
         <div className="px-2.5 py-2.5 md:py-2 flex justify-between items-center">
           <div className={`ml-1.5 duration-300 md:text-sm ${searchOpen ? 'hidden' : 'block'}`}>All notes</div>
           <div className={`h-fit border-1 rounded-full flex items-center duration-300 ${searchOpen ? 'p-1.5 md:p-1 w-full border-[var(--black-1)]' : 'w-fit border-[var(--white-1)]'}`}>
@@ -117,8 +121,8 @@ const SideBar = ({
             </div>
           </div>
         </div>
-        <div className="w-full h-[1px] bg-[var(--blue-1)]"></div>
-        <div className={`w-full duration-300 relative ${searchOpen ? 'h-[calc(100%-262px)] md:h-[calc(100%-232px)]' : 'h-[calc(100%-250px)] md:h-[calc(100%-224px)]'}`}>
+        <hr className="w-full border-[var(--blue-1)]" />
+        <div className={`w-full duration-300 relative ${searchOpen ? `${isUserDashboard ? 'h-[calc(100%-262px)] md:h-[calc(100%-232px)]' : 'h-[calc(100%-208px)] md:h-[calc(100%-178px)]'}` : `${isUserDashboard ? 'h-[calc(100%-250px)] md:h-[calc(100%-224px)]' : 'h-[calc(100%-196px)] md:h-[calc(100%-170px)]'} `}`}>
           <div className="flex justify-end rounded-br-xl">
             <button 
               className="text-[var(--blue-2)] px-3 py-1.5 translate-y-1.5 text-sm md:text-xs duration-200 hover:opacity-75 active:opacity-60"
@@ -136,7 +140,7 @@ const SideBar = ({
               noteTitlesFetchStatus === 0 && 
               <div className="w-full h-full flex flex-col items-center justify-center p-3.75">
                 <span className="text-sm text-[var(--black-2)] text-center">
-                  Gathering your notes.
+                  Gathering notes.
                 </span>
                 <span className="text-sm text-[var(--black-2)] text-center">
                   Almost there...
@@ -147,7 +151,7 @@ const SideBar = ({
               noteTitlesFetchStatus === -1 && 
               <div className="w-full h-full flex flex-col gap-1 items-center justify-center p-3.75">
                 <span className="text-sm text-[var(--black-2)] text-center">
-                  Something went wrong while retrieving your notes.
+                  Something went wrong while retrieving the notes.
                 </span>
                 <button
                   className="w-fit flex items-center gap-1.25 duration-150 hover:opacity-80 active:opacity-60 select-none"
@@ -167,17 +171,19 @@ const SideBar = ({
               noteTitles.length === 0 &&
               <div className="w-full h-full flex flex-col items-center justify-center p-3.75">
                 <span className="text-sm text-[var(--black-2)] text-center">
-                  You don't have any notes yet.
+                  {isUserDashboard ? "You don't have any notes yet." : `${username} hasn't published any public notes yet.`}
                 </span>
-                <div 
-                  className="text-sm text-[var(--black-2)] text-center"
-                  onClick={() => {
-                    if (windowWidth < 768) setSideNavOpen(false)
-                    setNewNoteOpen(true)
-                  }}
-                >
-                  Click <span className="text-[var(--blue-2)] text-center select-none">New Note</span> to get started.
-                </div>
+                {isUserDashboard && (
+                  <div 
+                    className="text-sm text-[var(--black-2)] text-center"
+                    onClick={() => {
+                      if (windowWidth < 768) setSideNavOpen(false)
+                      setNewNoteOpen(true)
+                    }}
+                  >
+                    Click <span className="text-[var(--blue-2)] text-center select-none">New Note</span> to get started.
+                  </div>
+                )}
               </div>
             } 
             {
@@ -228,7 +234,7 @@ const SideBar = ({
         </div>
         <div className="w-full h-fit p-2.5 pb-3.5 md:pb-2.5 cursor-default">
           <div
-            className="w-full h-full p-1.5 md:p-1 border-1 border-[var(--blue-1)] hover:border-[var(--blue-4)] rounded-full flex items-center justify-between gap-2 outline-3 outline-[var(--white-2)] hover:outline-[var(--blue-1)] duration-300 active:scale-98"
+            className="w-full h-full p-1.5 md:p-1 border-1 border-[var(--blue-1)] hover:border-[var(--blue-4)] rounded-full flex items-center justify-between gap-2 outline-0 outline-[var(--white-2)] hover:outline-4 hover:outline-[var(--white-4)] duration-200 active:scale-98"
             onClick={() => {
               if (windowWidth < 768) setSideNavOpen(false)
               setAccountOpen(true)
