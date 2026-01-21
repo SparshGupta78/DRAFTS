@@ -42,6 +42,14 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
         type: "error"
       })
     }
+    const exists = tags.find(tag => tag.tag === tagInput)
+    if (exists) {
+      return createNotification({
+        title: "Duplicate Tag",
+        message: "A tag with this name already exists.",
+        type: "default"
+      })
+    }
     setTags(prev => {
       if (prev.length >= 5) {
         return prev
@@ -139,7 +147,7 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
                     disabled={fieldDisable}
                     />
                   <button 
-                    className={`absolute top-1/2 right-1.25 -translate-y-1/2 rounded-full px-3 py-1.25 text-sm font-normal bg-[var(--blue-1)] disabled:opacity-75 duration-300 ${fieldDisable ? 'text-[var(--black-2)]' : 'text-[var(--blue-2)]'}`} 
+                    className={`absolute top-1/2 right-1.25 -translate-y-1/2 rounded-full px-3 py-1.25 text-sm font-normal bg-[var(--blue-1)] disabled:opacity-75 active:scale-94 duration-300 ${fieldDisable ? 'text-[var(--black-2)]' : 'text-[var(--blue-2)]'}`} 
                     onClick={() => {
                       createTag()
                       setTagInput('')
