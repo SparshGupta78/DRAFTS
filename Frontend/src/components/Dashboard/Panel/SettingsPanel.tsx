@@ -7,7 +7,7 @@ import { usePreferencesContext } from '../../../contexts/preferences.context'
 
 const SettingsPanel = () => {
 
-  const { preferences, updatePreference } = usePreferencesContext()
+  const { preferences, updatePreference, resetPreferences } = usePreferencesContext()
 
   const [language, setLanguage] = useState<'English'>('English')
   const [theme, setTheme] = useState<'System' | 'Light' | 'Dark'>('Light')
@@ -234,6 +234,25 @@ const SettingsPanel = () => {
           )
         }))}
       </DropDown>
+      </div>
+      <div>
+        <div className="mt-1.5 text-sm font-normal text-[var(--black-2)]">
+          Preferences
+        </div>
+        <hr className="my-1.5 w-full border-[var(--black-1)]" />
+      </div>
+      <div className="p-2.5 flex items-center justify-between gap-2.5">
+        <div>
+          <div className='text-sm text-[var(--black-3)] font-normal'>Theme</div>
+          <div className='text-xs text-[var(--black-2)]'>Undo all changes and restore default settings.</div>
+        </div>
+        <button
+          type='button'
+          className="px-2.5 py-1.5 rounded-sm bg-[var(--blue-2)] text-[var(--white-1)] font-normal flex items-center gap-2 duration-150 hover:opacity-90 active:opacity-80 text-[13px]"
+          onClick={resetPreferences}
+        >
+          Reset Preferences
+        </button>
       </div>
     </div>
   )
