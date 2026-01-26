@@ -248,20 +248,18 @@ const Editor = ({
         addTag={addTag}
         currentTags={tags}
       />
-      <div className="w-full h-full flex flex-col items-center gap-0.5">
-        <div className="w-full flex items-center">
-          <ToolBox
-            setSideNavOpen={setSideNavOpen}
-            toolkit={toolkit}
-            isUserDashboard={isUserDashboard}
-          />
-        </div>
-        <div className="w-full h-full md:h-[calc(100%-56px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-xl md:rounded-t-sm md:rounded-b-xl flex items-center justify-center mt-13 mb-10 md:mt-0 md:mb-0 overflow-hidden">
-          <div className={`w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-xl md:rounded-sm p-3.5 ${(preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'}`}>
+      <div className="w-full h-full flex flex-col items-center gap-0.75">
+        <ToolBox
+          setSideNavOpen={setSideNavOpen}
+          toolkit={toolkit}
+          isUserDashboard={isUserDashboard}
+        />
+        <div className="w-full h-full md:h-[calc(100%-43.6px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-t-xl md:rounded-t-sm rounded-b-xl flex items-center justify-center mb-10 md:mb-0 overflow-hidden">
+          <div className={`w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-sm p-3.5 ${(preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'}`}>
             {
               (noteId && fetchingStatus === 1) 
               ? 
-              (<div className="w-full h-full overflow-x-hidden overflow-y-auto">
+              (<div className="w-full h-full overflow-x-hidden overflow-y-scroll">
                 <div className="w-full">
                   <div className="w-full flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-1.5">
                     <div className={`w-full sm:w-fit max-w-full rounded-full flex sm:flex-row-reverse items-center gap-2.5 duration-300 ${titleEdit ? 'bg-[var(--white-3)] p-2 md:p-1.75' : 'bg-transparent border-transparent'}`}>
@@ -303,9 +301,9 @@ const Editor = ({
                       {isUserDashboard && (
                         <DropDown
                           trigger={
-                            <button className="group h-fit aspect-square border-2 border-[var(--black-6)] rounded-full flex items-center">
-                              <div className="group-hover:scale-95 group-active:scale-85 duration-300 p-1 rounded-full bg-[var(--black-4)]">
-                                <ThreeDots dimension={20} color="#4C4C4C" />
+                            <button className="group h-fit aspect-square border-2 border-[var(--white-3)] rounded-full flex items-center">
+                              <div className="group-hover:scale-95 group-active:scale-85 duration-300 p-1 rounded-full bg-[var(--blue-1)]">
+                                <ThreeDots dimension={20} color="#347CE9" />
                               </div>
                             </button>
                           }

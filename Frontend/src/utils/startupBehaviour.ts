@@ -1,4 +1,3 @@
-import { usePreferencesContext } from "../contexts/preferences.context"
 import type { DefaultPreferencesType } from "../types/preferences.type"
 
 const setStartupBehaviour = (path: string, preferences: DefaultPreferencesType | undefined) => {

@@ -28,10 +28,16 @@ const EditorPanel = () => {
     if(status) setSpellCheck(prev => !prev)
   }
 
+  const autosaveHandler = () => {
+    const status = updatePreference('editor.autosave', !autosave)
+    if(status) setAutosave(prev => !prev)
+  }
+
   useEffect(() => {
     if(!preferences) return
     setEditorWidth(preferences.editor.editorWidth)
     setSpellCheck(preferences.editor.spellCheck)
+    setAutosave(preferences.editor.autosave)
   }, [preferences])
 
   return (
@@ -54,7 +60,7 @@ const EditorPanel = () => {
         </div>
         <Switch 
           state={autosave}
-          onClick={() => setAutosave(prev => !prev)}
+          onClick={autosaveHandler}
         />
       </div>
       <hr className="mx-2.5 w-[calc(100%-20px)] border-[var(--black-4)]" />

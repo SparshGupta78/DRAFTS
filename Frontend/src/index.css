@@ -11,6 +11,7 @@
   --blue-2: #347CE9;
   --blue-3: #1b63ce;
   --blue-4: #b6d3ff;
+  --blue-5: #cee1ff;
 
   --black-1: #D0D0D0;
   --black-2: #4C4C4C;
@@ -175,6 +176,7 @@ body {
 .tiptap blockquote {
   margin: 0.75rem 0;
   padding-left: 1rem;
+  padding-right: 0.5rem;
   background-color: var(--white-3);
   border-left: 4px solid var(--blue-1);
   border-radius: 5px;
