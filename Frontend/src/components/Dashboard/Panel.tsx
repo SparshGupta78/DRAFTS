@@ -108,35 +108,37 @@ const Panel = ({
                     </div>
                   </DropDown>
                 </div>
-                <div className="sm:mr-2.5 w-full sm:w-fit flex justify-center items-center gap-3 relative">
-                  <button
-                    className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'account' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                    onClick={() => setPanel('account')}
-                  >
-                    <AccountIcon dimension={14} />
-                    <span className='text-sm'>Account</span>
-                  </button>
-                  <button
-                    className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'editor' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                    onClick={() => setPanel('editor')}
-                  >
-                    <Editor dimension={16} />
-                    <span className='text-sm'>Editor</span>
-                  </button>
-                  <button
-                    className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'data' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                    onClick={() => setPanel('data')}
-                  >
-                    <Data dimension={16} />
-                    <span className='text-sm'>Data</span>
-                  </button>
-                  <button
-                    className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'settings' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                    onClick={() => setPanel('settings')}
-                  >
-                    <Settings dimension={16} />
-                    <span className='text-sm'>Settings</span>
-                  </button>
+                <div className="sm:mr-2.5 w-full max-w-full overflow-x-scroll sm:w-fit grid place-items-center">
+                  <div className="w-fit flex justify-center items-center gap-3 relative">
+                    <button
+                      className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'account' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
+                      onClick={() => setPanel('account')}
+                    >
+                      <AccountIcon dimension={14} />
+                      <span className='text-sm'>Account</span>
+                    </button>
+                    <button
+                      className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'editor' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
+                      onClick={() => setPanel('editor')}
+                    >
+                      <Editor dimension={16} />
+                      <span className='text-sm'>Editor</span>
+                    </button>
+                    <button
+                      className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'data' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
+                      onClick={() => setPanel('data')}
+                    >
+                      <Data dimension={16} />
+                      <span className='text-sm'>Data</span>
+                    </button>
+                    <button
+                      className={`py-0.5 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:-bottom-0.75 after:left-0 after:w-7/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'settings' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
+                      onClick={() => setPanel('settings')}
+                    >
+                      <Settings dimension={16} />
+                      <span className='text-sm'>Settings</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="w-full min-h-[calc(100%-78px)] sm:min-h-[calc(100%-44px)] h-fit relative">
