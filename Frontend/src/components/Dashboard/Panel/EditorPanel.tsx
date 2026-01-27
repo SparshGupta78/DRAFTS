@@ -38,12 +38,17 @@ const EditorPanel = () => {
     updatePreference('editor.autosaveInterval', ew)
   }
 
+  const visibilityHandler = () => {
+    updatePreference('editor.visibility', visibility === 'Private' ? 'Public' : 'Private')
+  }
+
   useEffect(() => {
     if(!preferences) return
     setEditorWidth(preferences.editor.editorWidth)
     setSpellCheck(preferences.editor.spellCheck)
     setAutosave(preferences.editor.autosave)
     setAutosaveInterval(preferences.editor.autosaveInterval)
+    setVisibility(preferences.editor.visibility)
   }, [preferences])
 
   return (
@@ -108,7 +113,7 @@ const EditorPanel = () => {
       <div className="p-2.5 flex items-center justify-between gap-2.5">
         <div>
           <div className='text-sm text-[var(--black-3)] font-normal'>Default Visibility</div>
-          <div className='text-xs text-[var(--black-2)]'>Define who can view notes across the platform.</div>
+          <div className='text-xs text-[var(--black-2)]'>The visibility level automatically applied when a new note is created.</div>
         </div>
         <DropDown
         trigger={
@@ -130,6 +135,7 @@ const EditorPanel = () => {
               data={ew}
               preStyle={false}
               className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${visibility === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              onClick={visibilityHandler}
             >
               {ew}
             </DropDownItem>

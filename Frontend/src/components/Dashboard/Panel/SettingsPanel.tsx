@@ -248,7 +248,7 @@ const SettingsPanel = () => {
         </div>
         <button
           type='button'
-          className="px-2.5 py-1.5 rounded-sm bg-[var(--blue-2)] text-[var(--white-1)] font-normal flex items-center gap-2 duration-150 hover:opacity-90 active:opacity-80 text-[13px]"
+          className="px-2.5 py-1.5 rounded-sm bg-[var(--blue-2)] text-[var(--white-1)] font-normal flex items-center gap-2 duration-150 hover:opacity-90 active:opacity-80 text-[13px] text-nowrap"
           onClick={resetPreferences}
         >
           Reset Preferences

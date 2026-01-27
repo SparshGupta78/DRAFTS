@@ -1,10 +1,11 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Close } from "../../assets/Icons"
 import { useNotificationContext } from "../../contexts/notification.context"
 import useUserAPI from "../../services/user.service"
 import { useParams } from "react-router-dom"
 import type { TagType } from "../../types/tag.type"
 import type { CreateNewNote } from "../../types/CreateNewNote.type"
+import { usePreferencesContext } from "../../contexts/preferences.context"
 
 type NewNoteType = {
   newNoteOpen: boolean,
@@ -19,11 +20,12 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
   const { username } = useParams()
 
   const {createNotification} = useNotificationContext()
+  const { preferences } = usePreferencesContext()
 
   const [title, setTitle] = useState('')
   const [tags, setTags] = useState<TagType[]>([])
   const [tagInput, setTagInput] = useState('')
-  const [visibility, setVisibility] = useState<'private' | 'public'>('private')
+  const [visibility, setVisibility] = useState<'Private' | 'Public'>('Private')
   const [fieldDisable, setFieldDisable] = useState(false)
   const dialogRef = useRef(null)
 
@@ -67,7 +69,7 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
     setTitle('')
     setTagInput('')
     setTags([])
-    setVisibility('private')
+    setVisibility('Private')
     setFieldDisable(false)
   }
 
@@ -92,6 +94,10 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
       clearDialog()
     }
   }
+
+  useEffect(() => {
+    if(preferences) setVisibility(preferences.editor.visibility)
+  }, [preferences])
 
   return (
     <div className={`fixed inset-0 z-100 bg-black/15 backdrop-blur-[2px] duration-300 ${newNoteOpen ? 'pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
@@ -181,14 +187,14 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
               <div className="mt-1.5 sm:mt-0 w-full sm:w-1/2 flex justify-end sm:justify-start">
                 <div className="p-0.75 w-fit max-w-full border-2 border-[var(--blue-1)] rounded-full flex">
                   <div 
-                    className={`px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none ${visibility === 'private' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]'} ${fieldDisable ? 'opacity-75' : ''}`} 
-                    onClick={() => {!fieldDisable && setVisibility('private')}}
+                    className={`px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none ${visibility === 'Private' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]'} ${fieldDisable ? 'opacity-75' : ''}`} 
+                    onClick={() => {!fieldDisable && setVisibility('Private')}}
                   >
                     Private
                   </div>
                   <div 
-                    className={`px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none ${visibility === 'public' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]'} ${fieldDisable ? 'opacity-75' : ''}`} 
-                    onClick={() => {!fieldDisable && setVisibility('public')}}
+                    className={`px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none ${visibility === 'Public' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]'} ${fieldDisable ? 'opacity-75' : ''}`} 
+                    onClick={() => {!fieldDisable && setVisibility('Public')}}
                   >
                     Public
                   </div>
