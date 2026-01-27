@@ -1,3 +1,5 @@
+import type { AutoSaveIntervalType } from "./autoSaveIntervals.type"
+
 export interface DefaultPreferencesType {
   settings: {
     general: {
@@ -16,7 +18,7 @@ export interface DefaultPreferencesType {
   editor: {
     spellCheck: boolean,
     autosave: boolean,
-    autosaveInterval: number,
+    autosaveInterval: AutoSaveIntervalType,
     visibility: 'Private' | 'Public',
     editorWidth: 'Default' | 'Full'
   }

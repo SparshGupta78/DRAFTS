@@ -4,17 +4,18 @@ import DropDown from "../../DropDown/DropDown"
 import DropDownItem from "../../DropDown/DropDownItem"
 import Switch from "../../Switch/Switch"
 import { usePreferencesContext } from "../../../contexts/preferences.context"
+import type { AutoSaveIntervalType } from "../../../types/autoSaveIntervals.type"
 
 const EditorPanel = () => {
 
   const [spellCheck, setSpellCheck] = useState(true)
   const [autosave, setAutosave] = useState(true)
   const [editorWidth, setEditorWidth] = useState<'Default' | 'Full'>('Default')
-  const [autosaveInterval, setAutosaveInterval] = useState<'2.5' | '5' | '10' | '15'>('2.5')
+  const [autosaveInterval, setAutosaveInterval] = useState<AutoSaveIntervalType>(2.5)
   const [visibility, setVisibility] = useState<'Private' | 'Public'>('Private')
 
   const editorWidths = ['Default', 'Full']
-  const autosaveIntervals = ['2.5', '5', '10', '15']
+  const autosaveIntervals: AutoSaveIntervalType[] = [2.5, 5, 10, 15]
   const visibilities = ['Private', 'Public']
 
   const { preferences, updatePreference } = usePreferencesContext()
@@ -33,11 +34,16 @@ const EditorPanel = () => {
     if(status) setAutosave(prev => !prev)
   }
 
+  const autosaveIntervalHandler = (ew: AutoSaveIntervalType) => {
+    updatePreference('editor.autosaveInterval', ew)
+  }
+
   useEffect(() => {
     if(!preferences) return
     setEditorWidth(preferences.editor.editorWidth)
     setSpellCheck(preferences.editor.spellCheck)
     setAutosave(preferences.editor.autosave)
+    setAutosaveInterval(preferences.editor.autosaveInterval)
   }, [preferences])
 
   return (
@@ -87,9 +93,10 @@ const EditorPanel = () => {
             <DropDownItem
               key={ew}
               setValue={setAutosaveInterval}
-              data={ew}
+              data={ew.toString()}
               preStyle={false}
               className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${autosaveInterval === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              onClick={() => autosaveIntervalHandler(ew)}
             >
               {ew + ' sec'}
             </DropDownItem>

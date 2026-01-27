@@ -32,10 +32,16 @@ type props = {
     heading: (level: 1 | 2 | 3 | 4 | 5 | 6) => boolean;
     setLink: (link?: string) => boolean;
   },
-  isUserDashboard: boolean
+  isUserDashboard: boolean,
+  save: () => Promise<void>
 }
 
-const ToolBox = ({setSideNavOpen, toolkit, isUserDashboard}: props) => {
+const ToolBox = ({
+  setSideNavOpen,
+  toolkit,
+  isUserDashboard,
+  save
+}: props) => {
 
   const { noteId } = useParams()
 
@@ -127,6 +133,7 @@ const ToolBox = ({setSideNavOpen, toolkit, isUserDashboard}: props) => {
                   type="button"
                   className="h-full aspect-square rounded-sm rounded-tr-xl grid place-items-center duration-300 hover:scale-94 active:scale-80 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-50"
                   disabled={toolbarDisable}
+                  onClick={save}
                 >
                 <Save dimension={22} color="#347CE9" />
                 </button>
@@ -462,6 +469,7 @@ const ToolBox = ({setSideNavOpen, toolkit, isUserDashboard}: props) => {
             type="button"
             className="h-full aspect-square rounded-sm rounded-tr-xl grid place-items-center duration-300 hover:scale-94 active:scale-80 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-50"
             disabled={toolbarDisable}
+            onClick={save}
           >
           <Save dimension={22} color="#347CE9" />
           </button>

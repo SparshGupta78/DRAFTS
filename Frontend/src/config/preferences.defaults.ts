@@ -18,7 +18,7 @@ const defaultPreferences: DefaultPreferencesType = {
   editor: {
     spellCheck: true,
     autosave: true,
-    autosaveInterval: 2500,
+    autosaveInterval: 2.5,
     visibility: "Private",
     editorWidth: "Default"
   }

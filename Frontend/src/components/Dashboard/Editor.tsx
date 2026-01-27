@@ -107,6 +107,21 @@ const Editor = ({
     await EditorTitleUpdateAPI(noteId, title)
   }
 
+  const save = async () => {
+    console.log('saved function called')
+    if (!noteId) {
+      setAutoSaveStatus(-1)
+      return
+    }
+    setAutoSaveStatus(0)
+      if (controllerRef.current) controllerRef.current.abort()
+      controllerRef.current = new AbortController()
+      const signal = controllerRef.current.signal
+      prevContentRef.current = content
+      const status = await EditorContentSaveAPI(noteId, content, signal, prevContentRef)
+      setAutoSaveStatus(status)
+  }
+
   const autoSave = () => {
     if (timeRef.current) clearTimeout(timeRef.current)
     try {
@@ -117,15 +132,11 @@ const Editor = ({
 
       if (prevContentRef.current && JSON.stringify(prevContentRef.current) === JSON.stringify(content)) return
 
+      const autoSaveInterval = ((preferences && preferences.editor.autosaveInterval * 1000)) ?? 2500
+
       timeRef.current = setTimeout(async () => {
-        setAutoSaveStatus(0)
-        if (controllerRef.current) controllerRef.current.abort()
-        controllerRef.current = new AbortController()
-        const signal = controllerRef.current.signal
-        prevContentRef.current = content
-        const status = await EditorContentSaveAPI(noteId, content, signal, prevContentRef)
-        setAutoSaveStatus(status)
-      }, 2500)
+        save()
+      }, autoSaveInterval)
     } catch (error) {
       setAutoSaveStatus(-1)
     }
@@ -223,7 +234,7 @@ const Editor = ({
       setInitialLoad(false)
       return
     }
-    if (content) autoSave()
+    if (preferences && preferences.editor.autosave && content) autoSave()
   }, [content])
 
   useEffect(() => {
@@ -253,6 +264,7 @@ const Editor = ({
           setSideNavOpen={setSideNavOpen}
           toolkit={toolkit}
           isUserDashboard={isUserDashboard}
+          save={save}
         />
         <div className="w-full h-full md:h-[calc(100%-43.6px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-t-xl md:rounded-t-sm rounded-b-xl flex items-center justify-center mb-10 md:mb-0 overflow-hidden">
           <div className={`w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-sm p-3.5 ${(preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'}`}>

@@ -1,0 +1,1 @@
+export type AutoSaveIntervalType = 2.5 | 5 | 10 | 15
