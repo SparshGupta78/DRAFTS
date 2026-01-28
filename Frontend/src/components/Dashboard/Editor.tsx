@@ -322,6 +322,7 @@ const Editor = ({
                           preStyle={false}
                           contentStyle="p-0.75 bg-[var(--black-6)] rounded-lg flex flex-col gap-0.75"
                           align={'right'}
+                          onContentClickClose={true}
                         >
                           {editorOptions && editorOptions.map((item, i) => {
                             return (
