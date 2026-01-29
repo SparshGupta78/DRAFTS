@@ -21,6 +21,7 @@ import Alert from "./Alert"
 import type { AlertContentType } from "../../types/alertContent.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
 import { useWindowWidthContext } from "../../contexts/windowWidth.context"
+import { cn } from "../../utils/cn"
 
 type props = {
   loggedUser: UserType | undefined,
@@ -72,13 +73,11 @@ const Editor = ({
 }: props) => {
 
   const { AddTagAPI, DeleteNoteAPI, DeleteTagAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, ToggleVisibilityStatusAPI } = useUserAPI()
-
-  const { createNotification } = useNotificationContext()
-
+  
   const { username, noteId } = useParams()
-
+  
+  const { createNotification } = useNotificationContext()
   const { preferences } = usePreferencesContext()
-
   const windowWidth = useWindowWidthContext()
 
   const [titleEdit, setTitleEdit] = useState(false)
@@ -249,7 +248,11 @@ const Editor = ({
   }, [username, noteId])
 
   return (
-    <div className={`w-full h-full md:h-screen p-3.5 md:p-5 flex justify-center duration-300 ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'md:pr-2.5' : 'md:pl-2.5'} ${(preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? `md:w-[calc(100%-30px)] ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'md:translate-x-2.5' : 'md:-translate-x-2.5'}` : 'md:w-[calc(100%-290px)]'}`}>
+    <div className={cn(
+      'w-full h-full md:h-screen p-3.5 md:p-5 flex justify-center duration-300',
+      preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'md:pr-2.5' : 'md:pl-2.5',
+      (preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? `md:w-[calc(100%-30px)] ${preferences && preferences.settings.appearance.sidebar.position === 'Right' ? 'md:translate-x-2.5' : 'md:-translate-x-2.5'}` : 'md:w-[calc(100%-290px)]'
+    )}>
       <Alert
         alertOpen={alertOpen}
         setAlertOpen={setAlertOpen}
@@ -267,18 +270,28 @@ const Editor = ({
           save={save}
         />
         <div className="w-full h-full md:h-[calc(100%-43.6px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-t-xl md:rounded-t-sm rounded-b-xl flex items-center justify-center mb-10 md:mb-0 overflow-hidden">
-          <div className={`w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-sm p-3.5 ${(preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'}`}>
+          <div className={cn(
+            'w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-sm p-3.5',
+            (preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'
+          )}>
             {
               (noteId && fetchingStatus === 1) 
               ? 
               (<div className="w-full h-full overflow-x-hidden overflow-y-scroll">
                 <div className="w-full">
                   <div className="w-full flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-1.5">
-                    <div className={`w-full sm:w-fit max-w-full rounded-full flex sm:flex-row-reverse items-center gap-2.5 duration-300 ${titleEdit ? 'bg-[var(--white-3)] p-2 md:p-1.75' : 'bg-transparent border-transparent'}`}>
+                    <div className={cn(
+                      'w-full sm:w-fit max-w-full rounded-full flex sm:flex-row-reverse items-center gap-2.5 duration-300',
+                      titleEdit ? 'bg-[var(--white-3)] p-2 md:p-1.75' : 'bg-transparent border-transparent'
+                    )}>
                       <input 
                         name="heading" 
                         type="text" 
-                        className={`block sm:w-fit overflow-auto text-nowrap truncate outline-none duration-300 ${titleEdit ? 'text-lg md:text-xl px-1' : 'text-xl md:text-2xl'} ${username === loggedUser?.username ? 'w-[calc(100%-38px)] max-w-[calc(100%-38px)]' : 'w-full max-w-full'}`}
+                        className={cn(
+                          'block sm:w-fit overflow-auto text-nowrap truncate outline-none duration-300',
+                          titleEdit ? 'text-lg md:text-xl px-1' : 'text-xl md:text-2xl',
+                          username === loggedUser?.username ? 'w-[calc(100%-38px)] max-w-[calc(100%-38px)]' : 'w-full max-w-full'
+                        )}
                         value={title}
                         onChange={e => setTitle(e.target.value)} 
                         disabled={!titleEdit}
@@ -287,13 +300,19 @@ const Editor = ({
                       {username === loggedUser?.username ? (
                         <div className="flex">
                           <div 
-                            className={`bg-[var(--white-3)] p-1.5 rounded-full hover:scale-90 active:scale-90 duration-150 ${titleEdit ? 'hidden' : ''}`} 
+                            className={cn(
+                              'bg-[var(--white-3)] p-1.5 rounded-full hover:scale-90 active:scale-90 duration-150',
+                              titleEdit && 'hidden'
+                            )} 
                             onClick={() => setTitleEdit(true)}
                           >
                             <Edit dimension={16} color="#1b63ce" />
                           </div>
                           <div 
-                            className={`bg-[var(--blue-2)] p-0.5 rounded-full hover:scale-90 active:scale-90 duration-150 ${titleEdit ? '' : 'hidden'}`} 
+                            className={cn(
+                              'bg-[var(--blue-2)] p-0.5 rounded-full hover:scale-90 active:scale-90 duration-150',
+                              !titleEdit && 'hidden'
+                            )} 
                             onClick={() => {
                               headingUpdateHandler()
                               setTitleEdit(false)
@@ -307,9 +326,11 @@ const Editor = ({
                       )}
                     </div>
                     <div className="w-full sm:w-fit flex items-center justify-between sm:justify-start gap-1.5">
-                      {visibility && <div className="text-sm text-[var(--black-2)] font-normal px-2.5 py-1 rounded-full border-2 border-[var(--black-6)] h-fit w-fit capitalize">
-                        {visibility}
-                      </div>}
+                      {visibility && (
+                        <div className="text-sm text-[var(--black-2)] font-normal px-2.5 py-1 rounded-full border-2 border-[var(--black-6)] h-fit w-fit capitalize">
+                          {visibility}
+                        </div>
+                      )}
                       {isUserDashboard && (
                         <DropDown
                           trigger={
@@ -331,7 +352,12 @@ const Editor = ({
                               setValue={() => {}}
                               data={item.tag}
                               preStyle={false}
-                              className={`bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97 ${i == 0 ? 'rounded-t-md rounded-b-[2px]' : ''} ${i != 0 && i != (editorOptions.length - 1) ? 'rounded-[2px]' : ''} ${i == (editorOptions.length - 1) ? 'rounded-b-md rounded-t-[2px]' : ''}`}
+                              className={cn(
+                                'bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97',
+                                i == 0 && 'rounded-t-md rounded-b-[2px]',
+                                i != 0 && i != (editorOptions.length - 1) && 'rounded-[2px]',
+                                i == (editorOptions.length - 1) && 'rounded-b-md rounded-t-[2px]'
+                              )}
                               onClick={() => {
                                 setAlertContentType(item.tag)
                                 setAlertOpen(true)
@@ -355,8 +381,16 @@ const Editor = ({
                           (
                             tags.map((tag, _) => {
                               return (
-                                <div key={tag.tagId} className={`flex items-center gap-1 pl-2.25 py-0.5 bg-[var(--blue-1)] rounded-full ${isUserDashboard ? 'pr-1.5' : 'pr-2.5'}`}>
-                                  <span className="text-sm text-[var(--blue-2)] text-nowrap w-fit max-w-22 truncate">{tag.tag}</span>
+                                <div
+                                  key={tag.tagId}
+                                  className={cn(
+                                    'flex items-center gap-1 pl-2.25 py-0.5 bg-[var(--blue-1)] rounded-full',
+                                    isUserDashboard ? 'pr-1.5' : 'pr-2.5'
+                                  )}
+                                >
+                                  <span className="text-sm text-[var(--blue-2)] text-nowrap w-fit max-w-22 truncate">
+                                    {tag.tag}
+                                  </span>
                                   {isUserDashboard && (
                                     <div
                                       className="h-fit w-fit hover:opacity-65 active:opacity-50 duration-300"
@@ -390,7 +424,11 @@ const Editor = ({
                 </div>
                 <div className="w-full h-0.5 rounded-full bg-[var(--blue-1)] my-2.5"></div>
                 <div className={`w-full px-1 ${titleEdit ? 'md:h-[calc(100%-88px)]' : 'md:h-[calc(100%-98px)]'}`}>
-                  <EditorContent className="w-full h-full" editor={editor} spellCheck={(preferences && !preferences.editor.spellCheck) ? false : true} />
+                  <EditorContent
+                    className="w-full h-full"
+                    editor={editor}
+                    spellCheck={(preferences && !preferences.editor.spellCheck) ? false : true}
+                  />
                 </div>
               </div>)
               :

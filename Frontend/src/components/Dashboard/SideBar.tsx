@@ -5,6 +5,7 @@ import type { UserType } from "../../types/user.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
 import { useWindowWidthContext } from "../../contexts/windowWidth.context"
 import setStartupBehaviour from "../../utils/startupBehaviour"
+import { cn } from "../../utils/cn"
 
 type props = {
   loggedUser: UserType | undefined,
@@ -42,11 +43,9 @@ const SideBar = ({
 }: props) => {
 
   const navigate = useNavigate()
-
-  const { preferences } = usePreferencesContext()
-
   const { username, noteId } = useParams()
-
+  
+  const { preferences } = usePreferencesContext()
   const windowWidth = useWindowWidthContext()
 
   const [searchOpen, setSearchOpen] = useState(false)
@@ -80,8 +79,16 @@ const SideBar = ({
   }, [noteTitles, noteId])
 
   return (
-    <div className={`duration-300 fixed md:relative inset-0 w-full h-full flex z-900 md:z-0 md:p-5 ${sidebarPosition && sidebarPosition === 'Right' ? 'md:pl-2.5 flex-row-reverse' : 'md:pr-2.5'} ${sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${(preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? 'md:w-0' : 'md:w-fit' }`}>
-      <div className={`duration-300 w-[min(80%,340px)] md:w-65 h-full bg-[var(--white-2)] md:rounded-xl ${sideNavOpen ? 'translate-x-0' : `${sidebarPosition && sidebarPosition === 'Right' ? 'translate-x-full' : '-translate-x-full'}`}`}>
+    <div className={cn(
+      'duration-300 fixed md:relative inset-0 w-full h-full flex z-900 md:z-0 md:p-5',
+      sidebarPosition && sidebarPosition === 'Right' ? 'md:pl-2.5 flex-row-reverse' : 'md:pr-2.5',
+      sideNavOpen ? 'bg-black/15 md:bg-transparent backdrop-blur-[2px] md:backdrop-blur-[0px] opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+      (preferences && !preferences.settings.appearance.sidebar.visible && !sideNavOpen) ? 'md:w-0' : 'md:w-fit'
+    )}>
+      <div className={cn(
+        'duration-300 w-[min(80%,340px)] md:w-65 h-full bg-[var(--white-2)] md:rounded-xl',
+        sideNavOpen ? 'translate-x-0' : `${sidebarPosition && sidebarPosition === 'Right' ? 'translate-x-full' : '-translate-x-full'}`
+      )}>
         <div className="w-full h-fit px-2.5 py-3.5 md:pb-2.5 flex flex-col gap-3.5">
           <div className="w-fit h-hull text-lg md:text-base font-[500] tracking-[3px]">DRAFTS</div>
           {isUserDashboard && (
@@ -95,17 +102,30 @@ const SideBar = ({
               <div className="flex justify-center items-center bg-[var(--blue-3)] text-[var(--white-1)] rounded-full p-1 md:scale-80 group-hover:scale-85 duration-300">
                 <Plus color="#ffffff" />
               </div>
-              <div className="text-[15px] md:text-[13px] text-[var(--white-1)] select-none">New Note</div>
+              <div className="text-[15px] md:text-[13px] text-[var(--white-1)] select-none">
+                New Note
+              </div>
             </div>
           )}
         </div>
         <hr className="w-full border-[var(--blue-1)]" />
         <div className="px-2.5 py-2.5 md:py-2 flex justify-between items-center">
-          <div className={`ml-1.5 duration-300 md:text-sm ${searchOpen ? 'hidden' : 'block'}`}>All notes</div>
-          <div className={`h-fit border-1 rounded-full flex items-center duration-300 ${searchOpen ? 'p-1.5 md:p-1 w-full border-[var(--black-1)]' : 'w-fit border-[var(--white-1)]'}`}>
+          <div className={cn(
+            'ml-1.5 duration-300 md:text-sm',
+            searchOpen ? 'hidden' : 'block'
+          )}>
+            All notes
+          </div>
+          <div className={cn(
+            'h-fit border-1 rounded-full flex items-center duration-300',
+            searchOpen ? 'p-1.5 md:p-1 w-full border-[var(--black-1)]' : 'w-fit border-[var(--white-1)]'
+          )}>
             <div className="min-h-8 md:min-h-6 h-full w-full rounded-l-full">
               <input 
-                className={`min-h-8 md:min-h-6 h-full w-full rounded-l-full px-2.5 outline-none placeholder:text-[var(--black-2)] text-sm ${searchOpen ? 'block' : 'hidden'}`} 
+                className={cn(
+                  'min-h-8 md:min-h-6 h-full w-full rounded-l-full px-2.5 outline-none placeholder:text-[var(--black-2)] text-sm',
+                  searchOpen ? 'block' : 'hidden'
+                )} 
                 type="text" 
                 placeholder="Enter title ..." 
                 name="searchInput"
@@ -122,7 +142,10 @@ const SideBar = ({
           </div>
         </div>
         <hr className="w-full border-[var(--blue-1)]" />
-        <div className={`w-full duration-300 relative ${searchOpen ? `${isUserDashboard ? 'h-[calc(100%-262px)] md:h-[calc(100%-232px)]' : 'h-[calc(100%-208px)] md:h-[calc(100%-178px)]'}` : `${isUserDashboard ? 'h-[calc(100%-250px)] md:h-[calc(100%-224px)]' : 'h-[calc(100%-196px)] md:h-[calc(100%-170px)]'} `}`}>
+        <div className={cn(
+          'w-full duration-300 relative',
+          searchOpen ? (isUserDashboard ? 'h-[calc(100%-262px)] md:h-[calc(100%-232px)]' : 'h-[calc(100%-208px)] md:h-[calc(100%-178px)]') : (isUserDashboard ? 'h-[calc(100%-250px)] md:h-[calc(100%-224px)]' : 'h-[calc(100%-196px)] md:h-[calc(100%-170px)]')
+        )}>
           <div className="flex justify-end rounded-br-xl">
             <button 
               className="text-[var(--blue-2)] px-3 py-1.5 translate-y-1.5 text-sm md:text-xs duration-200 hover:opacity-75 active:opacity-60"
@@ -188,20 +211,29 @@ const SideBar = ({
             } 
             {
               noteTitlesFetchStatus === 1 && 
-              noteTitles.length > 0 &&
+              noteTitles.length > 0 && (
               <div className="w-full h-full relative">
                 <div className="relative z-10 w-full h-full">
                   {noteTitles.map((note, _) => {
                     return (
                       <div
-                        className={`w-full py-3 md:py-2.5 flex items-center justify-between gap-2.5 ${sidebarPosition && sidebarPosition === 'Right' ? 'pl-4 pr-5.5' : 'pl-5.5 pr-2.5'}`}
+                        className={cn(
+                          'w-full py-3 md:py-2.5 flex items-center justify-between gap-2.5',
+                          sidebarPosition && sidebarPosition === 'Right' ? 'pl-4 pr-5.5' : 'pl-5.5 pr-2.5'
+                        )}
                         key={note.noteID}
                         onClick={() => noteTitleFetch(note.noteID)}
                       >
-                        <span className={`text-[15px] text-nowrap truncate duration-300 delay-100 ${note.noteID == noteId ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'}`}>
+                        <span className={cn(
+                          'text-[15px] text-nowrap truncate duration-300 delay-100',
+                          note.noteID == noteId ? 'md:text-[13px] ml-1 max-w-[calc(100%-29px)]' : 'md:text-sm max-w-full'
+                        )}>
                           {note.title}
                         </span>
-                        <div className={`flex items-center justify-center gap-3.5 duration-300 delay-100 ${note.noteID == noteId ? 'opacity-100 w-fit' : 'opacity-0 w-0'}`}>
+                        <div className={cn(
+                          'flex items-center justify-center gap-3.5 duration-300 delay-100',
+                          note.noteID == noteId ? 'opacity-100 w-fit' : 'opacity-0 w-0'
+                        )}>
                           <div className="md:scale-90 active:scale-85 active:md:scale-80 duration-300">
                             <Edit dimension={19} />
                           </div>
@@ -213,21 +245,31 @@ const SideBar = ({
                     )
                   })}
                 </div>
-                <div 
-                  className="absolute duration-300 left-0 w-full h-fit z-0" 
-                  style={{top: `${(currentNoteIndex * sideNavActiveBg - 13)}px`, display: `${currentNoteIndex == -1 ? 'none' : 'block'}`}}>
+                <div
+                  className="absolute duration-300 left-0 w-full h-fit z-0"
+                  style={{top: `${(currentNoteIndex * sideNavActiveBg - 13)}px`, display: `${currentNoteIndex == -1 ? 'none' : 'block'}`}}
+                >
                   <div className="bg-[var(--blue-1)] w-full h-3">
-                    <div className={`bg-[var(--white-2)] w-full h-full ${sidebarPosition && sidebarPosition === 'Right' ? 'rounded-bl-xl' : 'rounded-br-xl'}`}></div>
+                    <div className={cn(
+                      'bg-[var(--white-2)] w-full h-full',
+                      sidebarPosition && sidebarPosition === 'Right' ? 'rounded-bl-xl' : 'rounded-br-xl'
+                    )}></div>
                   </div>
-                  <div className={`bg-[var(--blue-1)] w-[calc(100%-10px)] h-12 md:h-10 ${sidebarPosition && sidebarPosition === 'Right' ? 'mr-2.5 rounded-r-full' : 'ml-2.5 rounded-l-full'}`}>
+                  <div className={cn(
+                    'bg-[var(--blue-1)] w-[calc(100%-10px)] h-12 md:h-10',
+                    sidebarPosition && sidebarPosition === 'Right' ? 'mr-2.5 rounded-r-full' : 'ml-2.5 rounded-l-full'
+                  )}>
                     <div className="h-full w-[calc(100%-12px)] rounded-l-full"></div>
                   </div>
                   <div className="bg-[var(--blue-1)] w-full h-3">
-                    <div className={`bg-[var(--white-2)] w-full h-full ${sidebarPosition && sidebarPosition === 'Right' ? 'rounded-tl-xl' : 'rounded-tr-xl'}`}></div>
+                    <div className={cn(
+                      'bg-[var(--white-2)] w-full h-full',
+                      sidebarPosition && sidebarPosition === 'Right' ? 'rounded-tl-xl' : 'rounded-tr-xl'
+                    )}></div>
                   </div>
                 </div>
               </div>
-            }
+            )}
             
           </div>
           <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-b from-transparent to-[var(--white-2)] pointer-events-none z-10"></div>

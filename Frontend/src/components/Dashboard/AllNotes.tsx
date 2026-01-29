@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { ArrowDown, ArrowTopRight, Close, Delete, Filter, Plus, Retry } from "../../assets/Icons"
 import DropDown from "../DropDown/DropDown"
 import DropDownItem from "../DropDown/DropDownItem"
@@ -8,6 +8,7 @@ import { useWindowWidthContext } from "../../contexts/windowWidth.context"
 import useUserAPI from "../../services/user.service"
 import { Link, useParams } from "react-router-dom"
 import DialogWrapper from "../DialogWrapper/DialogWrapper"
+import { cn } from "../../utils/cn"
 
 type props = {
   allNotesOpen: boolean,
@@ -99,7 +100,10 @@ const AllNotes = ({
                       setValue={setFilter}
                       data={item}
                       preStyle={false}
-                      className={`text-sm text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${filter === item ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+                      className={cn(
+                        'text-sm text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                        filter === item ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+                      )}
                     >
                       {item}
                     </DropDownItem>
@@ -146,7 +150,10 @@ const AllNotes = ({
               className="absolute right-0 top-0 h-full w-8 flex items-center justify-center"
               onClick={() => setSearch('')}
             >
-              <div className={`hover:opacity-65 duration-300 ${search.length > 0 ? 'scale-100 opacity-100' : 'opacity-0 scale-0'}`}>
+              <div className={cn(
+                'hover:opacity-65 duration-300',
+                search.length > 0 ? 'scale-100 opacity-100' : 'opacity-0 scale-0'
+              )}>
                 <Close dimension={18} color="#4C4C4C" />
               </div>
             </div>
@@ -160,11 +167,16 @@ const AllNotes = ({
           ?
           <>
             {allNotes.map((note, index) => {
+
               const date = note.createdAt ? note.createdAt.split('T')[0].split('-') : null
               const month = date ? new Date(0, Number(date[1])).toLocaleString('en-US', {month: 'long'}) : ''
               const formattedDate = date ? date[2] + ' ' +  month + ', ' + date[0]: ''
+
               return (
-                <div key={index} className="bg-[var(--white-1)] border-1 border-[var(--black-4)] p-2.5 rounded-md w-full sm:w-[calc(50%-5px)] lg:w-[calc(33%-4px)] flex flex-col gap-2">
+                <div
+                  key={index}
+                  className="bg-[var(--white-1)] border-1 border-[var(--black-4)] p-2.5 rounded-md w-full sm:w-[calc(50%-5px)] lg:w-[calc(33%-4px)] flex flex-col gap-2"
+                >
                   <div className="w-full flex justify-between items-center gap-2.5">
                     <div className="text-xs text-[var(--black-2)]">{formattedDate}</div>
                     <div className="flex items-center gap-3">
@@ -198,7 +210,10 @@ const AllNotes = ({
                   <div className="flex gap-2 w-full max-w-full overflow-x-auto overflow-y-hidden">
                     {note.tags && note.tags.map((tag, _) => {
                       return (
-                        <div key={tag.tagId} className="h-fit w-fit text-xs px-2.5 py-0.75 rounded-full bg-[var(--blue-1)] text-[var(--black-5)] font-normal text-nowrap max-w-25 truncate">
+                        <div
+                          key={tag.tagId}
+                          className="h-fit w-fit text-xs px-2.5 py-0.75 rounded-full bg-[var(--blue-1)] text-[var(--black-5)] font-normal text-nowrap max-w-25 truncate"
+                        >
                           {tag.tag}
                         </div>
                       )

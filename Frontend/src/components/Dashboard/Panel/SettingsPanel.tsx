@@ -4,6 +4,7 @@ import DropDown from '../../DropDown/DropDown'
 import { ArrowDown } from '../../../assets/Icons'
 import Switch from '../../Switch/Switch'
 import { usePreferencesContext } from '../../../contexts/preferences.context'
+import { cn } from '../../../utils/cn'
 
 const SettingsPanel = () => {
 
@@ -61,7 +62,9 @@ const SettingsPanel = () => {
         <DropDown
         trigger={
           <button className="px-2.5 py-1 rounded-sm border-1 border-[var(--black-1)] flex items-center gap-2 duration-150 hover:opacity-75 active:opacity-60">
-            <span className='text-[13px] whitespace-nowrap'>{language}</span>
+            <span className='text-[13px] whitespace-nowrap'>
+              {language}
+            </span>
             <ArrowDown dimension={10} />
           </button>
         }
@@ -77,7 +80,10 @@ const SettingsPanel = () => {
               setValue={setLanguage}
               data={lang}
               preStyle={false}
-              className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${language === lang ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              className={cn(
+                'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                language === lang ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+              )}
             >
               {lang}
             </DropDownItem>
@@ -110,7 +116,10 @@ const SettingsPanel = () => {
               setValue={setStartupBehavior}
               data={sp}
               preStyle={false}
-              className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${startupBehavior === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              className={cn(
+                'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                startupBehavior === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+              )}
               onClick={startupBehaviorHandler}
             >
               {sp}
@@ -149,7 +158,10 @@ const SettingsPanel = () => {
               setValue={setTheme}
               data={th}
               preStyle={false}
-              className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${theme === th ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              className={cn(
+                'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                theme === th ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+              )}
             >
               {th}
             </DropDownItem>
@@ -182,7 +194,10 @@ const SettingsPanel = () => {
               setValue={setAccentColor}
               data={ac}
               preStyle={false}
-              className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${accentColor === ac ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              className={cn(
+                'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                accentColor === ac ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+              )}
             >
               {ac}
             </DropDownItem>
@@ -226,7 +241,10 @@ const SettingsPanel = () => {
               setValue={setSidebarPosition}
               data={sp}
               preStyle={false}
-              className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${sidebarPosition === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              className={cn(
+                'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                sidebarPosition === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+              )}
               onClick={sidebarPositionHandler}
             >
               {sp}

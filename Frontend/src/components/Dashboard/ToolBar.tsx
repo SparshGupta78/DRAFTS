@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react"
-import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Blockquote, Bold, Code, Highlighter, Italic, Link, Redo, Strikethrough, Subscript, Superscript, Underline, Undo, UnorderedList, HorizontalRule, Paragraph, ClearMarks, ClearNodes, Unlink, ScrollDown, Save, H1, H2, H3, H4, H5, H6, OrderedList, TaskList } from "../../assets/Icons";
+import { useEffect, useRef, useState, type ReactNode } from "react"
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Blockquote, Bold, Code, Highlighter, Italic, Link, Redo, Strikethrough, Subscript, Superscript, Underline, Undo, UnorderedList, HorizontalRule, Paragraph, ClearMarks, ClearNodes, ScrollDown, Save, H1, H2, H3, H4, H5, H6, OrderedList, TaskList } from "../../assets/Icons";
 import { usePreferencesContext } from "../../contexts/preferences.context";
 import { useWindowWidthContext } from "../../contexts/windowWidth.context";
-import DropDown from "../DropDown/DropDown";
 import { useParams } from "react-router-dom";
+import { cn } from "../../utils/cn";
 
 
 type props = {
@@ -34,6 +34,12 @@ type props = {
   },
   isUserDashboard: boolean,
   save: () => Promise<void>
+}
+
+type InsideButtonProps = {
+  children: ReactNode,
+  className?: string
+  onClick: () => void
 }
 
 const ToolBox = ({
@@ -94,6 +100,73 @@ const ToolBox = ({
     }
   }, [isUserDashboard, noteId])
 
+  const InsideButton = ({
+    children,
+    className,
+    onClick
+  }: InsideButtonProps) => {
+    return (
+      <button
+        className={cn(
+          "duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50",
+          className
+        )}
+        onClick={onClick}
+        disabled={toolbarDisable}
+      >
+        {children}
+      </button>
+    )
+  }
+
+  const Button = ({
+    className,
+    icon,
+    title,
+    onClick
+  }: {
+    className?: string,
+    icon: ReactNode,
+    title: string,
+    onClick: () => void
+  }) => {
+    return (
+      <button
+        className={cn(
+          "py-1 flex justify-center items-center bg-[var(--white-1)] rounded-full grow group duration-300 active:scale-94 disabled:opacity-50",
+          title === '' ? 'px-2' : 'pl-1.5 pr-2 gap-1',
+          className
+        )}
+        onClick={onClick}
+        disabled={toolbarDisable}
+      >
+        <div className="group-hover:opacity-75 duration-300">
+          {icon}
+        </div>
+        <div className="group-hover:opacity-75 duration-300 text-xs text-nowrap">
+          {title}
+        </div>
+      </button>
+    )
+  }
+
+  const ButtonsWrapper = ({
+    children,
+    className
+  }: {
+    children: ReactNode,
+    className?: string
+  }) => {
+    return (
+      <div className={cn(
+        'px-2 py-1 flex justify-center items-center gap-1.5 bg-[var(--white-1)] rounded-full grow',
+        className
+      )}>
+        {children}
+      </div>
+    )
+  }
+
   return (
     <div className="w-full max-w-full md:relative md:top-0 h-fit md:flex justify-between z-1">
       {sidebarVisibile && (
@@ -142,7 +215,12 @@ const ToolBox = ({
           </div>
         </div>
       )}
-      <div className={`bg-[var(--white-3)] h-10 flex items-center gap-1.5 rounded-xl p-1.5 mt-0.75 md:mt-0 ${sidebarVisibile ? 'md:ml-0.75 md:rounded-l-sm' : 'md:rounded-bl-sm'} ${autosave ? 'md:mr-0.75 md:rounded-r-sm' : 'md:rounded-br-sm'} ${toolbarWidth()}`}>
+      <div className={cn(
+        'bg-[var(--white-3)] h-10 flex items-center gap-1.5 rounded-xl p-1.5 mt-0.75 md:mt-0',
+        sidebarVisibile ? 'md:ml-0.75 md:rounded-l-sm' : 'md:rounded-bl-sm',
+        autosave ? 'md:mr-0.75 md:rounded-r-sm' : 'md:rounded-br-sm',
+        toolbarWidth()
+      )}>
         <div className="hidden px-2 py-1.25 sm:flex justify-center items-center gap-1.5">
           <button
             className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
@@ -165,277 +243,169 @@ const ToolBox = ({
             style={{transform: `translateY(calc(${toolbarCount * -1}*34px))`}}
             ref={toolbarRef}
           >
-            <div className="max-w-40 px-2 py-1 flex justify-center items-center gap-1.5 bg-[var(--white-1)] rounded-full grow">
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+            <ButtonsWrapper
+              className="max-w-40"
+            >
+              <InsideButton
                 onClick={() => toolkit.bold()}
-                disabled={toolbarDisable}
               >
                 <Bold dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.italic()}
-                disabled={toolbarDisable}
               >
                 <Italic dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.underline()}
-                disabled={toolbarDisable}
               >
                 <Underline dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.strikethrough()}
-                disabled={toolbarDisable}
               >
                 <Strikethrough dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.highlight()}
-                disabled={toolbarDisable}
+                className="-translate-y-0.25 scale-75"
               >
-                <div className="-translate-y-0.25 scale-75">
-                  <Highlighter dimension={20} />
-                </div>
-              </button>
-              {/* <DropDown
-                trigger={
-                  <button
-                    className="h-full flex items-center"
-                    disabled={toolbarDisable}
-                  >
-                    <Link dimension={20} />
-                  </button>
-                }
-                disabled={toolbarDisable}
-                preStyle={false}
-              >
-                <div className="p-1.5 min-w-55 w-fit bg-[var(--white-3)] rounded-lg shadow-[var(--shadow-1)] flex items-center gap-1.5">
-                  <input
-                    type="text"
-                    className="px-2.5 py-1 bg-[var(--white-2)] text-sm w-full rounded-md border-1 duration-100 border-[var(--black-4)] outline-0 outline-[var(--black-4)] hover:outline-2 active:outline-2 focus:outline-3 focus:border-[var(--black-1)]"
-                    name=""
-                    placeholder="Enter link..."
-                    value={link}
-                    onChange={e => setLink(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="h-full aspect-square p-1"
-                    onClick={() => toolkit.setLink('https://github.com/SparshGupta78')}
-                    disabled={toolbarDisable}
-                  >
-                    <Link dimension={windowWidth > 425 ? 20 : 24} />
-                  </button>
-                  <button
-                    type="button"
-                    className="h-full aspect-square p-1"
-                    onClick={() => toolkit.removeLink()}
-                    disabled={toolbarDisable}
-                  >
-                    <Unlink dimension={windowWidth > 425 ? 20 : 24} />
-                  </button>
-                </div>
-              </DropDown> */}
-            </div>
-            <div className="px-2 py-1 flex justify-center items-center gap-1.5 bg-[var(--white-1)] rounded-full">
-              <button
-                className="h-full flex items-center disabled:opacity-50"
-                disabled={toolbarDisable}
-              >
-                <Link dimension={20} />
-              </button>
-            </div>
-            <div className="max-w-20 px-2 py-1 flex justify-center items-center gap-1.5 bg-[var(--white-1)] rounded-full grow">
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+                <Highlighter dimension={20} />
+              </InsideButton>
+            </ButtonsWrapper>
+            <Button
+              icon={<Link dimension={20} />}
+              title={''}
+              onClick={() => {}}
+              className="max-w-10"
+            />
+            <ButtonsWrapper
+              className="max-w-20"
+            >
+              <InsideButton
                 onClick={() => toolkit.superscript()}
-                disabled={toolbarDisable}
               >
                 <Superscript dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.subscript()}
-                disabled={toolbarDisable}
               >
                 <Subscript dimension={20} />
-              </button>
-            </div>
-            <div className="max-w-36 px-2 py-1 flex justify-center items-center gap-1.5 bg-[var(--white-1)] rounded-full grow">
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+            </ButtonsWrapper>
+            <ButtonsWrapper
+              className="max-w-36"
+            >
+              <InsideButton
                 onClick={() => toolkit.align('left')}
-                disabled={toolbarDisable}
               >
                 <AlignLeft dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.align('center')}
-                disabled={toolbarDisable}
               >
                 <AlignCenter dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.align('right')}
-                disabled={toolbarDisable}
               >
                 <AlignRight dimension={20} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.align('justify')}
-                disabled={toolbarDisable}
               >
                 <AlignJustify dimension={20} />
-              </button>
-            </div>
-            <div className="max-w-50 px-2 py-0.75 flex justify-center items-center gap-1.5 bg-[var(--white-1)] rounded-full grow">
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+            </ButtonsWrapper>
+            <ButtonsWrapper
+              className="max-w-50 py-0.75"
+            >
+              <InsideButton
                 onClick={() => toolkit.heading(1)}
-                disabled={toolbarDisable}
               >
                 <H1 dimension={22} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.heading(2)}
-                disabled={toolbarDisable}
               >
                 <H2 dimension={22} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.heading(3)}
-                disabled={toolbarDisable}
               >
                 <H3 dimension={22} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.heading(4)}
-                disabled={toolbarDisable}
               >
                 <H4 dimension={22} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.heading(5)}
-                disabled={toolbarDisable}
               >
                 <H5 dimension={22} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.heading(6)}
-                disabled={toolbarDisable}
               >
                 <H6 dimension={22} />
-              </button>
-            </div>
-            <button
-              className="max-w-20 pl-1.5 pr-2 py-1 flex justify-center items-center gap-1 bg-[var(--white-1)] rounded-full grow group duration-300 active:scale-94 disabled:opacity-50"
+              </InsideButton>
+            </ButtonsWrapper>
+            <Button
+              icon={<Code dimension={20} />}
+              title={'Code'}
               onClick={() => toolkit.code()}
-              disabled={toolbarDisable}
+              className="max-w-20"
+            />
+            <ButtonsWrapper
+              className="max-w-26 py-1.25"
             >
-              <div className="group-hover:opacity-75 duration-300">
-                <Code dimension={20} />
-              </div>
-              <div className="group-hover:opacity-75 duration-300 text-xs text-nowrap">
-                Code
-              </div>
-            </button>
-            <div className="max-w-26 px-2 py-1.25 flex justify-center items-center gap-1.5 bg-[var(--white-1)] rounded-full grow">
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              <InsideButton
                 onClick={() => toolkit.orderedList()}
-                disabled={toolbarDisable}
               >
                 <OrderedList dimension={18} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50 rotate-180"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.unorderedList()}
-                disabled={toolbarDisable}
               >
                 <UnorderedList dimension={18} />
-              </button>
-              <button
-                className="duration-300 hover:opacity-70 active:opacity-60 disabled:opacity-50"
+              </InsideButton>
+              <InsideButton
                 onClick={() => toolkit.taskList()}
-                disabled={toolbarDisable}
               >
                 <TaskList dimension={18} />
-              </button>
-            </div>
-            <button
-              className="max-w-28 pl-1.5 pr-2 py-1 flex justify-center items-center gap-1 bg-[var(--white-1)] rounded-full grow group duration-300 active:scale-94 disabled:opacity-50"
+              </InsideButton>
+            </ButtonsWrapper>
+            <Button
+              icon={<Blockquote dimension={20} />}
+              title={'Blockquote'}
               onClick={() => toolkit.blockquote()}
-              disabled={toolbarDisable}
-            >
-              <div className="group-hover:opacity-75 duration-300">
-                <Blockquote dimension={20} />
-              </div>
-              <div className="group-hover:opacity-75 duration-300 text-xs text-nowrap">
-                Blockquote
-              </div>
-            </button>
-            <button
-              className="max-w-34 pl-1.5 pr-2 py-1 flex justify-center items-center gap-1 bg-[var(--white-1)] rounded-full grow group duration-300 active:scale-94 disabled:opacity-50"
+              className="max-w-28"
+            />
+            <Button
+              icon={<HorizontalRule dimension={20} />}
+              title={'Horizontal rule'}
               onClick={() => toolkit.horizontalRule()}
-              disabled={toolbarDisable}
-            >
-              <div className="group-hover:opacity-75 duration-300">
-                <HorizontalRule dimension={20} />
-              </div>
-              <div className="group-hover:opacity-75 duration-300 text-xs text-nowrap">
-                Horizontal rule
-              </div>
-            </button>
-            <button
-              className="max-w-30 pl-1.5 pr-2 py-1 flex justify-center items-center gap-1 bg-[var(--white-1)] rounded-full grow group duration-300 active:scale-94 disabled:opacity-50"
+              className="max-w-34"
+            />
+            <Button
+              icon={<Paragraph dimension={20} />}
+              title={'Paragraph'}
               onClick={() => toolkit.paragraph()}
-              disabled={toolbarDisable}
-            >
-              <div className="group-hover:opacity-75 duration-300">
-                <Paragraph dimension={20} />
-              </div>
-              <div className="group-hover:opacity-75 duration-300 text-xs text-nowrap">
-                Paragraph
-              </div>
-            </button>
-            <button
-              className="max-w-34 pl-1.5 pr-2 py-1 flex justify-center items-center gap-1 bg-[var(--white-1)] rounded-full grow group duration-300 active:scale-94 disabled:opacity-50"
+              className="max-w-30"
+            />
+            <Button
+              icon={<ClearMarks dimension={20} />}
+              title={'CLear marks'}
               onClick={() => toolkit.clearMarks()}
-              disabled={toolbarDisable}
-            >
-              <div className="group-hover:opacity-75 duration-300">
-                <ClearMarks dimension={20} />
-              </div>
-              <div className="group-hover:opacity-75 duration-300 text-xs text-nowrap">
-                CLear marks
-              </div>
-            </button>
-            <button
-              className="max-w-34 pl-1.5 pr-2 py-1 flex justify-center items-center gap-1 bg-[var(--white-1)] rounded-full grow group duration-300 active:scale-94 disabled:opacity-50"
+              className="max-w-30"
+            />
+            <Button
+              icon={<ClearNodes dimension={20} />}
+              title={'CLear nodes'}
               onClick={() => toolkit.clearNodes()}
-              disabled={toolbarDisable}
-            >
-              <div className="group-hover:opacity-75 duration-300">
-                <ClearNodes dimension={20} />
-              </div>
-              <div className="group-hover:opacity-75 duration-300 text-xs text-nowrap">
-                CLear nodes
-              </div>
-            </button>
+              className="max-w-34"
+            />
           </div>
         </div>
         <div className="h-full">

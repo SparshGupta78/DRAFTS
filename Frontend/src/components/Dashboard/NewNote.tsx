@@ -7,6 +7,7 @@ import type { TagType } from "../../types/tag.type"
 import type { CreateNewNote } from "../../types/CreateNewNote.type"
 import { usePreferencesContext } from "../../contexts/preferences.context"
 import DialogWrapper from "../DialogWrapper/DialogWrapper"
+import { cn } from "../../utils/cn"
 
 type NewNoteType = {
   newNoteOpen: boolean,
@@ -128,30 +129,36 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
           </div>
           <div className="mt-1.5 sm:mt-0 w-full sm:w-1/2">
             <div className="w-full md:w-fit max-w-full relative">
-              <input 
-                type="text" 
-                name="title" 
-                className="w-full md:w-fit pl-3 py-1.5 pr-15 rounded-full max-w-full border-2 outline-0 border-[var(--blue-1)] placeholder:text-sm placeholder:text-[var(--black-2)] placeholder:opacity-60 disabled:opacity-75 duration-300" 
-                placeholder="Max 10 characters" 
+              <input
+                type="text"
+                name="title"
+                className="w-full md:w-fit pl-3 py-1.5 pr-15 rounded-full max-w-full border-2 outline-0 border-[var(--blue-1)] placeholder:text-sm placeholder:text-[var(--black-2)] placeholder:opacity-60 disabled:opacity-75 duration-300"
+                placeholder="Max 10 characters"
                 value={tagInput} 
                 onChange={(e) => setTagInput(prev => (
                   e.target.value.length <= 10 ? e.target.value : prev
-                ))} 
+                ))}
                 disabled={fieldDisable}
                 />
-              <button 
-                className={`absolute top-1/2 right-1.25 -translate-y-1/2 rounded-full px-3 py-1.25 text-sm font-normal bg-[var(--blue-1)] disabled:opacity-75 active:scale-94 duration-300 ${fieldDisable ? 'text-[var(--black-2)]' : 'text-[var(--blue-2)]'}`} 
+              <button
+                className={cn(
+                  'absolute top-1/2 right-1.25 -translate-y-1/2 rounded-full px-3 py-1.25 text-sm font-normal bg-[var(--blue-1)] disabled:opacity-75 active:scale-94 duration-300',
+                  fieldDisable ? 'text-[var(--black-2)]' : 'text-[var(--blue-2)]'
+                )}
                 onClick={() => {
                   createTag()
                   setTagInput('')
-                }} 
+                }}
                 disabled={fieldDisable}
               >
                 Add
               </button>
             </div>
           </div>
-          <div className={`mt-3 w-full flex flex-wrap items-center gap-2.5 h-fit duration-500 ${tags.length > 0 ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className={cn(
+            'mt-3 w-full flex flex-wrap items-center gap-2.5 h-fit duration-500',
+            tags.length > 0 ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'
+          )}>
             {tags.map((tag, _) => {
               return (
                 <div key={tag.tagId} className="bg-[var(--blue-1)] rounded-full px-1.75 py-1 flex items-center gap-1">
@@ -173,14 +180,22 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
           </div>
           <div className="mt-1.5 sm:mt-0 w-full sm:w-1/2 flex justify-end sm:justify-start">
             <div className="p-0.75 w-fit max-w-full border-2 border-[var(--blue-1)] rounded-full flex">
-              <div 
-                className={`px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none ${visibility === 'Private' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]'} ${fieldDisable ? 'opacity-75' : ''}`} 
+              <div
+                className={cn(
+                  'px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none',
+                  visibility === 'Private' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]',
+                  fieldDisable && 'opacity-75'
+                )}
                 onClick={() => {!fieldDisable && setVisibility('Private')}}
               >
                 Private
               </div>
-              <div 
-                className={`px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none ${visibility === 'Public' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]'} ${fieldDisable ? 'opacity-75' : ''}`} 
+              <div
+                className={cn(
+                  'px-5 py-1.25 rounded-full text-sm w-1/2 flex items-center justify-center font-normal duration-200 select-none',
+                  visibility === 'Public' ? 'bg-[var(--blue-1)] text-[var(--blue-2)]' : 'text-[var(--black-2)]',
+                  fieldDisable && 'opacity-75'
+                )}
                 onClick={() => {!fieldDisable && setVisibility('Public')}}
               >
                 Public
@@ -190,7 +205,10 @@ const NewNote = ({newNoteOpen, setNewNoteOpen, fetchNotesTitle}: NewNoteType) =>
         </div>
         <div className="mt-3.5 flex justify-end">
           <button 
-            className={`w-fit px-5 py-1.5 rounded-full text-[15px] font-normal duration-300 ${fieldDisable ? 'bg-[var(--white-5)] text-[var(--black-2)]' : 'bg-[var(--blue-2)] text-[var(--white-2)]'}`} 
+            className={cn(
+              'w-fit px-5 py-1.5 rounded-full text-[15px] font-normal duration-300',
+              fieldDisable ? 'bg-[var(--white-5)] text-[var(--black-2)]' : 'bg-[var(--blue-2)] text-[var(--white-2)]'
+            )} 
             onClick={() => submitHandler()}
             disabled={fieldDisable}
           >

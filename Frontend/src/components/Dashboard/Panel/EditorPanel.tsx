@@ -5,6 +5,7 @@ import DropDownItem from "../../DropDown/DropDownItem"
 import Switch from "../../Switch/Switch"
 import { usePreferencesContext } from "../../../contexts/preferences.context"
 import type { AutoSaveIntervalType } from "../../../types/autoSaveIntervals.type"
+import { cn } from "../../../utils/cn"
 
 const EditorPanel = () => {
 
@@ -76,13 +77,19 @@ const EditorPanel = () => {
       </div>
       <hr className="mx-2.5 w-[calc(100%-20px)] border-[var(--black-4)]" />
       <div className="p-2.5 flex items-center justify-between gap-2.5">
-        <div className={`duration-300 ${!autosave ? 'opacity-50' : ''}`}>
+        <div className={cn(
+          'duration-300',
+          !autosave && 'opacity-50'
+        )}>
           <div className='text-sm text-[var(--black-3)] font-normal'>Autosave Interval</div>
           <div className='text-xs text-[var(--black-2)]'>Set how often changes are automatically saved.</div>
         </div>
         <DropDown
         trigger={
-          <button className={`px-2.5 py-1 rounded-sm border-1 border-[var(--black-1)] flex items-center gap-2 duration-150 ${!autosave ? 'opacity-50' : 'hover:opacity-75 active:opacity-60'}`}>
+          <button className={cn(
+            'px-2.5 py-1 rounded-sm border-1 border-[var(--black-1)] flex items-center gap-2 duration-150',
+            !autosave ? 'opacity-50' : 'hover:opacity-75 active:opacity-60'
+          )}>
             <span className='text-[13px] text-nowrap'>{autosaveInterval + ' sec'}</span>
             <ArrowDown dimension={10} />
           </button>
@@ -100,7 +107,10 @@ const EditorPanel = () => {
               setValue={setAutosaveInterval}
               data={ew.toString()}
               preStyle={false}
-              className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${autosaveInterval === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              className={cn(
+                'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                autosaveInterval === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+              )}
               onClick={() => autosaveIntervalHandler(ew)}
             >
               {ew + ' sec'}
@@ -134,7 +144,10 @@ const EditorPanel = () => {
               setValue={setVisibility}
               data={ew}
               preStyle={false}
-              className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${visibility === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+              className={cn(
+                'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                visibility === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+              )}
               onClick={visibilityHandler}
             >
               {ew}
@@ -168,7 +181,10 @@ const EditorPanel = () => {
                 setValue={setEditorWidth}
                 data={ew}
                 preStyle={false}
-                className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${editorWidth === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+                className={cn(
+                  'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                  editorWidth === ew ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+                )}
                 onClick={editorWidthHandler}
               >
                 {ew}

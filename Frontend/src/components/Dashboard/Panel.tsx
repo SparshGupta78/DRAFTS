@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, type ReactNode } from 'react'
 import { Account as AccountIcon, Data, Editor, LogOut, Settings } from '../../assets/Icons'
 import type { userTypeExtended } from '../../types/userExtended.type'
 import AccountPanel from './Panel/AccountPanel'
@@ -10,6 +10,7 @@ import DropDown from '../DropDown/DropDown'
 import { useNavigate } from 'react-router-dom'
 import { useWindowWidthContext } from '../../contexts/windowWidth.context'
 import DialogWrapper from '../DialogWrapper/DialogWrapper'
+import { cn } from '../../utils/cn'
 
 type props = {
   panelOpen: boolean,
@@ -36,6 +37,27 @@ const Panel = ({
     localStorage.removeItem('preferences')
     localStorage.removeItem('startup')
     navigate('/login')
+  }
+
+  const PanelNavButton = ({
+    value,
+    icon
+  }: {
+    value: 'account' | 'editor' | 'data' | 'settings',
+    icon: ReactNode
+  }) => {
+    return (
+      <button
+        className={cn(
+          "py-0.25 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-6/10 after:h-0.5 after:rounded-full duration-300",
+          panel === value ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'
+        )}
+        onClick={() => setPanel(value)}
+      >
+        {icon}
+        <span className='text-sm capitalize'>{value}</span>
+      </button>
+    )
   }
 
   return (
@@ -86,34 +108,22 @@ const Panel = ({
           </div>
           <div className="sm:mr-2.5 w-full max-w-full overflow-x-scroll overflow-y-visible sm:w-fit grid place-items-center">
             <div className="w-fit flex justify-center items-center gap-3 relative">
-              <button
-                className={`py-0.25 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-6/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'account' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                onClick={() => setPanel('account')}
-              >
-                <AccountIcon dimension={14} />
-                <span className='text-sm'>Account</span>
-              </button>
-              <button
-                className={`py-0.25 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-6/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'editor' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                onClick={() => setPanel('editor')}
-              >
-                <Editor dimension={16} />
-                <span className='text-sm'>Editor</span>
-              </button>
-              <button
-                className={`py-0.25 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-6/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'data' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                onClick={() => setPanel('data')}
-              >
-                <Data dimension={16} />
-                <span className='text-sm'>Data</span>
-              </button>
-              <button
-                className={`py-0.25 flex items-center gap-1 rounded-md relative after:content-[''] after:absolute after:bottom-0 after:right-0 after:w-6/10 after:h-0.5 after:rounded-full duration-300 ${panel === 'settings' ? 'after:bg-[var(--black-4)]' : 'after:bg-transparent hover:opacity-75'}`}
-                onClick={() => setPanel('settings')}
-              >
-                <Settings dimension={16} />
-                <span className='text-sm'>Settings</span>
-              </button>
+              <PanelNavButton
+                value='account'
+                icon={<AccountIcon dimension={14} />}
+              />
+              <PanelNavButton
+                value='editor'
+                icon={<Editor dimension={16} />}
+              />
+              <PanelNavButton
+                value='data'
+                icon={<Data dimension={16} />}
+              />
+              <PanelNavButton
+                value='settings'
+                icon={<Settings dimension={16} />}
+              />
             </div>
           </div>
         </div>

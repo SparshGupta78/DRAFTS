@@ -1,10 +1,15 @@
+import { cn } from "../../utils/cn"
+
 type props = {
   setLoaderOff: boolean
 }
 
 const Loader = ({ setLoaderOff }: props) => {
   return (
-    <div className={`fixed inset-0 z-200 bg-[linear-gradient(var(--black-3),var(--black-5))] duration-700 ${setLoaderOff ? 'opacity-0 pointer-events-none' : ''}`}>
+    <div className={cn(
+      'fixed inset-0 z-200 bg-[linear-gradient(var(--black-3),var(--black-5))] duration-700',
+      setLoaderOff && 'opacity-0 pointer-events-none'
+    )}>
       {!setLoaderOff && (
         <div className="relative w-full h-full grid place-items-center">
           <div className="w-fit h-22.5 flex">

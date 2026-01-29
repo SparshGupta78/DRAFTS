@@ -2,13 +2,21 @@ import { useEffect, useState } from "react"
 import { Alert, Notification } from "../../assets/Icons"
 import Marquee from "../Marquee/Marquee"
 import type { NotificationToastType } from "../../types/notificationToast.type"
+import { cn } from "../../utils/cn"
 
-interface IextendedNotificationToast extends NotificationToastType {
+interface props extends NotificationToastType {
   index: number,
   destructNotification: (toastId: string) => void
 }
 
-const NotificationToast = ({toastId, title, index, message, type, destructNotification}: IextendedNotificationToast) => {
+const NotificationToast = ({
+  toastId,
+  title,
+  index,
+  message,
+  type,
+  destructNotification
+}: props) => {
   const translateY = index * -10
   const scale = Math.max(100 - index * 10, 0) / 100
 
@@ -47,11 +55,14 @@ const NotificationToast = ({toastId, title, index, message, type, destructNotifi
   
   return (
     <div 
-    className={`max-h-14 absolute top-7 left-1/2 max-w-9/10 sm:max-w-95 p-2 bg-[var(--white-1)] rounded-full shadow-[var(--shadow-1)] flex items-center gap-2 overflow-hidden h-fit ${notificationAnimationCLass}`}
-    style={{
-      zIndex: 999 - index,
-      transform: `translate(-50%, ${translateY}px) scale(${scale})`
-    }}
+      className={cn(
+        'max-h-14 absolute top-7 left-1/2 max-w-9/10 sm:max-w-95 p-2 bg-[var(--white-1)] rounded-full shadow-[var(--shadow-1)] flex items-center gap-2 overflow-hidden h-fit',
+        notificationAnimationCLass
+      )}
+      style={{
+        zIndex: 999 - index,
+        transform: `translate(-50%, ${translateY}px) scale(${scale})`
+      }}
     >
       <div 
         className="h-10 aspect-square p-1.75 rounded-full flex items-center justify-center" 
@@ -64,7 +75,9 @@ const NotificationToast = ({toastId, title, index, message, type, destructNotifi
         <div 
           className="text-[15px] font-normal whitespace-nowrap overflow-hidden truncate" 
           style={{color: colors.color1}}
-        >{title}</div>
+        >
+          {title}
+        </div>
         <div 
           className="w-full pr-2 text-xs relative" 
           style={{color: colors.color3}}

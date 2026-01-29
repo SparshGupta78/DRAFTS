@@ -3,6 +3,7 @@ import type { SideBarNotesType } from "../../../types/titles.type"
 import DropDown from "../../DropDown/DropDown"
 import { ArrowDown, Export } from "../../../assets/Icons"
 import DropDownItem from "../../DropDown/DropDownItem"
+import { cn } from "../../../utils/cn"
 
 type props = {
   noteTitles: SideBarNotesType[]
@@ -125,7 +126,10 @@ const DataPanel = ({noteTitles}: props) => {
                   setValue={setFormatType}
                   data={sp}
                   preStyle={false}
-                  className={`text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200 ${formatType === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'}`}
+                  className={cn(
+                    'text-[13px] text-nowrap px-2.25 py-1 rounded-md text-[var(--black-3)] cursor-default duration-200',
+                    formatType === sp ? 'bg-[var(--black-4)]' : 'hover:opacity-75 active:scale-96'
+                  )}
                 >
                   {sp}
                 </DropDownItem>
@@ -141,7 +145,10 @@ const DataPanel = ({noteTitles}: props) => {
                 id="author"
                 className="scale-125 translate-y-0.25 accent-[var(--blue-3)]"
               />
-              <label htmlFor="author" className="w-fit text-sm whitespace-nowrap truncate">
+              <label
+                htmlFor="author"
+                className="w-fit text-sm whitespace-nowrap truncate"
+              >
                 Include author info
               </label>
             </div>
@@ -152,7 +159,10 @@ const DataPanel = ({noteTitles}: props) => {
                 id="includeTags"
                 className="scale-125 translate-y-0.25 accent-[var(--blue-3)]"
               />
-              <label htmlFor="includeTags" className="w-fit text-sm whitespace-nowrap truncate">
+              <label
+                htmlFor="includeTags"
+                className="w-fit text-sm whitespace-nowrap truncate"
+              >
                 Include tags
               </label>
             </div>
@@ -163,7 +173,10 @@ const DataPanel = ({noteTitles}: props) => {
                 id="includeTimestamps"
                 className="scale-125 translate-y-0.25 accent-[var(--blue-3)]"
               />
-              <label htmlFor="includeTimestamps" className="w-fit text-sm whitespace-nowrap truncate">
+              <label
+                htmlFor="includeTimestamps"
+                className="w-fit text-sm whitespace-nowrap truncate"
+              >
                 Include timestamps
               </label>
             </div>
@@ -174,7 +187,10 @@ const DataPanel = ({noteTitles}: props) => {
                 id="visibility"
                 className="scale-125 translate-y-0.25 accent-[var(--blue-3)]"
               />
-              <label htmlFor="visibility" className="w-fit text-sm whitespace-nowrap truncate">
+              <label
+                htmlFor="visibility"
+                className="w-fit text-sm whitespace-nowrap truncate"
+              >
                 Include visibility
               </label>
             </div>
@@ -185,13 +201,19 @@ const DataPanel = ({noteTitles}: props) => {
                 id="pinned"
                 className="scale-125 translate-y-0.25 accent-[var(--blue-3)]"
               />
-              <label htmlFor="pinned" className="w-fit text-sm whitespace-nowrap truncate">
+              <label
+                htmlFor="pinned"
+                className="w-fit text-sm whitespace-nowrap truncate"
+              >
                 Include pinned status
               </label>
             </div>
         </div>
         <div className="w-full flex justify-end">
-          <button type="button" className="mt-2.5 pl-3 pr-4 py-1.5 bg-[var(--blue-2)] text-sm text-[var(--white-2)] rounded-md flex items-center gap-2 duration-300 hover:opacity-75 active:opacity-75">
+          <button
+            type="button"
+            className="mt-2.5 pl-3 pr-4 py-1.5 bg-[var(--blue-2)] text-sm text-[var(--white-2)] rounded-md flex items-center gap-2 duration-300 hover:opacity-75 active:opacity-75"
+          >
             <Export dimension={18} color="#fff" />
             Export
           </button>

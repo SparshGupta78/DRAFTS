@@ -4,6 +4,7 @@ import type { AlertContentType } from "../../types/alertContent.type"
 import type { TagType } from "../../types/tag.type"
 import { useNotificationContext } from "../../contexts/notification.context"
 import DialogWrapper from "../DialogWrapper/DialogWrapper"
+import { cn } from "../../utils/cn"
 
 type props = {
   alertOpen: boolean,
@@ -104,20 +105,20 @@ const Alert = ({
     >
       <div className="p-2.5 bg-[var(--white-2)] rounded-b-xl">
         <div className="px-0.75 w-full font-normal">
-          {alertContentType === 'delete' ? "Are you sure you want to delete this note?" : ""}
-          {alertContentType === 'makePublic' ? "Are you sure you want to make this note public?" : ""}
-          {alertContentType === 'makePrivate' ? "Are you sure you want to make this note private?" : ""}
-          {alertContentType === 'pin' ? "Pin this note?" : ""}
-          {alertContentType === 'unpin' ? "Unpin this note?" : ""}
-          {alertContentType === 'addTag' ? "Add a new tag to this note?" : ""}
+          {alertContentType === 'delete' && "Are you sure you want to delete this note?"}
+          {alertContentType === 'makePublic' && "Are you sure you want to make this note public?"}
+          {alertContentType === 'makePrivate' && "Are you sure you want to make this note private?"}
+          {alertContentType === 'pin' && "Pin this note?"}
+          {alertContentType === 'unpin' && "Unpin this note?"}
+          {alertContentType === 'addTag' && "Add a new tag to this note?"}
         </div>
         <div className="px-0.75 mt-0.5 w-full font-normal text-[var(--black-2)] text-sm">
-          {alertContentType === 'delete' ? "This action cannot be undone." : ""}
-          {alertContentType === 'makePublic' ? "Anyone with the link will be able to view this note." : ""}
-          {alertContentType === 'makePrivate' ? "Only you will be able to access this note after this change." : ""}
-          {alertContentType === 'pin' ? "This note will stay at the top of your notes list." : ""}
-          {alertContentType === 'unpin' ? "This note will return to its original position in the list." : ""}
-          {alertContentType === 'addTag' ? "This will make the note easier to categorize and access later." : ""}
+          {alertContentType === 'delete' && "This action cannot be undone."}
+          {alertContentType === 'makePublic' && "Anyone with the link will be able to view this note."}
+          {alertContentType === 'makePrivate' && "Only you will be able to access this note after this change."}
+          {alertContentType === 'pin' && "This note will stay at the top of your notes list."}
+          {alertContentType === 'unpin' && "This note will return to its original position in the list."}
+          {alertContentType === 'addTag' && "This will make the note easier to categorize and access later."}
         </div>
         {alertContentType === 'addTag' && (
           <div className="w-full mt-2">
@@ -134,7 +135,10 @@ const Alert = ({
                 />
                 <div className="absolute top-0 right-0 h-full aspect-square flex items-center justify-center">
                   <div
-                    className={`w-fit h-fit duration-300 ${tagInput.length === 0 ? 'scale-0 opacity-0' : 'opacity-100 hover:opacity-75 active:scale-90'}`}
+                    className={cn(
+                      'w-fit h-fit duration-300',
+                      tagInput.length === 0 ? 'scale-0 opacity-0' : 'opacity-100 hover:opacity-75 active:scale-90'
+                    )}
                     onClick={() => setTagInput('')}
                   >
                     <Close dimension={20} color="#347CE9" />
@@ -150,7 +154,9 @@ const Alert = ({
                 }}
               >Add</button>
             </div>
-            <div className="px-1 py-0.25 font-normal text-[11px] text-[var(--black-2)]">{tagInput.length}/10</div>
+            <div className="px-1 py-0.25 font-normal text-[11px] text-[var(--black-2)]">
+              {tagInput.length}/10
+            </div>
             <div className="">
               {tags.length === 0 ? (
                 <div className="px-0.75 pt-0.5 italic text-sm text-[var(--black-2)] font-normal">No tags added</div>
@@ -177,22 +183,22 @@ const Alert = ({
         <div className="mt-5 w-full flex items-center justify-end gap-1.75">
           <button
             type="button"
-            className=" sm:w-fit h-fit px-3.5 py-1.5 rounded-lg text-[15px] font-normal duration-300 bg-[var(--white-5)] text-[var(--black-5)] hover:opacity-80"
+            className="sm:w-fit h-fit px-3.5 py-1.5 rounded-lg text-[15px] font-normal duration-300 bg-[var(--white-5)] text-[var(--black-5)] hover:opacity-80"
             onClick={() => clearDialog()}
           >
             Cancel
           </button>
           <button
             type="button"
-            className=" sm:w-fit h-fit px-3.5 py-1.5 rounded-lg text-[15px] font-normal duration-300 bg-[var(--blue-2)] text-[var(--white-2)] hover:opacity-80"
+            className="sm:w-fit h-fit px-3.5 py-1.5 rounded-lg text-[15px] font-normal duration-300 bg-[var(--blue-2)] text-[var(--white-2)] hover:opacity-80"
             onClick={() => submitHandler()}
           >
-            {alertContentType === "delete" ? "Delete" : ""}
-            {alertContentType === "makePublic" ? "Make Public" : ""}
-            {alertContentType === "makePrivate" ? "Make Private" : ""}
-            {alertContentType === 'pin' ? "Pin Note" : ""}
-            {alertContentType === 'unpin' ? "Unpin Note" : ""}
-            {alertContentType === 'addTag' ? "Add Tag" : ""}
+            {alertContentType === "delete" && "Delete"}
+            {alertContentType === "makePublic" && "Make Public"}
+            {alertContentType === "makePrivate" && "Make Private"}
+            {alertContentType === 'pin' && "Pin Note"}
+            {alertContentType === 'unpin' && "Unpin Note"}
+            {alertContentType === 'addTag' && "Add Tag"}
           </button>
         </div>
       </div>

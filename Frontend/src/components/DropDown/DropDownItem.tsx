@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { cn } from "../../utils/cn"
 
 type props = {
   children: ReactNode,
@@ -9,18 +10,26 @@ type props = {
   onClick?: () => void
 }
 
-const DropDownItem = ({children, setValue, data, preStyle = true, className = '', onClick}: props) => {
+const DropDownItem = ({
+  children,
+  setValue,
+  data,
+  preStyle = true,
+  className = '',
+  onClick
+}: props) => {
 
   const clickHandler = () => {
     setValue(data)
-    if(onClick) {
-      onClick()
-    }
+    if(onClick) onClick()
   }
 
   return (
     <div 
-      className={`${preStyle ? 'w-full px-1 py-0.5 bg-[var(--black-4)]' : ''} ${className}`} 
+      className={cn(
+        preStyle && 'w-full px-1 py-0.5 bg-[var(--black-4)]',
+        className
+      )} 
       onClick={() => clickHandler()}
     >
       {children}

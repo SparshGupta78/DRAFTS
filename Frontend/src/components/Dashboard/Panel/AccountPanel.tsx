@@ -3,6 +3,7 @@ import { Account, AccountEdit, Edit } from "../../../assets/Icons"
 import type { userTypeExtended } from "../../../types/userExtended.type"
 import DropDown from "../../DropDown/DropDown"
 import useUserAPI from "../../../services/user.service"
+import { cn } from "../../../utils/cn"
 
 type props = {
   loggedUser: userTypeExtended | undefined
@@ -128,7 +129,12 @@ const AccountPanel = ({loggedUser}: props) => {
             disabled={!accountConfirm}
           >
             <div className="p-2.5 w-65 sm:w-85 bg-[var(--black-6)] rounded-lg shadow-[var(--shadow-1)]">
-              <div className={`w-full h-fit text-sm text-[var(--red-5)] text-center font-normal  border-[var(--red-6)] overflow-hidden duration-300 ${incorrectPasswordField ? 'max-h-10 pb-2.5 mb-2 border-b-1' : 'max-h-0'}`}>Incorrect password</div>
+              <div className={cn(
+                'w-full h-fit text-sm text-[var(--red-5)] text-center font-normal border-[var(--red-6)] overflow-hidden duration-300',
+                incorrectPasswordField ? 'max-h-10 pb-2.5 mb-2 border-b-1' : 'max-h-0'
+              )}>
+                Incorrect password
+              </div>
               <div className="text-sm font-normal text-[var(--black-2)]">Enter your password</div>
               <input
                 type="password"
