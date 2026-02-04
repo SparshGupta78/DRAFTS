@@ -6,10 +6,16 @@ import useUserAPI from "../../../services/user.service"
 import { cn } from "../../../utils/cn"
 
 type props = {
-  loggedUser: userTypeExtended | undefined
+  loggedUser: userTypeExtended | undefined,
+  setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setEditProfileOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const AccountPanel = ({loggedUser}: props) => {
+const AccountPanel = ({
+  loggedUser,
+  setPanelOpen,
+  setEditProfileOpen
+}: props) => {
 
   const { DeleteAccount } = useUserAPI()
 
@@ -41,6 +47,10 @@ const AccountPanel = ({loggedUser}: props) => {
           <button
             type="button"
             className='mt-2.5 flex items-center gap-1.25 hover:opacity-75 duration-300'
+            onClick={() => {
+              setPanelOpen(false)
+              setEditProfileOpen(true)
+            }}
           >
             <AccountEdit dimension={14} color='#347CE9' />
             <span className='text-sm text-[var(--blue-2)]'>Edit profile</span>
@@ -75,7 +85,14 @@ const AccountPanel = ({loggedUser}: props) => {
           <div className="w-full flex">
             <div className="w-1/2 truncate text-sm text-[var(--black-2)]">Password</div>
             <div className="w-1/2 truncate text-sm text-[var(--blue-2)]">
-              <button type="button" className='flex items-center gap-1.25 hover:opacity-75 duration-300'>
+              <button
+                type="button"
+                className='flex items-center gap-1.25 hover:opacity-75 duration-300'
+                onClick={() => {
+                  setPanelOpen(false)
+                  setEditProfileOpen(true)
+                }}
+              >
                 <Edit dimension={14} color='#347CE9' />
                 Edit password
               </button>

@@ -14,6 +14,7 @@ import type { userTypeExtended } from '../types/userExtended.type';
 import type { SideBarNotesType } from '../types/titles.type';
 import { usePreferencesContext } from '../contexts/preferences.context';
 import { cn } from '../utils/cn';
+import EditProfile from '../components/Dashboard/EditProfile';
 
 const Dashboard = () => {
 
@@ -41,6 +42,7 @@ const Dashboard = () => {
   const [allNotes, setAllNotes] = useState<NoteType[]>([])
   const [panelOpen, setPanelOpen] = useState(false)
   const [allNotesFetchingStatus, setAllNotesFetchingStatus] = useState<-1 | 0 | 1>(1)
+  const [editProfileOpen, setEditProfileOpen] = useState(false)
 
   const userFetch = async () => {
     if(!username) return
@@ -161,6 +163,11 @@ const Dashboard = () => {
         setPanelOpen={setPanelOpen}
         loggedUser={loggedUser}
         noteTitles={noteTitles}
+        setEditProfileOpen={setEditProfileOpen}
+      />
+      <EditProfile
+        editProfileOpen={editProfileOpen}
+        setEditProfileOpen={setEditProfileOpen}
       />
     </div>
   )

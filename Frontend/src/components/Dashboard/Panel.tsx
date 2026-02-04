@@ -16,14 +16,16 @@ type props = {
   panelOpen: boolean,
   setPanelOpen: React.Dispatch<React.SetStateAction<boolean>>
   loggedUser: userTypeExtended | undefined,
-  noteTitles: SideBarNotesType[]
+  noteTitles: SideBarNotesType[],
+  setEditProfileOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const Panel = ({
   panelOpen,
   setPanelOpen,
   loggedUser,
-  noteTitles
+  noteTitles,
+  setEditProfileOpen
 }: props) => {
 
   const navigate = useNavigate()
@@ -128,7 +130,13 @@ const Panel = ({
           </div>
         </div>
         <div className="w-full min-h-[calc(100%-78px)] sm:min-h-[calc(100%-44px)] h-fit relative">
-          {panel === 'account' && panelOpen && <AccountPanel loggedUser={loggedUser} />}
+          {panel === 'account' && panelOpen && (
+            <AccountPanel
+              loggedUser={loggedUser}
+              setEditProfileOpen={setEditProfileOpen}
+              setPanelOpen={setPanelOpen}
+            />
+          )}
           {panel === 'editor' && panelOpen && <EditorPanel />}
           {panel === 'data' && panelOpen && <DataPanel noteTitles={noteTitles} />}
           {panel === 'settings' && panelOpen && <SettingsPanel />}

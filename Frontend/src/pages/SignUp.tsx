@@ -8,6 +8,13 @@ import { cn } from "../utils/cn"
 import { Arrow2 } from "../assets/Icons"
 import Input from "../components/Input/Input"
 
+export const authGuidelines = [
+  "First name and last name must be at least 2 characters long.",
+  "First name, middle name and last name must contain only letters and spaces.",
+  "Username must be unique, 3 to 12 characters long, and include only letters, numbers and underscore(_).",
+  "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (e.g., !@#$%^&*()_+-=)"
+]
+
 const SignUp = () => {
 
   const { signUpAPI } = useAuthAPI()
@@ -96,13 +103,6 @@ const SignUp = () => {
     }
     setBtnsDisable(false)
   }
-
-  const guidelines = [
-    "First name and last name must be at least 2 characters long.",
-    "First name, middle name and last name must contain only letters and spaces.",
-    "Username must be unique, 3 to 12 characters long, and include only letters, numbers and underscore(_).",
-    "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (e.g., !@#$%^&*()_+-=)"
-  ]
 
   const AIFeatures = [
     "Turn long notes into clear summaries with Summarization.",
@@ -265,7 +265,7 @@ const SignUp = () => {
                 'overflow-auto duration-400',
                 guidelinesOpen ? 'pt-0.5 pb-2 max-h-85 sm:max-h-full opacity-100' : 'max-h-0 opacity-0'
               )}>
-                {guidelines.map((g, i) => (
+                {authGuidelines.map((g, i) => (
                   <div
                     key={i}
                     className="text-[15px] before:content-['•\00a0'] before:color-[var(--black-1)] before:text-xl"
