@@ -168,6 +168,7 @@ const Dashboard = () => {
       <EditProfile
         editProfileOpen={editProfileOpen}
         setEditProfileOpen={setEditProfileOpen}
+        loggedUser={loggedUser}
       />
     </div>
   )

@@ -294,3 +294,33 @@ export const deleteAllNotes = async (req: Request, res: Response) => {
     res.status(500).json({message: "Internal server error"})
   }
 }
+
+export const updateUserDetails = async (req: Request, res: Response) => {
+  try {
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if (!loggedUser) return res.status(400).json({ message: "Bad request" })
+    const { firstName, middleName, lastName } = req.body
+    if (
+      typeof firstName !== 'string' ||
+      typeof middleName !== 'string' ||
+      typeof lastName !== 'string'
+    ) return res.status(400).json({ message: "firstName, middleName and lastName must be strings" })
+    if (!firstName.trim() || !lastName.trim()) return res.status(400).json({ message: "firstName and lastName cannot be empty" })
+    const dbUser = await UserSchema.findOne(
+      { username: loggedUser.username },
+      { firstName: 1, middleName: 1, lastName: 1 }
+    )
+    if (!dbUser) return res.status(404).json({ message: "User not found" })
+    const details: Partial<Pick<User, 'firstName' | 'middleName' | 'lastName'>> = {}
+    if (firstName !== dbUser.firstName) details.firstName = firstName
+    if (middleName !== dbUser.middleName) details.middleName = middleName
+    if (lastName !== dbUser.lastName) details.lastName = lastName
+    await UserSchema.updateOne(
+      { username: loggedUser.username },
+      { $set: details }
+    )
+    return res.status(200).json({ message: "success" })
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" })
+  }
+}

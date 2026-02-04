@@ -1,15 +1,13 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Account, Close } from "../../assets/Icons"
 import { cn } from "../../utils/cn"
 import DialogWrapper from "../DialogWrapper/DialogWrapper"
 import DropDown from "../DropDown/DropDown"
 import { authGuidelines } from "../../pages/SignUp"
 import { useWindowWidthContext } from "../../contexts/windowWidth.context"
-
-type props = {
-  editProfileOpen: boolean,
-  setEditProfileOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
+import type { userTypeExtended } from "../../types/userExtended.type"
+import useUserAPI from "../../services/user.service"
+import { useNotificationContext } from "../../contexts/notification.context"
 
 type InputProps = {
   title: string,
@@ -35,7 +33,7 @@ const Input = ({
         <input
           type={type}
           className={cn(
-            "w-full lg:w-fit lg:min-w-60 pl-2 pr-6 py-1 border border-[var(--black-4)] rounded-sm duration-100 outline-0 outline-[var(--blue-1)] text-sm hover:outline-1 focus:border-[var(--blue-2)] focus:outline-4 placeholder:text-[var(--black-7)]",
+            "w-full lg:w-fit lg:min-w-60 pl-2 pr-6 py-1 border border-[var(--black-4)] rounded-sm duration-100 outline-0 outline-[var(--blue-1)] text-[13px] hover:outline-1 focus:border-[var(--blue-2)] focus:outline-4 placeholder:text-[var(--black-7)]",
             className
           )}
           placeholder={placeholder}
@@ -44,7 +42,7 @@ const Input = ({
         />
         <button
           className={cn(
-            "absolute top-1/2 right-0 -translate-x-1.5 -translate-y-1/2 duration-300",
+            "absolute top-1/2 right-0 -translate-x-1.5 -translate-y-1/2 duration-300 hover:opacity-75",
             value === '' && 'scale-0 opacity-0'
           )}
           onClick={() => {
@@ -61,10 +59,22 @@ const Input = ({
   )
 }
 
+type props = {
+  editProfileOpen: boolean,
+  setEditProfileOpen: React.Dispatch<React.SetStateAction<boolean>>
+  loggedUser: userTypeExtended | undefined,
+  loggedUserFetch: () => Promise<void>
+}
+
 const EditProfile = ({
   editProfileOpen,
-  setEditProfileOpen
+  setEditProfileOpen,
+  loggedUser,
+  loggedUserFetch
 }: props) => {
+
+  const { createNotification } = useNotificationContext()
+  const { updateUserDetails } = useUserAPI()
 
   const windowWidth = useWindowWidthContext()
 
@@ -74,6 +84,35 @@ const EditProfile = ({
   const [firstName, setFirstName] = useState('')
   const [middleName, setMiddleName] = useState('')
   const [lastName, setLastName] = useState('')
+
+  const loggedDetailsHandler = () => {
+    if(!loggedUser) return
+    setFirstName(loggedUser.firstName)
+    setMiddleName(loggedUser.middleName)
+    setLastName(loggedUser.lastName)
+  }
+
+  const detailsHandler = async () => {
+    const status = await updateUserDetails(firstName, middleName, lastName)
+    if(status) {
+      createNotification({
+        title: "Profile Updated",
+        message: "Account details have been updated successfully.",
+        type: "default"
+      })
+      loggedUserFetch()
+    } else {
+      createNotification({
+        title: "Update Failed",
+        message: "Account details could not be updated. Please try again.",
+        type: "error"
+      })
+    }
+  }
+
+  useEffect(() => {
+    loggedDetailsHandler()
+  }, [editProfileOpen])
 
   return (
     <DialogWrapper
@@ -119,7 +158,7 @@ const EditProfile = ({
               }
               preStyle={false}
               triggerStyle="w-fit"
-              contentStyle="w-full max-w-100 max-h-80 bg-[var(--white-4)] rounded-lg p-3 md:mb-2.5 overflow-auto"
+              contentStyle="w-full max-w-100 max-h-80 bg-[var(--white-4)] rounded-lg p-3 md:mb-2.5 border-5 border-[var(--white-3)] overflow-auto"
               align="left"
               position={windowWidth > 768 ? "top" : "bottom"}
             >
@@ -168,6 +207,7 @@ const EditProfile = ({
                   <button
                     type="button"
                     className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm"
+                    onClick={detailsHandler}
                   >
                     Update
                   </button>

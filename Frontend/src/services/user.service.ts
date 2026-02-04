@@ -377,6 +377,16 @@ const useUserAPI = () => {
     }
   }
 
+  const updateUserDetails = async (firstName: string, middleName: string, lastName: string) => {
+    try {
+      const res = await api.post('/user/updateUserDetails', { firstName, middleName, lastName })
+      navigate(0)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
   return {
     dashboardAPI,
     newNoteAPI,
@@ -391,7 +401,8 @@ const useUserAPI = () => {
     AddTagAPI,
     DeleteTagAPI,
     DeleteAccount,
-    DeleteAllNotes
+    DeleteAllNotes,
+    updateUserDetails
   }
   
 }
