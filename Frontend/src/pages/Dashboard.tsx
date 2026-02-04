@@ -169,6 +169,7 @@ const Dashboard = () => {
         editProfileOpen={editProfileOpen}
         setEditProfileOpen={setEditProfileOpen}
         loggedUser={loggedUser}
+        loggedUserFetch={loggedUserFetch}
       />
     </div>
   )
