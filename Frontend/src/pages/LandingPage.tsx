@@ -1,6 +1,8 @@
 const LandingPage = () => {
   return (
-    <div>LandingPage</div>
+    <div>
+      This page is currently in development. Start with <a href="/signin" className="text-blue-600">signin page</a>.
+    </div>
   )
 }
 
