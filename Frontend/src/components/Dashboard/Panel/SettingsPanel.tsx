@@ -5,9 +5,11 @@ import { ArrowDown } from '../../../assets/Icons'
 import Switch from '../../Switch/Switch'
 import { usePreferencesContext } from '../../../contexts/preferences.context'
 import { cn } from '../../../utils/cn'
+import { useNotificationContext } from '../../../contexts/notification.context'
 
 const SettingsPanel = () => {
 
+  const { createNotification } = useNotificationContext()
   const { preferences, updatePreference, resetPreferences } = usePreferencesContext()
 
   const [language, setLanguage] = useState<'English'>('English')
@@ -267,7 +269,14 @@ const SettingsPanel = () => {
         <button
           type='button'
           className="px-2.5 py-1.5 rounded-sm bg-[var(--blue-2)] text-[var(--white-1)] font-normal flex items-center gap-2 duration-150 hover:opacity-90 active:opacity-80 text-[13px] text-nowrap"
-          onClick={resetPreferences}
+          onClick={() => {
+            resetPreferences()
+            createNotification({
+              title: "Preferences Restored",
+              message: "All preferences have been reset to their default settings.",
+              type: "default"
+            })
+          }}
         >
           Reset Preferences
         </button>
