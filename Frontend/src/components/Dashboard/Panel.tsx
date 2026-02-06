@@ -67,6 +67,8 @@ const Panel = ({
       open={panelOpen}
       setOpen={setPanelOpen}
       header={panel}
+      scrollable
+      onClose={() => setPanel('account')}
     >
       <div className="w-full h-fit">
         <div className="sticky top-0 left-0 w-full p-2.5 bg-[var(--white-2)] z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">

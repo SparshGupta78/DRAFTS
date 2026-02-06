@@ -8,7 +8,9 @@ type props = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>,
   header: string,
   widthStyle?: string,
-  heightStyle?: string
+  heightStyle?: string,
+  scrollable?: boolean,
+  onClose?: () => void
 }
 
 const DialogWrapper = ({
@@ -17,14 +19,21 @@ const DialogWrapper = ({
   setOpen,
   header,
   widthStyle="w-92/100 sm:max-w-275",
-  heightStyle="h-90/100 max-h-full"
+  heightStyle="h-90/100 max-h-full",
+  scrollable=false,
+  onClose
 }: props) => {
 
   const dialogRef = useRef(null)
 
+  const closeHandler = () => {
+    setOpen(false)
+    if(onClose) onClose()
+  }
+
   const outsideClickHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (dialogRef.current && !(dialogRef.current as HTMLElement).contains(e.target as Node)) {
-      setOpen(false)
+      closeHandler()
     }
   }
 
@@ -52,14 +61,15 @@ const DialogWrapper = ({
             </span>
             <div
               className="duration-150 hover:opacity-70 active:opacity-60"
-              onClick={() => {
-                setOpen(false)
-              }}
+              onClick={closeHandler}
             >
               <Close />
             </div>
           </div>
-          <div className="w-full h-[calc(100%-41px)] max-h-full">
+          <div className={cn(
+            "w-full h-[calc(100%-41px)] max-h-full",
+            scrollable && "overflow-x-hidden overflow-y-scroll"
+          )}>
             {children}
           </div>
         </div>
