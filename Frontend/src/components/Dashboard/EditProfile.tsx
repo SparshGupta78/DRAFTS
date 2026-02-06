@@ -15,7 +15,18 @@ type InputProps = {
   className?: string,
   placeholder?: string,
   value: string,
-  setValue: React.Dispatch<React.SetStateAction<string>>
+  setValue: React.Dispatch<React.SetStateAction<string>>,
+  error?: "password" | "newPassword" | "reNewPassword",
+  errors?: {
+    password: boolean;
+    newPassword: boolean;
+    reNewPassword: boolean;
+  },
+  setErrors?: React.Dispatch<React.SetStateAction<{
+    password: boolean;
+    newPassword: boolean;
+    reNewPassword: boolean;
+  }>>
 }
 
 const Input = ({
@@ -24,8 +35,17 @@ const Input = ({
   className,
   placeholder,
   value,
-  setValue
+  setValue,
+  error,
+  errors,
+  setErrors
 }: InputProps) => {
+
+  const errorFeildReset = () => {
+    if(!error || !errors || !setErrors) return
+    setErrors({ ...errors, [error]: false })
+  }
+
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-2">
       <div className="w-full text-sm text-[var(--black-2)]">{title}</div>
@@ -33,12 +53,16 @@ const Input = ({
         <input
           type={type}
           className={cn(
-            "w-full lg:w-fit lg:min-w-60 pl-2 pr-6 py-1 border border-[var(--black-4)] rounded-sm duration-100 outline-0 outline-[var(--blue-1)] text-[13px] hover:outline-1 focus:border-[var(--blue-2)] focus:outline-4 placeholder:text-[var(--black-7)]",
+            "w-full lg:w-fit lg:min-w-60 pl-2 pr-6 py-1 border rounded-sm duration-100 text-[13px] outline-0 hover:outline-2 focus:outline-4 placeholder:text-[var(--black-7)]",
+            (error && errors && errors[error]) ? "border-[var(--red-1)] outline-[var(--red-2)]" : "border-[var(--black-4)] focus:border-[var(--blue-2)] outline-[var(--blue-1)]",
             className
           )}
           placeholder={placeholder}
           value={value}
-          onChange={e => setValue(e.target.value)}
+          onChange={e => {
+            setValue(e.target.value)
+            errorFeildReset()
+          }}
         />
         <button
           className={cn(
@@ -47,6 +71,7 @@ const Input = ({
           )}
           onClick={() => {
             setValue('')
+            errorFeildReset()
           }}
         >
           <Close
@@ -74,13 +99,13 @@ const EditProfile = ({
 }: props) => {
 
   const { createNotification } = useNotificationContext()
-  const { updateUserDetails } = useUserAPI()
+  const { resetPassword, updateUserDetails } = useUserAPI()
 
   const windowWidth = useWindowWidthContext()
 
-  const [oldPassword, setOldPassword] = useState('')
   const [password, setPassword] = useState('')
-  const [rePassword, setRePassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [reNewPassword, setReNewPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [middleName, setMiddleName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -108,6 +133,41 @@ const EditProfile = ({
         type: "error"
       })
     }
+  }
+
+  const [passwordErrors, setPasswordErrors] = useState({
+    password: false,
+    newPassword: false,
+    reNewPassword: false
+  })
+
+  const passwordHandler = async () => {
+    if(newPassword !== reNewPassword) {
+      createNotification({
+        title: "Password Confirmation Failed",
+        message: "The new password and confirmation do not match.",
+        type: "error"
+      })
+      setPasswordErrors(prev => ({ ...prev, newPassword: true, reNewPassword: true }))
+      return
+    }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=]).+$/
+    const error = {
+      password: password.trim().length < 8 || !passwordRegex.test(password.trim()),
+      newPassword: newPassword.trim().length < 8 || !passwordRegex.test(newPassword.trim()),
+      reNewPassword: reNewPassword.trim().length < 8 || !passwordRegex.test(reNewPassword.trim())
+    }
+    setPasswordErrors(error)
+    if(Object.values(error).some(v => v)) {
+      createNotification({
+        title: "Invalid Input",
+        message: "Please check your entered details and try again.",
+        type: "error"
+      })
+      return
+    }
+    const res = await resetPassword(password, newPassword)
+    if(res === -1) setPasswordErrors(prev => ({ ...prev, password: true }))
   }
 
   useEffect(() => {
@@ -158,7 +218,7 @@ const EditProfile = ({
               }
               preStyle={false}
               triggerStyle="w-fit"
-              contentStyle="w-full max-w-100 max-h-80 bg-[var(--white-4)] rounded-lg p-3 md:mb-2.5 border-5 border-[var(--white-3)] overflow-auto"
+              contentStyle="w-full max-w-100 max-h-100 bg-[var(--black-6)] rounded-lg p-3 md:mb-2.5 overflow-auto shadow-[var(--shadow-1)]"
               align="left"
               position={windowWidth > 768 ? "top" : "bottom"}
             >
@@ -206,8 +266,9 @@ const EditProfile = ({
                   <div className="w-full flex justify-end">
                   <button
                     type="button"
-                    className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm"
+                    className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm duration-300 disabled:opacity-75"
                     onClick={detailsHandler}
+                    disabled={firstName === loggedUser?.firstName && middleName === loggedUser?.middleName && lastName === loggedUser.lastName}
                   >
                     Update
                   </button>
@@ -226,28 +287,39 @@ const EditProfile = ({
                 <Input
                   title={"Enter old password"}
                   type={"password"}
-                  value={oldPassword}
-                  setValue={setOldPassword}
+                  value={password}
+                  setValue={setPassword}
                   placeholder="***"
+                  error={"password"}
+                  errors={passwordErrors}
+                  setErrors={setPasswordErrors}
                 />
                 <Input
                   title={"Enter new password"}
                   type={"password"}
-                  value={password}
-                  setValue={setPassword}
+                  value={newPassword}
+                  setValue={setNewPassword}
                   placeholder="***"
+                  error={"newPassword"}
+                  errors={passwordErrors}
+                  setErrors={setPasswordErrors}
                 />
                 <Input
                   title={"Re-enter new password"}
                   type={"password"}
-                  value={rePassword}
-                  setValue={setRePassword}
+                  value={reNewPassword}
+                  setValue={setReNewPassword}
                   placeholder="***"
+                  error={"reNewPassword"}
+                  errors={passwordErrors}
+                  setErrors={setPasswordErrors}
                 />
                 <div className="w-full flex justify-end">
                   <button
                     type="button"
-                    className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm"
+                    className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm duration-300 disabled:opacity-75"
+                    disabled={password === '' || newPassword === '' || reNewPassword === ''}
+                    onClick={passwordHandler}
                   >
                     Change password
                   </button>

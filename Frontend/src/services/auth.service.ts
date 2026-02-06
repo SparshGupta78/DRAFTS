@@ -36,22 +36,6 @@ const useAuthAPI = () => {
   const signInAPI = async (data: any) => {
     try {
       const res = await api.post('/auth/signin', data)
-      if (res.status === 404) {
-        createNotification({
-          title: "User not found",
-          message: "We couldn't find an account with the provided username.",
-          type: "error"
-        })
-        return
-      }
-      if (res.status === 401) {
-        createNotification({
-          title: "Invalid credentials",
-          message: "The username or password you entered is incorrect. Please try again.",
-          type: "error"
-        })
-        return
-      }
       const response: AuthResponseType | null = res.data
       if (!response?.token) {
         createNotification({
@@ -65,6 +49,23 @@ const useAuthAPI = () => {
       const path = localStorage.getItem('startup')
       navigate(path ? path : `/${data.username}`)
     } catch (err: any) {
+      const status = err?.response?.status
+      if (status === 404) {
+        createNotification({
+          title: "User not found",
+          message: "We couldn't find an account with the provided username.",
+          type: "error"
+        })
+        return
+      }
+      if (status === 401) {
+        createNotification({
+          title: "Invalid credentials",
+          message: "The username or password you entered is incorrect. Please try again.",
+          type: "error"
+        })
+        return
+      }
       createNotification({
         title: "Something Went Wrong",
         message: "Signup could not be completed at this moment. Please try again shortly.",

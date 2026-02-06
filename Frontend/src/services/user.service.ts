@@ -379,11 +379,42 @@ const useUserAPI = () => {
 
   const updateUserDetails = async (firstName: string, middleName: string, lastName: string) => {
     try {
-      const res = await api.post('/user/updateUserDetails', { firstName, middleName, lastName })
+      await api.post('/user/updateUserDetails', { firstName, middleName, lastName })
       navigate(0)
       return true
     } catch (error) {
       return false
+    }
+  }
+
+  const resetPassword = async (password: string, newPassword: string) => {
+    try {
+      await api.post('/user/resetPassword', {
+        password,
+        newPassword
+      })
+      createNotification({
+        title: "Password Updated",
+        message: "The password has been changed successfully.",
+        type: "default"
+      })
+      return 1
+    } catch (error: any) {
+      const status = error?.response?.status
+      if(status === 401) {
+        createNotification({
+          title: "Authentication Failed",
+          message: "The current password provided is incorrect.",
+          type: "error"
+        })
+        return -1
+      }
+      createNotification({
+        title: "Password Update Failed",
+        message: "Unable to change the password at this time. Please try again.",
+        type: "error"
+      })
+      return 0
     }
   }
 
@@ -402,7 +433,8 @@ const useUserAPI = () => {
     DeleteTagAPI,
     DeleteAccount,
     DeleteAllNotes,
-    updateUserDetails
+    updateUserDetails,
+    resetPassword
   }
   
 }

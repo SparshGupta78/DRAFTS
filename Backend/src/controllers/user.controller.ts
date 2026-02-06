@@ -324,3 +324,28 @@ export const updateUserDetails = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" })
   }
 }
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const loggedUser = req.user as Omit<User, 'notes'> | undefined
+    if(!loggedUser) return res.status(400).json({ message: "Bad request" })
+    const { password, newPassword } = req.body
+    if(!password || !newPassword) return res.status(400).json({ message: "Insufficient details." })
+    if(typeof password !== 'string' || typeof newPassword !== 'string') return res.status(400).json({ message: "password must be of type string" })
+    const user = await UserSchema.findOne(
+      { username: loggedUser.username },
+      {_id: 0, password: 1}
+    )
+    if(!user) return res.status(404).json({ message: "User not found" })
+    const match = await bcryptjs.compare(password, user.password)
+    if(!match) return res.status(401).json({error: "Invalid credentials"})
+    const hashedPassword = await bcryptjs.hash(newPassword, 16)
+    await UserSchema.findOneAndUpdate(
+      { username: loggedUser.username },
+      {$set: {password: hashedPassword}}
+    )
+    res.status(200).json({ message: "success" })
+  } catch (error) {
+    res.status(500).json({message: "Internal server error"})
+  }
+}
