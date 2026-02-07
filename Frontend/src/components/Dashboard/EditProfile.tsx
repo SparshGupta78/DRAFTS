@@ -26,7 +26,8 @@ type InputProps = {
     password: boolean;
     newPassword: boolean;
     reNewPassword: boolean;
-  }>>
+  }>>,
+  disable?: boolean
 }
 
 const Input = ({
@@ -38,7 +39,8 @@ const Input = ({
   setValue,
   error,
   errors,
-  setErrors
+  setErrors,
+  disable=false
 }: InputProps) => {
 
   const errorFeildReset = () => {
@@ -49,7 +51,10 @@ const Input = ({
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-2">
       <div className="w-full text-sm text-[var(--black-2)]">{title}</div>
-      <div className="relative w-full lg:w-fit">
+      <div className={cn(
+        "relative w-full lg:w-fit duration-300",
+        disable && "opacity-75 pointer-events-none"
+        )}>
         <input
           type={type}
           className={cn(
@@ -63,6 +68,7 @@ const Input = ({
             setValue(e.target.value)
             errorFeildReset()
           }}
+          disabled={disable}
         />
         <button
           className={cn(
@@ -109,6 +115,17 @@ const EditProfile = ({
   const [firstName, setFirstName] = useState('')
   const [middleName, setMiddleName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [passwordErrors, setPasswordErrors] = useState({
+    password: false,
+    newPassword: false,
+    reNewPassword: false
+  })
+  const [detailFieldsDisable, setDetailFieldsDisable] = useState(false)
+  const [passwordFieldsDisable, setPasswordFieldsDisable] = useState(false)
+
+  useEffect(() => {
+    loggedDetailsHandler()
+  }, [editProfileOpen])
 
   const loggedDetailsHandler = () => {
     if(!loggedUser) return
@@ -118,6 +135,7 @@ const EditProfile = ({
   }
 
   const detailsHandler = async () => {
+    setDetailFieldsDisable(true)
     const status = await updateUserDetails(firstName, middleName, lastName)
     if(status) {
       createNotification({
@@ -133,13 +151,8 @@ const EditProfile = ({
         type: "error"
       })
     }
+    setDetailFieldsDisable(false)
   }
-
-  const [passwordErrors, setPasswordErrors] = useState({
-    password: false,
-    newPassword: false,
-    reNewPassword: false
-  })
 
   const passwordHandler = async () => {
     if(newPassword !== reNewPassword) {
@@ -166,13 +179,16 @@ const EditProfile = ({
       })
       return
     }
+    setPasswordFieldsDisable(true)
     const res = await resetPassword(password, newPassword)
     if(res === -1) setPasswordErrors(prev => ({ ...prev, password: true }))
+    else if(res === 1) {
+      setPassword('')
+      setNewPassword('')
+      setReNewPassword('')
+    } 
+    setPasswordFieldsDisable(false)
   }
-
-  useEffect(() => {
-    loggedDetailsHandler()
-  }, [editProfileOpen])
 
   return (
     <DialogWrapper
@@ -235,48 +251,56 @@ const EditProfile = ({
             </DropDown>
           </div>
           <div className="w-full md:w-fit h-fit grow">
-            <div className="w-full rounded-lg border border-[var(--black-4)] px-2.5 py-2">
-              <div>
-                <div className="text-sm font-normal text-[var(--black-2)]">
-                  Details
-                </div>
-                <hr className="my-1.5 mx-auto w-full border-[var(--black-4)]" />
-                <div className="p-1 flex flex-col gap-3 sm:gap-2.5">
-                  <Input
-                    title={"First name"}
-                    type={"text"}
-                    value={firstName}
-                    setValue={setFirstName}
-                    placeholder="First name"
-                  />
-                  <Input
-                    title={"Middle name"}
-                    type={"text"}
-                    value={middleName}
-                    setValue={setMiddleName}
-                    placeholder="Middle name"
-                  />
-                  <Input
-                    title={"Last name"}
-                    type={"text"}
-                    value={lastName}
-                    setValue={setLastName}
-                    placeholder="Last name"
-                  />
-                  <div className="w-full flex justify-end">
-                  <button
-                    type="button"
-                    className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm duration-300 disabled:opacity-75"
-                    onClick={detailsHandler}
-                    disabled={firstName === loggedUser?.firstName && middleName === loggedUser?.middleName && lastName === loggedUser.lastName}
-                  >
-                    Update
-                  </button>
-                </div>
-                </div>
+            <div className="w-full bg-[var(--white-1)] rounded-lg border border-[var(--black-4)] px-2.5 py-2">
+              <div className="text-sm font-normal text-[var(--black-2)]">
+                Details
+              </div>
+              <hr className="my-1.5 mx-auto w-full border-[var(--black-4)]" />
+              <div className="p-1 flex flex-col gap-3 sm:gap-2.5">
+                <Input
+                  title={"First name"}
+                  type={"text"}
+                  value={firstName}
+                  setValue={setFirstName}
+                  placeholder="First name"
+                  disable={detailFieldsDisable}
+                />
+                <Input
+                  title={"Middle name"}
+                  type={"text"}
+                  value={middleName}
+                  setValue={setMiddleName}
+                  placeholder="Middle name"
+                  disable={detailFieldsDisable}
+                />
+                <Input
+                  title={"Last name"}
+                  type={"text"}
+                  value={lastName}
+                  setValue={setLastName}
+                  placeholder="Last name"
+                  disable={detailFieldsDisable}
+                />
+                <div className="w-full flex justify-end">
+                <button
+                  type="button"
+                  className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm duration-300 disabled:opacity-75"
+                  onClick={detailsHandler}
+                  disabled={
+                    (
+                      firstName === loggedUser?.firstName &&
+                      middleName === loggedUser?.middleName &&
+                      lastName === loggedUser.lastName
+                    ) ||
+                    detailFieldsDisable
+                  }
+                >
+                  {detailFieldsDisable ? 'Updating...' : 'Update'}
+                </button>
+              </div>
               </div>
             </div>
-            <div className="mt-2.5 w-full rounded-lg border border-[var(--black-4)] px-2.5 py-2">
+            <div className="mt-2.5 w-full bg-[var(--white-1)] rounded-lg border border-[var(--black-4)] px-2.5 py-2">
               <div>
                 <div className="text-sm font-normal text-[var(--black-2)]">
                   Password
@@ -293,6 +317,7 @@ const EditProfile = ({
                   error={"password"}
                   errors={passwordErrors}
                   setErrors={setPasswordErrors}
+                  disable={passwordFieldsDisable}
                 />
                 <Input
                   title={"Enter new password"}
@@ -303,6 +328,7 @@ const EditProfile = ({
                   error={"newPassword"}
                   errors={passwordErrors}
                   setErrors={setPasswordErrors}
+                  disable={passwordFieldsDisable}
                 />
                 <Input
                   title={"Re-enter new password"}
@@ -313,15 +339,16 @@ const EditProfile = ({
                   error={"reNewPassword"}
                   errors={passwordErrors}
                   setErrors={setPasswordErrors}
+                  disable={passwordFieldsDisable}
                 />
                 <div className="w-full flex justify-end">
                   <button
                     type="button"
                     className="px-3.5 py-1.5 bg-[var(--blue-2)] text-[var(--white-1)] rounded-sm text-sm duration-300 disabled:opacity-75"
-                    disabled={password === '' || newPassword === '' || reNewPassword === ''}
+                    disabled={password === '' || newPassword === '' || reNewPassword === '' || passwordFieldsDisable}
                     onClick={passwordHandler}
                   >
-                    Change password
+                    {passwordFieldsDisable ? "Changing password..." : "Change password"}
                   </button>
                 </div>
               </div>
