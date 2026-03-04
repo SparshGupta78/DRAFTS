@@ -1,11 +1,10 @@
 import { useState, type FormEvent } from "react"
 import { NavLink } from "react-router-dom"
-import ai from '../assets/ai.svg'
 import useAuthAPI from "../services/auth.service"
 import useDraftsAPI from "../services/drafts.service"
 import { useNotificationContext } from "../contexts/notification.context"
 import { cn } from "../utils/cn"
-import { Arrow2 } from "../assets/Icons"
+import { AI, Arrow2 } from "../assets/Icons"
 import Input from "../components/Input/Input"
 
 export const authGuidelines = [
@@ -283,11 +282,7 @@ const SignUp = () => {
               onClick={aiHandler}
             >
               <span className="text-base sm:text-lg font-[400] bg-[linear-gradient(to_right,#dc2626_0%,#f97316_20%,#facc15_40%,#4ade80_60%,#3b82f6_80%,#6366f1_100%)] bg-clip-text text-transparent">Introducing AI features</span>
-              <img
-                className="w-6.5 h-6.5 aspect-square"
-                src={ai}
-                alt="ai"
-              />
+              <AI dimension={22} />
               <div className="flex justify-center items-center p-1 rounded-full bg-[var(--blue-1)] sm:hidden">
                 <div className={cn(
                   'duration-300',
