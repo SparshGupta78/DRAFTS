@@ -15,6 +15,7 @@ import type { SideBarNotesType } from '../types/titles.type';
 import { usePreferencesContext } from '../contexts/preferences.context';
 import { cn } from '../utils/cn';
 import EditProfile from '../components/Dashboard/EditProfile';
+import AI from '../components/Dashboard/AI';
 
 const Dashboard = () => {
 
@@ -43,6 +44,7 @@ const Dashboard = () => {
   const [panelOpen, setPanelOpen] = useState(false)
   const [allNotesFetchingStatus, setAllNotesFetchingStatus] = useState<-1 | 0 | 1>(1)
   const [editProfileOpen, setEditProfileOpen] = useState(false)
+  const [aiOpen, setAiOpen] = useState(false)
 
   const userFetch = async () => {
     if(!username) return
@@ -142,6 +144,7 @@ const Dashboard = () => {
         setAllNotesOpen={setAllNotesOpen}
         notesFetch={notesFetch}
         fetchNotesTitle={fetchNotesTitle}
+        setAiOpen={setAiOpen}
       />
       <NewNote
         newNoteOpen={newNoteOpen}
@@ -170,6 +173,10 @@ const Dashboard = () => {
         setEditProfileOpen={setEditProfileOpen}
         loggedUser={loggedUser}
         loggedUserFetch={loggedUserFetch}
+      />
+      <AI
+        aiOpen={aiOpen}
+        setAiOpen={setAiOpen}
       />
     </div>
   )

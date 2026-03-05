@@ -7,7 +7,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
-import { Close, Edit, Plus, Retry, ThreeDots, Tick, ViewAll } from "../../assets/Icons"
+import { AI, Close, Edit, Plus, Retry, ThreeDots, Tick, ViewAll } from "../../assets/Icons"
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import useUserAPI from "../../services/user.service"
@@ -42,7 +42,8 @@ type props = {
   updatedAt: string,
   setAllNotesOpen: React.Dispatch<React.SetStateAction<boolean>>,
   notesFetch: () => Promise<void>,
-  fetchNotesTitle: () => Promise<void>
+  fetchNotesTitle: () => Promise<void>,
+  setAiOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type editorOptionsType = {
@@ -69,7 +70,8 @@ const Editor = ({
   updatedAt,
   setAllNotesOpen,
   notesFetch,
-  fetchNotesTitle
+  fetchNotesTitle,
+  setAiOpen
 }: props) => {
 
   const { AddTagAPI, DeleteNoteAPI, DeleteTagAPI, EditorContentSaveAPI, EditorTitleUpdateAPI, ToggleVisibilityStatusAPI } = useUserAPI()
@@ -332,42 +334,53 @@ const Editor = ({
                         </div>
                       )}
                       {isUserDashboard && (
-                        <DropDown
-                          trigger={
-                            <button className="group h-fit aspect-square border-2 border-[var(--white-3)] rounded-full flex items-center">
-                              <div className="group-hover:scale-95 group-active:scale-85 duration-300 p-1 rounded-full bg-[var(--blue-1)]">
-                                <ThreeDots dimension={20} color="#347CE9" />
-                              </div>
-                            </button>
-                          }
-                          preStyle={false}
-                          contentStyle="p-0.75 bg-[var(--black-6)] rounded-lg flex flex-col gap-0.75"
-                          align={'right'}
-                          onContentClickClose={true}
-                        >
-                          {editorOptions && editorOptions.map((item, i) => {
-                            return (
-                              <DropDownItem
-                              key={item.tag}
-                              setValue={() => {}}
-                              data={item.tag}
-                              preStyle={false}
-                              className={cn(
-                                'bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97',
-                                i == 0 && 'rounded-t-md rounded-b-[2px]',
-                                i != 0 && i != (editorOptions.length - 1) && 'rounded-[2px]',
-                                i == (editorOptions.length - 1) && 'rounded-b-md rounded-t-[2px]'
-                              )}
-                              onClick={() => {
-                                setAlertContentType(item.tag)
-                                setAlertOpen(true)
-                              }}
-                            >
-                              {item.option}
-                            </DropDownItem>
-                            )
-                          })}
-                        </DropDown>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            className="group h-[31.2px] aspect-square rounded-full bg-[conic-gradient(#FF6347,#FF4500,#FFD700,#FFD700,#1E90FF,#8A2BE2,#FF1493,#FF6347)] flex items-center justify-center"
+                            onClick={() => setAiOpen(true)}
+                          >
+                            <div className="group-hover:scale-92 group-active:scale-86 duration-300 w-7 aspect-square bg-radial from-[var(--white-2)] via-[var(--white-2)] to-transparent backdrop-blur-md rounded-full grid place-items-center">
+                              <AI dimension={18} />
+                            </div>
+                          </button>
+                          <DropDown
+                            trigger={
+                              <button className="group h-fit aspect-square border-2 border-[var(--white-3)] rounded-full flex items-center">
+                                <div className="group-hover:scale-95 group-active:scale-85 duration-300 p-1 rounded-full bg-[var(--blue-1)]">
+                                  <ThreeDots dimension={20} color="#347CE9" />
+                                </div>
+                              </button>
+                            }
+                            preStyle={false}
+                            contentStyle="p-0.75 bg-[var(--black-6)] rounded-lg flex flex-col gap-0.75"
+                            align={'right'}
+                            onContentClickClose={true}
+                          >
+                            {editorOptions && editorOptions.map((item, i) => {
+                              return (
+                                <DropDownItem
+                                key={item.tag}
+                                setValue={() => {}}
+                                data={item.tag}
+                                preStyle={false}
+                                className={cn(
+                                  'bg-[var(--black-4)] text-sm text-nowrap px-2.25 py-1 text-[var(--black-3)] cursor-default duration-200 font-normal hover:opacity-75 active:scale-97',
+                                  i == 0 && 'rounded-t-md rounded-b-[2px]',
+                                  i != 0 && i != (editorOptions.length - 1) && 'rounded-[2px]',
+                                  i == (editorOptions.length - 1) && 'rounded-b-md rounded-t-[2px]'
+                                )}
+                                onClick={() => {
+                                  setAlertContentType(item.tag)
+                                  setAlertOpen(true)
+                                }}
+                              >
+                                {item.option}
+                              </DropDownItem>
+                              )
+                            })}
+                          </DropDown>
+                        </div>
                       )}
                     </div>
                   </div>

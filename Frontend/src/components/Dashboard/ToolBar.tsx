@@ -408,28 +408,28 @@ const ToolBox = ({
             />
           </div>
         </div>
-        <div className="h-full">
+        <div className="h-full grid place-items-center">
           <button
             type="button"
-            className="grid place-items-center duration-300 hover:opacity-75 scale-90 active:scale-80 disabled:opacity-50 rotate-z-180"
+            className="w-full p-0.5 grid place-items-center duration-300 bg-[var(--blue-2)] rounded-b-lg rounded-t-xs hover:opacity-75 scale-90 active:scale-80 disabled:opacity-50 rotate-z-180 translate-x-[0.25px]"
             onClick={() => setToolbarCount(prev => {
               if(prev <= 0) return prev
               return prev - 1
             })}
             disabled={toolbarDisable}
           >
-            <ScrollDown dimension={14} color="#347CE9" />
+            <ScrollDown dimension={10} color="#ffffff" />
           </button>
           <button
             type="button"
-            className="grid place-items-center duration-300 hover:opacity-75 scale-90 active:scale-80 disabled:opacity-50"
+            className="w-full p-0.5 grid place-items-center duration-300 bg-[var(--blue-2)] rounded-b-lg rounded-t-xs hover:opacity-75 scale-90 active:scale-80 disabled:opacity-50"
             onClick={() => setToolbarCount(prev => {
               if(prev >= (toolbarCountMax - 1)) return prev
               return prev + 1
             })}
             disabled={toolbarDisable}
           >
-            <ScrollDown dimension={14} color="#347CE9" />
+            <ScrollDown dimension={10} color="#ffffff" />
           </button>
         </div>
       </div>
