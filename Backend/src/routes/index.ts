@@ -3,11 +3,13 @@ import authRouter from "./auth.router"
 import publicRouter from "./public.router"
 import userRouter from "./user.router"
 import { auth } from "../middlewares/auth.middleware"
+import aiRouter from "./ai.router"
 
 const router = Router()
 
 router.use('/auth', authRouter)
 router.use('/user', auth, userRouter)
+router.use('/ai', auth, aiRouter)
 router.use('/public', publicRouter)
 
 export default router
