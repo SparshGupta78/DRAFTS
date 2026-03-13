@@ -177,6 +177,7 @@ const Dashboard = () => {
       <AI
         aiOpen={aiOpen}
         setAiOpen={setAiOpen}
+        content={content}
       />
     </div>
   )

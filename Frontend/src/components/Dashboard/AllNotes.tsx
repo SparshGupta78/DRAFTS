@@ -200,10 +200,10 @@ const AllNotes = ({
                   </div>
                   <div className="w-full sm:h-20 text-sm text-[va(--black-3)] line-clamp-4">
                     {
-                      extractTextFromJSON(note.content) !== '' 
-                      ? 
-                      extractTextFromJSON(note.content) 
-                      : 
+                      extractTextFromJSON(note.content) !== ''
+                      ?
+                      extractTextFromJSON(note.content)
+                      :
                       <span className="text-[var(--black-2)] italic">No content</span>
                     }
                   </div>

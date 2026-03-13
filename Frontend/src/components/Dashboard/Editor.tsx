@@ -109,7 +109,6 @@ const Editor = ({
   }
 
   const save = async () => {
-    console.log('saved function called')
     if (!noteId) {
       setAutoSaveStatus(-1)
       return
@@ -274,10 +273,10 @@ const Editor = ({
         <div className="w-full h-full md:h-[calc(100%-43.6px)] bg-[linear-gradient(to_right,var(--white-4)_10%,var(--blue-1)_90%,var(--white-4)_100%)] rounded-t-xl md:rounded-t-sm rounded-b-xl flex items-center justify-center mb-10 md:mb-0 overflow-hidden">
           <div className={cn(
             'w-full h-full md:min-h-0 bg-[var(--white-1)] rounded-sm p-3.5',
-            (preferences && preferences.editor.editorWidth === 'Full') ? '' : 'max-w-180'
+            !(preferences && preferences.editor.editorWidth === 'Full') && 'max-w-180'
           )}>
             {
-              (noteId && fetchingStatus === 1) 
+              (noteId && fetchingStatus === 1)
               ? 
               (<div className="w-full h-full overflow-x-hidden overflow-y-scroll">
                 <div className="w-full">
@@ -440,7 +439,7 @@ const Editor = ({
                   <EditorContent
                     className="w-full h-full"
                     editor={editor}
-                    spellCheck={(preferences && !preferences.editor.spellCheck) ? false : true}
+                    spellCheck={ !preferences || preferences.editor.spellCheck }
                   />
                 </div>
               </div>)

@@ -18,7 +18,7 @@ const DialogWrapper = ({
   open,
   setOpen,
   header,
-  widthStyle="w-92/100 sm:max-w-275",
+  widthStyle="w-92/100 sm:max-w-300",
   heightStyle="h-90/100 max-h-full",
   scrollable=false,
   onClose

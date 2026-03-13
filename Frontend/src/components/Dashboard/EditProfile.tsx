@@ -234,7 +234,7 @@ const EditProfile = ({
               }
               preStyle={false}
               triggerStyle="w-fit"
-              contentStyle="w-full max-w-100 max-h-100 bg-[var(--black-6)] rounded-lg p-3 md:mb-2.5 overflow-auto shadow-[var(--shadow-1)]"
+              contentStyle="w-full max-w-100 max-h-100 bg-[var(--white-1)] border border-[var(--black-4)] rounded-lg p-3 md:mb-2.5 overflow-auto"
               align="left"
               position={windowWidth > 768 ? "top" : "bottom"}
             >

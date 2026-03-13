@@ -158,6 +158,7 @@ const AccountPanel = ({
                 className="mt-1.5 px-2.5 py-1 bg-[var(--white-2)] text-sm w-full rounded-md border-1 duration-100 border-[var(--black-4)] outline-0 outline-[var(--black-4)] hover:outline-2 active:outline-2 focus:outline-3 focus:border-[var(--black-1)] disabled:opacity-60 disabled:hover:outline-0 disabled:active:outline-0 disabled:focus:outline-0"
                 value={password}
                 onChange={e => setPassword(e.currentTarget.value)}
+                placeholder="***"
                 disabled={confirmBtnDisable}
               />
               <button
