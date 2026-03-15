@@ -178,6 +178,9 @@ const Dashboard = () => {
         aiOpen={aiOpen}
         setAiOpen={setAiOpen}
         content={content}
+        setContent={setContent}
+        editorFetch={editorFetch}
+        tagsLength={tags.length}
       />
     </div>
   )

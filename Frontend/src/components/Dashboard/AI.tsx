@@ -1,5 +1,5 @@
 import React, { useState, type ReactNode } from 'react'
-import { ArrowDown, Info } from '../../assets/Icons'
+import { ArrowDown, Close, Edit, Info } from '../../assets/Icons'
 import DialogWrapper from '../DialogWrapper/DialogWrapper'
 import { AI as AiIcon } from "../../assets/Icons"
 import DropDown from '../DropDown/DropDown'
@@ -8,6 +8,12 @@ import { cn } from '../../utils/cn'
 import type { Content } from '../../types/tiptap.type'
 import { extractHTML } from '../../utils/tiptapHTMLExtractor'
 import type { JSONContent } from '@tiptap/core'
+import useAiAPI from '../../services/ai.service'
+import { useNotificationContext } from '../../contexts/notification.context'
+import type { actionType, AIResponse } from '../../types/AiResponse.type'
+import type { TagType } from '../../types/tag.type'
+import useUserAPI from '../../services/user.service'
+import { useParams } from 'react-router-dom'
 
 type btnProps = {
   type: string,
@@ -15,8 +21,6 @@ type btnProps = {
   content: ReactNode,
   options?: string[]
 }
-
-type actionType = '' | 'Generate Heading' | 'Extract Tags' | 'Summarize' | 'Expand' | 'Rephrase' | 'Grammar & Spell Check' | 'Formal' | 'Casual' | 'Professional' | 'Academic' | 'Creative'
 
 type ButtonProps = {
   btn: btnProps,
@@ -47,17 +51,35 @@ const Button = ({
 
 type props = {
   aiOpen: boolean,
-  setAiOpen: React.Dispatch<React.SetStateAction<boolean>>
-  content: Content
+  setAiOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  content: Content,
+  setContent: React.Dispatch<React.SetStateAction<Content>>,
+  editorFetch: (noteId: string) => Promise<void>,
+  tagsLength: number
 }
 
 const AI = ({
   aiOpen,
   setAiOpen,
-  content
+  content,
+  setContent,
+  editorFetch,
+  tagsLength
 }: props) => {
 
+  const { username, noteId } = useParams()
+
+  const { createNotification } = useNotificationContext()
+
+  const { EditorTitleUpdateAPI, AddTagAPI } = useUserAPI()
+  const { aiQuery } = useAiAPI()
+
   const [action, setAction] = useState<actionType>('')
+  const [aiResponse, setAiResponse] = useState<AIResponse | undefined>(undefined)
+  const [fetchingStatus, setFetchingStatus] = useState<0 | 1>(0) // 0 - inactive, 1 - active
+  const [updatingStatus, setUpdatingStatus] = useState<0 | 1>(0) // 0 - inactive, 1 - active
+  const [tags, setTags] = useState<TagType[]>([])
+  const [HTMLContent, setHTMLContent] = useState("")
 
   const generalBtns: btnProps[] = [
     {
@@ -105,20 +127,123 @@ const AI = ({
     }
   ]
 
-  const contentHTML =
-  content && typeof content !== 'string' && !Array.isArray(content)
-    ? extractHTML(content as JSONContent)
-    : ''
+  let contentHTML = ""
+
+  if (
+    content &&
+    typeof content === "object" &&
+    !Array.isArray(content) &&
+    "type" in content &&
+    content.type === "doc"
+  ) {
+    try {
+      contentHTML = extractHTML(content as JSONContent)
+    } catch {
+      contentHTML = ""
+    }
+  }
+  
+  const queryHandler = async () => {
+    if(action == '') {
+      createNotification({
+        title: "Action Not Selected",
+        message: "Select an action to continue.",
+        type: "default"
+      })
+      return
+    }
+    setFetchingStatus(1)
+    const res = await aiQuery(content as JSONContent, action)
+    if(!res) {
+      createNotification({
+        title: "AI Processing Error",
+        message: "The request could not be processed at this time. Please try again.",
+        type: "error"
+      })
+      setFetchingStatus(0)
+      return
+    }
+    setAiResponse(res)
+    if(res.response &&
+      typeof res.response == "object" &&
+      !("heading" in res.response) &&
+      ("tags" in res.response)
+    ) {
+      const ts = res.response.tags as string[]
+      const mts = ts.map(tag => ({
+        tag,
+        tagId: crypto.randomUUID()
+      }))
+      setTags(mts)
+    }
+    else if(res.response &&
+      typeof res.response === "object" &&
+      !("heading" in res.response) &&
+      !("tags" in res.response)
+    ) {
+      const resHTML = extractHTML(res.response as JSONContent)
+      setHTMLContent(resHTML)
+    }
+    setFetchingStatus(0)
+  }
+
+  const headingUpdateHandler = async (title: string) => {
+    if (!noteId) return
+    await EditorTitleUpdateAPI(noteId, title)
+    await editorFetch(noteId)
+  }
+
+  const updateHandler = async () => {
+    if (!aiResponse) return
+    setUpdatingStatus(1)
+    if (
+      aiResponse.action === "Generate Heading" &&
+      aiResponse.response &&
+      "heading" in aiResponse.response &&
+      typeof aiResponse.response.heading === "string"
+    ) {
+      headingUpdateHandler(aiResponse.response.heading)
+    }
+    else if (aiResponse.action === "Extract Tags") {
+      if (!username || !noteId) return
+      const ts = tags.slice(0, 5 - tagsLength)
+      await AddTagAPI(username, noteId, ts)
+      await editorFetch(noteId)
+    }
+    else if (
+      aiResponse.response &&
+      typeof aiResponse.response === "object" &&
+      !("heading" in aiResponse.response) &&
+      !("tags" in aiResponse.response)
+    ) {
+      setContent(aiResponse.response as JSONContent)
+    }
+    setUpdatingStatus(0)
+    setAiOpen(false)
+    clearDialog()
+  }
+
+  const removeTag = (tagId: string) => {
+    setTags(prev => prev.filter(tag => tag.tagId != tagId))
+  }
+
+  const clearDialog = () => {
+    setAction('')
+    setAiResponse(undefined)
+    setFetchingStatus(0)
+    setTags([])
+    setHTMLContent("")
+  }
 
   return (
     <DialogWrapper
       open={aiOpen}
       setOpen={setAiOpen}
       header={"AI Features"}
-      onClose={() => setAction('')}
+      onClose={clearDialog}
     >
       <div className="h-full w-full overflow-y-scroll">
-        <div className="p-2.5 w-full h-fit min-h-full flex flex-col justify-between gap-2.5">
+        <div className="p-2.5 w-full h-fit min-h-full flex flex-col justify-between">
           <div className="w-full flex flex-col gap-2.5">
             <div className="p-2.5 border-1 border-[var(--black-4)] rounded-lg">
               <div className="px-2.5 pb-2.5 w-full flex flex-col sm:flex-row items-center justify-between gap-2.5">
@@ -159,13 +284,43 @@ const AI = ({
                 AI Output
               </div>
               <div className="relative">
-                <div className="absolute left-0 top-0 w-full h-3 bg-gradient-to-b from-[var(--white-1)] to-transparent"></div>
+                <div className="absolute left-0 top-0 w-full h-3 bg-gradient-to-b from-[var(--white-2)] to-transparent"></div>
                 <div className="w-full min-h-15 max-h-60 overflow-y-scroll py-1.5">
-                  <div className="w-full h-fit text-[15px]">
-                    Nothing to show now.
-                  </div>
+                  {aiResponse ? (
+                    aiResponse.action === "Generate Heading" && aiResponse.response && "heading" in aiResponse.response ? (
+                      <div className="text-xl">
+                        {aiResponse.response.heading}
+                      </div>
+                    ) : aiResponse.action === "Extract Tags" && aiResponse.response && "tags" in aiResponse.response ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {tags.length > 0 ?
+                        (tags.map((tag: TagType, _) => (
+                          <span
+                            key={tag.tagId}
+                            className="pl-2.25 pr-1.5 py-0.5 text-[var(--blue-2)] text-sm bg-[var(--blue-1)] rounded-full flex items-center gap-1"
+                          >
+                            {tag.tag}
+                            <div onClick={() => removeTag(tag.tagId)}>
+                              <Close dimension={14} color='#1b63ce'/>
+                            </div>
+                          </span>
+                        ))) : (
+                          <div className="text-[var(--black-2)] text-sm italic">No tags selected</div>
+                        )}
+                      </div>
+                    ) : aiResponse.response ? (
+                      <div
+                        className="tiptap text-sm"
+                        dangerouslySetInnerHTML={{ __html: HTMLContent }}
+                      />
+                    ) : ''
+                  ) : (
+                    <div className="w-full min-h-12 h-full grid place-items-center text-sm text-[var(--black-7)] font-normal">
+                      Query to see the AI results.
+                    </div>
+                  )}
                 </div>
-                <div className="absolute left-0 bottom-0 w-full h-3 bg-gradient-to-b from-transparent to-[var(--white-1)]"></div>
+                <div className="absolute left-0 bottom-0 w-full h-3 bg-gradient-to-b from-transparent to-[var(--white-2)]"></div>
               </div>
             </div>
             <div className="p-2.5 w-full flex flex-col gap-2.5">
@@ -235,6 +390,28 @@ const AI = ({
                   }
                 })}
               </div>
+              <div className="w-full flex justify-end">
+                <div className="w-full sm:w-fit flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    className='w-fit text-[var(--blue-2)] text-sm font-normal whites select-none duration-300 hover:opacity-75 active:opacity-60'
+                    onClick={() => setAction('')}
+                  >
+                    Clear selection
+                  </button>
+                  <button
+                    type="button"
+                    className='px-3 py-1.5 bg-[var(--blue-1)] rounded-lg flex items-center gap-1.5 duration-200 not-disabled:hover:opacity-75 not-disabled:active:scale-98 disabled:opacity-75'
+                    onClick={queryHandler}
+                    disabled={fetchingStatus === 1 || action === ''}
+                  >
+                    <span>
+                      <AiIcon dimension={20} color='#347CE9' />
+                    </span>
+                    <div className="text-[var(--blue-2)] font-normal">{fetchingStatus == 1 ? 'Querying...' : 'Query'}</div>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div className="p-2.5 w-full flex flex-col md:flex-row justify-between items-center gap-x-2.5 gap-y-5">
@@ -246,15 +423,15 @@ const AI = ({
                 By accepting these AI-generated changes, the selected content will be permanently replaced. The previous version cannot be recovered.
               </span>
             </div>
-            <div className="w-full md:w-fit flex justify-end">
+            <div className="w-full md:w-fit">
               <button
                 type="button"
-                className='px-3 py-1.5 bg-[var(--blue-2)] rounded-lg flex items-center gap-1.5 duration-200 hover:opacity-75 active:scale-94'
+                className='px-3 py-1.5 bg-[var(--blue-2)] rounded-lg flex items-center gap-1.5 duration-200 not-disabled:hover:opacity-75 not-disabled:active:scale-98 disabled:opacity-60'
+                disabled={updatingStatus === 1 || !aiResponse}
+                onClick={updateHandler}
               >
-                <span>
-                  <AiIcon dimension={20} color='#fff' />
-                </span>
-                <div className="text-[var(--white-1)] font-normal">Create</div>
+                <Edit dimension={20} color='#fff' />
+                <span className='text-[var(--white-1)] font-normal'>{updatingStatus === 1 ? 'Updating...' : 'Update'}</span>
               </button>
             </div>
           </div>

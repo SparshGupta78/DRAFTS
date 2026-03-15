@@ -274,7 +274,7 @@ const useUserAPI = () => {
     tags: TagType[]
   ) => {
     try {
-      const res = await api.post('/user/addTag', {username,noteId,tags})
+      const res = await api.post('/user/addTag', {username, noteId, tags})
       if (!res) {
         createNotification({
           title: "Tag Update Failed",
