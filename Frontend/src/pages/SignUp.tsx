@@ -53,20 +53,19 @@ const SignUp = () => {
 
   const [usernameStatus, setUsernameStatus] = useState< 0 | 1 | 2 | 3 | 4 >(0)
   // 0 - Empty | 1 - Available | 2 - Not available | 3 - Error | 4 - Invalid
-  const usernameHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const currentUsername = e.target.value
-    setUsername(currentUsername)
+  const usernameHandler = async () => {
+    console.log("hghr")
     setFormErrors({...formErrors, username: false})
-    if (currentUsername === '') {
+    if (username === '') {
       setUsernameStatus(0)
       return
     }
     const usernameRegex = /^[A-Za-z0-9_]{3,12}$/
-    if (!usernameRegex.test(currentUsername)) {
+    if (!usernameRegex.test(username)) {
       setUsernameStatus(4)
       return
     }
-    const status = await usernameCheckerAPI(currentUsername)
+    const status = await usernameCheckerAPI(username)
     setUsernameStatus(status)
   }
 
@@ -94,6 +93,7 @@ const SignUp = () => {
     if (!hasError) {
       await signUpAPI({ firstName, middleName, lastName, email, username, password })
     } else {
+      console.log(errors)
       createNotification({
         title: "Invalid Input",
         message: "Please check your entered details and try again.",
@@ -186,6 +186,7 @@ const SignUp = () => {
                   errorClassConditioner={formErrors.username}
                   disabled={btnsDisable}
                   resetter={() => setFormErrors({...formErrors, username: false})}
+                  onChange={usernameHandler}
                 />
                 <div
                   className={cn(

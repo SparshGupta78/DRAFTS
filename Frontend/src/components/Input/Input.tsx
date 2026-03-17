@@ -9,7 +9,8 @@ type props = {
   type: string,
   errorClassConditioner: boolean,
   disabled?: boolean,
-  resetter?: () => void
+  resetter?: () => void,
+  onChange?: () => void
 }
 
 const Input = ({
@@ -20,7 +21,8 @@ const Input = ({
   type='text',
   errorClassConditioner,
   disabled=false,
-  resetter
+  resetter,
+  onChange
 }: props) => {
 
   const inputClass = (conditioner: boolean) => (
@@ -43,6 +45,7 @@ const Input = ({
         onChange={(e) => {
           setValue(e.target.value)
           if(resetter) resetter()
+          if(onChange) onChange()
         }}
         disabled={disabled}
       />
